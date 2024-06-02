@@ -70,3 +70,6 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+Assets/PrototypeAssetsURP/Fonts/TMP asset/SourceHanSansSC-Regular-2 SDF.asset
+Assets/PrototypeAssetsURP/Fonts/TMP asset/SourceHanSansSC-Regular-2 SDF.asset.meta
+/.idea
