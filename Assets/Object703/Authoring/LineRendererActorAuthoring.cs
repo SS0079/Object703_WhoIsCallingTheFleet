@@ -1,0 +1,20 @@
+﻿using Object703.Core.VisualEffect;
+using Unity.Entities;
+using UnityEngine;
+
+namespace Object703.Authoring
+{
+    [DisallowMultipleComponent]
+    public class LineRendererActorAuthoring : MonoBehaviour
+    {
+        public LineRenderer prefab;
+        class LineRendererActorAuthoringBaker : Baker<LineRendererActorAuthoring>
+        {
+            public override void Bake(LineRendererActorAuthoring authoring)
+            {
+                var self = GetEntity(TransformUsageFlags.None);
+                AddComponentObject(self,new LineRendererActorPrefab(){prefab = authoring.prefab.gameObject});
+            }
+        }
+    }
+}

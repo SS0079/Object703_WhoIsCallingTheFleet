@@ -1,0 +1,59 @@
+﻿- 20240404：给kittyMath添加一个计算扇形绘制点的方法
+- 20240322：添加KittyBindDictionary和KittyBindHashSet
+- 20240305：给kittyPool添加一个自动筛除已经被删除的对象的功能
+- 20240304：将cinemachine accessories中的Face camera 移动到这里来
+- 20240301：修改orbiter，使之可以选择更新阶段
+- 20240227：添加KittyInput，一个可配置输入监听器
+- 20240226：将IniParser加入service class，删除无用的MonoTemplate,修复猫猫环形大缓冲里的bug
+- 20240222：添加一个UDP Listener工具
+- 20240201：在kitty math中添加一个凸包算法工具
+- 20231201：修复KittyCircleBuffer中Tail起始位置不对的bug
+- 20231130：给KittyCircleBuffer添加自动扩容
+- 20231118：添加一个修复mesh filter和mesh collider 与mesh资源关联的工具
+- 20230830：修改JsonFileHandler的TryRead方法，使之可以接受一个默认值，在找不到文件时返回默认值
+- 20230803：添加一个不会自动生成的单例
+- 20230724：添加DebugLogOutPut
+- 20230717：添加DebugLogOutput
+- 20230712：添加一个摄像机截图脚本
+- 20230703：添加Debug Controller
+- 20230620：修改ViewScopeRenderer，使其可以在低视角下正常工作
+- 20230619：添加ViewScopeRenderer，添加KittyEvent
+- 20230515：给KittySingleton添加一个DDoL选项
+- 20230419：添加向量平面剪裁和求向量与平面相交点的数学方法
+- 20230310：优化KittyDataEntity，添加CustomToggle
+- 20230301：增加KittyDataEntity，数据激发UI同步方案
+- 20221223：添加OpenFile功能
+- 20221212：添加猫猫环状大缓冲
+- 20221202：将字体资产移动到PrototypeAssets包里
+- 20221121：轻微改进KittyTimer，添加一个Struct版本的Timer。增加一个可视化程度较高的TriggerBox
+- 20221116：添加Edy车辆物理中的防滚杆
+- 20221108：将GetMainCameraUtility改为MainCameraUtility，添加一个鼠标点击射线检测方法
+- 20221024：生成TMP字体资源
+- 20221023：添加一个OutInspectorEuler的重载
+- 20220729：为JsonFileHandler添加TryRead方法,添加AddComponentMenu
+- 20220727：为KittyTimer加一个启动标识符
+- 20220726：添加Inspector的ReadOnly特性
+- 20200714：删除过时代码。为所有移动控制组件添加Mover引用
+- 20200713：改良UIDrag，现在拖拽时不会跳一下了
+- 20220709：完善kittyTimer，添加了重置倒计时功能
+- 20220708：将猫猫计时器改为非协程，缓解性能焦虑，增设Prototype文件夹，用于存放尚未完成的功能
+- 20220707：精简KittyPool，删除了返回Component的方法
+- 20220701：改进猫猫策略箱，现在它基于类型并且用法和猫猫策略大机器类似了
+- 20220626：添加猫猫策略大机器和猫猫策略箱
+- 20220622：添加Assets文件夹，添加几种免费字体
+- 20220510：添加GetMainCameraUtility，添加UIDrag
+- 20220507：删除CoroutineRunner中的无用代码，它本来就什么都不用做
+- 20220428：简化Mono代码模板，只保留Update
+- 20220328:增加巡航控制的滚轮高度限制
+- 20220303:进一步加强CruiseMove的可定制性
+- 20220225:优化Pool逻辑，现在根据对象本身是否activeSelf判断是否可用了（原先是根据activeInHierarchy）；优化CustomSider,现在可以对点击做出反应了;为CruiseMove增加一个可以在输入时调用的委托，继承整个CruiseMove类后可使用；修改代码模板行尾为LF
+- 20220220:修復KittyTimer中一个潜在bug
+- 20220217:增加一个可延申的抽象性能显示面板
+- 20220128:添加Follow服务类
+- 20220123:添加旧的向量平面投影数学方法
+- 20220121:移除AttachTo
+- 20220118:上传四棱锥生成器代码，上传有拖动委托的slider
+- 20220117:修改数学类名称为KittyMath（猫猫算数！）
+- 20220114:改进KittyTimer。现在重复触发StartTimer类型方法可以续订闹钟了（你明白我的意思）
+- 20220108:改进KittyTimer。修复因为改名导致的代码模板生成器问题
+- 20220107:把命名空间改为KittyHelpYouOut
