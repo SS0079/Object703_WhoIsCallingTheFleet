@@ -74,7 +74,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14845fc57f4744fcafae25f811a61321, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  netConfig: {fileID: 0}
+  netConfig: {fileID: 11400000, guid: 5fafff5fa10047c46a2040db1c8fb7ea, type: 2}
   style: 0
   shipMoveConfig:
     moveSpeedPerSecond: 0
@@ -83,6 +83,8 @@ MonoBehaviour:
     rotateDegreePerSecond: 0
     rotateDampMotion: 0
     rotateDampStop: 0
+  arrowMoveConfig:
+    speedPerSecond: 85
   isHoming: 0
 --- !u!114 &-5316111087388616607
 MonoBehaviour:

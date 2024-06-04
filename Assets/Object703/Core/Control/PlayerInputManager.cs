@@ -78,7 +78,7 @@ namespace Object703.Core.Control
         }
     }
     
-    public enum PlayerPressSlot
+    public enum SkillSlot
     {
         Skill0=1<<0,
         Skill1=1<<1,

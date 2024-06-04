@@ -25,6 +25,8 @@ namespace Object703.Core.Recycle
     public struct DestructTag : IComponentData , IEnableableComponent
     {
     }
+    
+    [UpdateBefore(typeof(PredictedSimulationSystemGroup))]
     public partial struct PrepareDestructTimerSystem : ISystem
     {
         public void OnCreate(ref SystemState state)

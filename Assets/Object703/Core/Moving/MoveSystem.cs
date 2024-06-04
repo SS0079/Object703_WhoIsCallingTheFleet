@@ -67,9 +67,9 @@ namespace Object703.Core.Moving
     }
     
     [Serializable]
-    public struct RotateAxis : IComponentData
+    public struct RotateAxis : IInputComponentData
     {
-        public float3 rotateEuler;
+        [GhostField] public float3 rotateEuler;
     }
     
     // [Serializable]
@@ -93,9 +93,9 @@ namespace Object703.Core.Moving
     }
     
     [Serializable]
-    public struct MoveAxis : IComponentData
+    public struct MoveAxis : IInputComponentData
     {
-        public float3 moveDirection;
+        [GhostField] public float3 moveDirection;
     }
     
     public enum ShipMoveType
@@ -107,6 +107,8 @@ namespace Object703.Core.Moving
     public struct ArrowMoveConfig : IComponentData
     {
         [GhostField]public float speedPerTick;
+        
+        [Serializable]
         public struct AuthoringBox
         {
             public float speedPerSecond;
@@ -219,7 +221,6 @@ namespace Object703.Core.Moving
             var Δt = SystemAPI.Time.DeltaTime;
             var shipMoveHandle = new MoveSystemJobs.ShipMoveJob().ScheduleParallel(state.Dependency);
             shipMoveHandle.Complete();
-            
             new MoveSystemJobs.ProjectileMoveJob().ScheduleParallel();
             ltwLp.Update(ref state);
             simulateLp.Update(ref state);

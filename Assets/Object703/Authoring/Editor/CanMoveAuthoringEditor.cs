@@ -30,13 +30,14 @@ namespace Object703.Authoring.Editor
             EditorGUI.indentLevel--;
             if (netConfigProp.objectReferenceValue!=null)
             {
-                EditorGUILayout.LabelField("MoveConfig",EditorStyles.boldLabel);
+                // EditorGUILayout.LabelField("MoveConfig",EditorStyles.boldLabel);
                 EditorGUI.indentLevel++;
                 EditorGUILayout.PropertyField(moveStyleProp, new GUIContent("Style"));
                 var style = (CanMoveAuthoring.MoveStyle)moveStyleProp.enumValueIndex;
                 switch (style)
                 {
                     case CanMoveAuthoring.MoveStyle.Arrow:
+                        SerializeArrowMove(arrowMoveProp);
                         break;
                     case CanMoveAuthoring.MoveStyle.Ship:
                         SerializeShipMove(shipMoveProp);
@@ -57,24 +58,30 @@ namespace Object703.Authoring.Editor
             EditorGUILayout.LabelField("Move");
             EditorGUI.indentLevel++;
             {
-                var moveSpeedProp = prop.FindPropertyRelative("moveSpeedPerSecond");
-                EditorGUILayout.PropertyField(moveSpeedProp, new GUIContent("MoveSpeed"));
-                var motionDampProp = prop.FindPropertyRelative("moveDampMotion");
-                EditorGUILayout.PropertyField(motionDampProp, new GUIContent("MotionDamp"));
-                var stopDampProp = prop.FindPropertyRelative("moveDampStop");
-                EditorGUILayout.PropertyField(stopDampProp, new GUIContent("StopDamp"));
+                Wrapper_PropertyField(prop,"moveSpeedPerSecond","MoveSpeed");
+                // var moveSpeedProp = prop.FindPropertyRelative("moveSpeedPerSecond");
+                // EditorGUILayout.PropertyField(moveSpeedProp, new GUIContent("MoveSpeed"));
+                Wrapper_PropertyField(prop,"moveDampMotion","MotionDamp");
+                // var motionDampProp = prop.FindPropertyRelative("moveDampMotion");
+                // EditorGUILayout.PropertyField(motionDampProp, new GUIContent("MotionDamp"));
+                Wrapper_PropertyField(prop,"moveDampStop","StopDamp");
+                // var stopDampProp = prop.FindPropertyRelative("moveDampStop");
+                // EditorGUILayout.PropertyField(stopDampProp, new GUIContent("StopDamp"));
             }
             EditorGUI.indentLevel--;
             
             EditorGUILayout.LabelField("Rotate");
             EditorGUI.indentLevel++;
             {
-                var rotateSpeedProp = prop.FindPropertyRelative("rotateDegreePerSecond");
-                EditorGUILayout.PropertyField(rotateSpeedProp, new GUIContent("RotateSpeed"));
-                var motionDampProp = prop.FindPropertyRelative("rotateDampMotion");
-                EditorGUILayout.PropertyField(motionDampProp, new GUIContent("MotionDamp"));
-                var stopDampProp = prop.FindPropertyRelative("rotateDampStop");
-                EditorGUILayout.PropertyField(stopDampProp, new GUIContent("StopDamp"));
+                Wrapper_PropertyField(prop,"rotateDegreePerSecond","RotateSpeed");
+                // var rotateSpeedProp = prop.FindPropertyRelative("rotateDegreePerSecond");
+                // EditorGUILayout.PropertyField(rotateSpeedProp, new GUIContent("RotateSpeed"));
+                Wrapper_PropertyField(prop,"rotateDampMotion","MotionDamp");
+                // var motionDampProp = prop.FindPropertyRelative("rotateDampMotion");
+                // EditorGUILayout.PropertyField(motionDampProp, new GUIContent("MotionDamp"));
+                Wrapper_PropertyField(prop,"rotateDampStop","StopDamp");
+                // var stopDampProp = prop.FindPropertyRelative("rotateDampStop");
+                // EditorGUILayout.PropertyField(stopDampProp, new GUIContent("StopDamp"));
             }
             EditorGUI.indentLevel--;
 
@@ -82,7 +89,12 @@ namespace Object703.Authoring.Editor
 
         private void SerializeArrowMove(SerializedProperty prop)
         {
-            
+            Wrapper_PropertyField(prop,"speedPerSecond","MoveSpeed");
+        }
+
+        private void Wrapper_PropertyField(SerializedProperty prop,string propName, string propLabel)
+        {
+            EditorGUILayout.PropertyField(prop.FindPropertyRelative(propName), new GUIContent(propLabel));
         }
     }
 }

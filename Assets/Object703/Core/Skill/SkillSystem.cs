@@ -27,34 +27,21 @@ namespace Object703.Core.Skill
         public float lifeSpan;
 
         public float RangeSq => range * range;
-     
+    }
+
+    public struct SkillInvokeAtTick : IComponentData , IEnableableComponent
+    {
+        public NetworkTick coolDownAtTick;
+        public NetworkTick lifeSpanAtTick;
     }
     
     [Serializable]
     public struct SkillFlags : IComponentData
     {
         [FormerlySerializedAs("Slot")]
-        public PlayerPressSlot slot;
+        public SkillSlot slot;
         [FormerlySerializedAs("SkillTriggerDown")]
-        public bool skillTriggerDown;
-        [ReadOnlyInspector]
-        public float timer;
-
-        public bool Tick(float dt)
-        {
-            bool result = timer<=0;
-            if (!result)
-            {
-                timer -= dt;
-            }
-            return result;
-        }
-
-        public void Reset(float coolDown)
-        {
-            timer = coolDown;
-        }
-        public bool Activate => skillTriggerDown && timer<=0;
+        public InputEvent skillTriggerDown;
     }
     
     [BurstCompile]
@@ -78,38 +65,9 @@ namespace Object703.Core.Skill
             foreach (var (flags,commonData,parent) in SystemAPI.Query<RefRW<SkillFlags>,RefRO<SkillCommonData>,RefRO<Parent>>().WithAll<Simulate>())
             {
                 if(!inputLp.HasComponent(parent.ValueRO.Value)) continue;
-                // flags.ValueRW.skillPermission = false;
                 var playerInput = inputLp[parent.ValueRO.Value];
-                
-                // if (commonData.ValueRW.timer<0)
-                // {
-                //     if (flags.ValueRO.skillTriggerDown)
-                //     {
-                //         //check range
-                //         
-                //         if (playerInput.fromTo2DDisSq>commonData.ValueRO.RangeSq) continue;
-                //         flags.ValueRW.skillPermission = true;
-                //         commonData.ValueRW.timer = commonData.ValueRO.coolDown;
-                //         Debug.Log($"{commonData.ValueRO.timer} | {flags.ValueRO.skillPermission}");
-                //     }
-                // }
-                // else
-                // {
-                //     commonData.ValueRW.timer -= Δt;
-                // }
 
                 flags.ValueRW.Tick(Δt);
-                
-                // if (flags.ValueRW.timer>0)
-                // {
-                //     flags.ValueRW.timer -= Δt;
-                //     flags.ValueRW.ready = false;
-                // }
-                // else
-                // {
-                //     flags.ValueRW.timer = commonData.ValueRO.coolDown;
-                //     flags.ValueRW.ready = true;
-                // }
             }
         }
     }

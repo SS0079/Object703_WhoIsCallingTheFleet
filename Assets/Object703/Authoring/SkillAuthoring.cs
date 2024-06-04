@@ -18,7 +18,7 @@ namespace Object703.Authoring
         [Serializable]
         public struct Skill
         {
-            public PlayerPressSlot slot;
+            public SkillSlot slot;
             public SkillType type;
             public SkillCommonData data;
             public GameObject spawnPrefab;
@@ -34,8 +34,6 @@ namespace Object703.Authoring
             public override void Bake(SkillAuthoring authoring)
             {
                 var self = GetEntity(TransformUsageFlags.None);
-                // AddComponent(self,new SkillActiveTag());
-                // SetComponentEnabled<SkillActiveTag>(self,false);
                 switch (authoring.skill.type)
                 {
                     case SkillType.Shot:
@@ -49,8 +47,9 @@ namespace Object703.Authoring
                         throw new ArgumentOutOfRangeException();
                 }
                 AddComponent(self,authoring.skill.data);
+                AddComponent(self,new SkillInvokeAtTick());
+                SetComponentEnabled<SkillInvokeAtTick>(self,false);
                 AddComponent(self,new SkillFlags(){slot = authoring.skill.slot});
-                // AddComponent(self,new PlayerBit());
             }
         }
     }

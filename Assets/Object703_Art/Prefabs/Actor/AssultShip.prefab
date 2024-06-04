@@ -223,15 +223,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14845fc57f4744fcafae25f811a61321, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  move: 1
-  moveConfig:
-    speed: 5
-    motionDamp: 200
-    stopDamp: 50
-  rotateConfig:
-    degree: 35
-    motionDamp: 150
-    stopDamp: 80
+  netConfig: {fileID: 11400000, guid: 5fafff5fa10047c46a2040db1c8fb7ea, type: 2}
+  style: 1
+  shipMoveConfig:
+    moveSpeedPerSecond: 5
+    moveDampMotion: 200
+    moveDampStop: 50
+    rotateDegreePerSecond: 35
+    rotateDampMotion: 150
+    rotateDampStop: 80
+  arrowMoveConfig:
+    speedPerSecond: 0
   isHoming: 0
 --- !u!114 &-9129361758202117754
 MonoBehaviour:

@@ -26,17 +26,17 @@ namespace Object703.Core.Control
         public Entity mousePointEntity;
         public InputEvent skill0, skill1, skill2, skill3;
 
-        public readonly bool CheckPress(PlayerPressSlot slot)
+        public readonly bool CheckPress(SkillSlot slot)
         {
             switch (slot)
             {
-                case PlayerPressSlot.Skill0:
+                case SkillSlot.Skill0:
                     return skill0.IsSet;
-                case PlayerPressSlot.Skill1:
+                case SkillSlot.Skill1:
                     return skill1.IsSet;
-                case PlayerPressSlot.Skill2:
+                case SkillSlot.Skill2:
                     return skill2.IsSet;
-                case PlayerPressSlot.Skill3:
+                case SkillSlot.Skill3:
                     return skill3.IsSet;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(slot), slot, null);
