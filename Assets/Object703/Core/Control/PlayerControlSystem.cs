@@ -79,7 +79,7 @@ namespace Object703.Core.Control
                 ref SkillFlags flags)
             {
                 var intput = inputLp[parent.Value];
-                flags.skillTriggerDown = intput.CheckPress(flags.slot);
+                // flags.skillTriggerDown = intput.CheckPress(flags.slot);
             }
         }
 

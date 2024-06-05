@@ -24,10 +24,6 @@ namespace Object703.Authoring.Editor
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
-            EditorGUILayout.LabelField("NetCodeConfig",EditorStyles.boldLabel);
-            EditorGUI.indentLevel++;
-            EditorGUILayout.PropertyField(netConfigProp, new GUIContent("Config"));
-            EditorGUI.indentLevel--;
             if (netConfigProp.objectReferenceValue!=null)
             {
                 // EditorGUILayout.LabelField("MoveConfig",EditorStyles.boldLabel);

@@ -67,7 +67,7 @@ namespace Object703.Core.Skill
                 if(!inputLp.HasComponent(parent.ValueRO.Value)) continue;
                 var playerInput = inputLp[parent.ValueRO.Value];
 
-                flags.ValueRW.Tick(Δt);
+                // flags.ValueRW.Tick(Δt);
             }
         }
     }
@@ -127,7 +127,7 @@ namespace Object703.Core.Skill
             //perform teleport skill
             foreach (var (commonData,parent,flags) in SystemAPI.Query<RefRW<SkillCommonData>,RefRO<Parent>,RefRW<SkillFlags>>().WithAll<Simulate,TeleportSkill>())
             {
-                if(!flags.ValueRO.Activate) continue;
+                // if(!flags.ValueRO.Activate) continue;
                 var performer = parent.ValueRO.Value;
                 if(!inputLp.HasComponent(performer)) continue;
                 var playerInput = inputLp[performer];
@@ -139,7 +139,7 @@ namespace Object703.Core.Skill
                 var newRot = quaternion.LookRotationSafe(newPos - previousPos, math.up());
                 var newTrans = LocalTransform.FromPositionRotation(newPos,newRot);
                 localTransLp[performer] = newTrans;
-                flags.ValueRW.Reset(commonData.ValueRO.coolDown);
+                // flags.ValueRW.Reset(commonData.ValueRO.coolDown);
                 
             }
             
@@ -155,7 +155,7 @@ namespace Object703.Core.Skill
                                  RefRO<Parent>>()
                              .WithAll<Simulate>().WithEntityAccess())
                 {
-                    if (!flags.ValueRO.Activate) continue;
+                    // if (!flags.ValueRO.Activate) continue;
                     var performer = parent.ValueRO.Value;
                     if(!inputLp.HasComponent(performer)) continue;
                     var playerInput = inputLp[performer];
@@ -171,7 +171,7 @@ namespace Object703.Core.Skill
                     };
                     SystemAPI.SetComponent(localShot,owner.ValueRO);
                     SystemAPI.SetComponent(localShot, localTrans);
-                    flags.ValueRW.Reset(commonData.ValueRO.coolDown);
+                    // flags.ValueRW.Reset(commonData.ValueRO.coolDown);
                     // Debug.Log($"{state.WorldUnmanaged.Name} : {entity.Index} | {data.ValueRO.timer} | {flags.ValueRO.skillPermission}");
                 }
                 
