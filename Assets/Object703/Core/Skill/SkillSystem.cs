@@ -70,28 +70,32 @@ namespace Object703.Core.Skill
     
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
-    [UpdateBefore(typeof(SkillSystem))]
-    public partial struct PreSkillSystem : ISystem
+    [UpdateInGroup(typeof(SimulationSystemGroup))]
+    public partial struct PrepareSkillSystem : ISystem
     {
-        private ComponentLookup<PlayerInput> inputLp;
         public void OnCreate(ref SystemState state)
         {
-            inputLp = SystemAPI.GetComponentLookup<PlayerInput>(true);
-
+            state.RequireForUpdate<NetworkTime>();
         }
 
         public void OnUpdate(ref SystemState state)
         {
-            var Δt = SystemAPI.Time.fixedDeltaTime;
-            inputLp.Update(ref state);
-            // update skill flags
-            foreach (var (flags,commonData,parent) in SystemAPI.Query<RefRW<SkillFlags>,RefRO<SkillCommonData>,RefRO<Parent>>().WithAll<Simulate>())
+            //update the target tick of skill
+            var networkTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
+            foreach (var (commonData,invokeAtTick) in SystemAPI
+                         .Query<RefRO<SkillCommonData>,RefRW<SkillInvokeAtTick>>().WithAll<Simulate>().WithDisabled<SkillInvokeAtTick>())
             {
-                if(!inputLp.HasComponent(parent.ValueRO.Value)) continue;
-                var playerInput = inputLp[parent.ValueRO.Value];
-
-                // flags.ValueRW.Tick(Δt);
+                var localTick = networkTick;
+                localTick.Add(commonData.ValueRO.coolDownTick);
+                invokeAtTick.ValueRW.coolDownAtTick = localTick;
+                localTick = networkTick;
+                localTick.Add(commonData.ValueRO.lifeSpanTick);
+                invokeAtTick.ValueRW.lifeSpanAtTick = localTick;
+            }
+            foreach (var enInvokeAtTick in SystemAPI
+                         .Query<EnabledRefRW<SkillInvokeAtTick>>().WithAll<Simulate,SkillCommonData>().WithDisabled<SkillInvokeAtTick>())
+            {
+                enInvokeAtTick.ValueRW = true;
             }
         }
     }

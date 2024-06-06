@@ -107,10 +107,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slot: 2
-  type: 1
+  type: 0
   data:
     radius: 0
     range: 0
-    coolDown: 0
-    lifeSpan: 0
-  spawnPrefab: {fileID: 0}
+    coolDown: 1
+    lifeSpan: 1
+  spawnPrefab: {fileID: 4033528821912424, guid: 57782b7233ec83840a75b4790fe14492,
+    type: 3}

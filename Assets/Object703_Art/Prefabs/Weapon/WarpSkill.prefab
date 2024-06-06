@@ -107,10 +107,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slot: 1
-  type: 0
+  type: 1
   data:
     radius: 0
-    range: 0
-    coolDown: 0.01
+    range: 100
+    coolDown: 0.5
     lifeSpan: 0
   spawnPrefab: {fileID: 0}

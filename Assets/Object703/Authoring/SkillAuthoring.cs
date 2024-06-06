@@ -41,7 +41,12 @@ namespace Object703.Authoring
                         throw new ArgumentOutOfRangeException();
                 }
                 AddComponent(self,authoring.data.ToComponentData(tickRate));
-                AddComponent(self,new SkillInvokeAtTick());
+                var startTick = new NetworkTick(0);
+                AddComponent(self,new SkillInvokeAtTick
+                {
+                    coolDownAtTick = startTick,
+                    lifeSpanAtTick = startTick
+                });
                 SetComponentEnabled<SkillInvokeAtTick>(self,true);
                 AddComponent(self,new SkillFlags(){slot = authoring.slot});
             }
