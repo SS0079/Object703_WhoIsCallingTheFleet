@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace KittyHelpYouOut
 {
-	public static class ListExtension
+	public static class ListHelper
 	{
 
 		#region CustomMethod

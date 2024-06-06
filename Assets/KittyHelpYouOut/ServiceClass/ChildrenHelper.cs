@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace KittyHelpYouOut
 {
-	public static class GetChildExtension
+	public static class ChildrenHelper
 	{
 
         #region CustomMethod

@@ -21,12 +21,36 @@ namespace Object703.Core.Skill
     [Serializable]
     public struct SkillCommonData : IComponentData
     {
-        public float radius,range;
-        [Range(0.01f,9999)]
-        public float coolDown;
-        public float lifeSpan;
+        [GhostField]
+        public float radius;
+        [GhostField]
+        public float range;
+        [GhostField]
+        public uint coolDownTick;
+        [GhostField]
+        public uint lifeSpanTick;
 
         public float RangeSq => range * range;
+        
+        [Serializable]
+        public struct AuthoringBox
+        {
+            public float radius;
+            public float range;
+            public float coolDown;
+            public float lifeSpan;
+
+            public SkillCommonData ToComponentData(int tickRate)
+            {
+                return new SkillCommonData()
+                {
+                    radius = radius,
+                    range = range,
+                    coolDownTick = (uint)(coolDown * tickRate),
+                    lifeSpanTick = (uint)(coolDown * lifeSpan)
+                };
+            }
+        }
     }
 
     public struct SkillInvokeAtTick : IComponentData , IEnableableComponent

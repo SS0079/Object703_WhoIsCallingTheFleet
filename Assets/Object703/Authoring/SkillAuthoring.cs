@@ -1,12 +1,9 @@
 ﻿using System;
-using KittyHelpYouOut.Utilities;
 using Object703.Core.Control;
 using Object703.Core.Skill;
 using Unity.Entities;
-using Unity.Mathematics;
 using Unity.NetCode;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Object703.Authoring
 {
@@ -15,29 +12,26 @@ namespace Object703.Authoring
     [DisallowMultipleComponent]
     public class SkillAuthoring : MonoBehaviour
     {
-        [Serializable]
-        public struct Skill
-        {
-            public SkillSlot slot;
-            public SkillType type;
-            public SkillCommonData data;
-            public GameObject spawnPrefab;
-        }
         public enum SkillType
         {
             Shot,
             Teleport,
         }
-        public Skill skill;
+        public SkillSlot slot;
+        public SkillType type;
+        public SkillCommonData.AuthoringBox data;
+        public GameObject spawnPrefab;
         class SkillAuthoringBaker : Baker<SkillAuthoring>
         {
             public override void Bake(SkillAuthoring authoring)
             {
+                if (NetCodeConfig.Global == null) return;
+                var tickRate = NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;
                 var self = GetEntity(TransformUsageFlags.None);
-                switch (authoring.skill.type)
+                switch (authoring.type)
                 {
                     case SkillType.Shot:
-                        var spawn = GetEntity(authoring.skill.spawnPrefab,TransformUsageFlags.Dynamic);
+                        var spawn = GetEntity(authoring.spawnPrefab,TransformUsageFlags.Dynamic);
                         AddComponent(self,new ShotSkill(){charge = spawn});
                         break;
                     case SkillType.Teleport:
@@ -46,10 +40,10 @@ namespace Object703.Authoring
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-                AddComponent(self,authoring.skill.data);
+                AddComponent(self,authoring.data.ToComponentData(tickRate));
                 AddComponent(self,new SkillInvokeAtTick());
-                SetComponentEnabled<SkillInvokeAtTick>(self,false);
-                AddComponent(self,new SkillFlags(){slot = authoring.skill.slot});
+                SetComponentEnabled<SkillInvokeAtTick>(self,true);
+                AddComponent(self,new SkillFlags(){slot = authoring.slot});
             }
         }
     }

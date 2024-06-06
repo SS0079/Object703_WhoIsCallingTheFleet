@@ -1,4 +1,9 @@
-﻿- 20240404：给kittyMath添加一个计算扇形绘制点的方法
+# KittyHelpYouOutToolBox
+ 一个私人小工具集合
+
+## 更新记录
+- 20240606：添加一个UnityEditorHelper，方便Editor编写。把所有的Extension转移到ServiceClass里
+- 20240404：给kittyMath添加一个计算扇形绘制点的方法
 - 20240322：添加KittyBindDictionary和KittyBindHashSet
 - 20240305：给kittyPool添加一个自动筛除已经被删除的对象的功能
 - 20240304：将cinemachine accessories中的Face camera 移动到这里来
@@ -57,3 +62,4 @@
 - 20220114:改进KittyTimer。现在重复触发StartTimer类型方法可以续订闹钟了（你明白我的意思）
 - 20220108:改进KittyTimer。修复因为改名导致的代码模板生成器问题
 - 20220107:把命名空间改为KittyHelpYouOut
+

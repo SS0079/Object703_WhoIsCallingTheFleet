@@ -1,18 +1,22 @@
 ﻿using System;
-using Object703.Core.Skill;
+using KittyHelpYouOut;
 using UnityEditor;
-using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Object703.Authoring.Editor
 {
     [CustomEditor(typeof(SkillAuthoring))]
     public class SkillAuthoringEditor : UnityEditor.Editor
     {
-        private SerializedProperty skillProp;
+        private SerializedProperty slotProp;
+        private SerializedProperty skillTypeProp;
+        private SerializedProperty commonDataProp;
+        private SerializedProperty spawnPrefabProp;
         private void OnEnable()
         {
-            skillProp = serializedObject.FindProperty("skill");
+            slotProp = this.Find("slot");
+            skillTypeProp = this.Find("type");
+            commonDataProp = this.Find("data");
+            spawnPrefabProp = this.Find("spawnPrefab");
         }
         public override void OnInspectorGUI()
         {
@@ -21,21 +25,20 @@ namespace Object703.Authoring.Editor
             EditorGUI.indentLevel++;
             //serialize skill
             //serialize skill slot
-            var slotProp = skillProp.FindPropertyRelative("slot");
-            EditorGUILayout.PropertyField(slotProp, new GUIContent("Slot"));
+            slotProp.ShowField();
             //serialize skill type
-            var skillType = skillProp.FindPropertyRelative("type");
-            EditorGUILayout.PropertyField(skillType, new GUIContent("Type"));
-            var type = (SkillAuthoring.SkillType)skillType.enumValueIndex;
+            skillTypeProp.ShowField();
+            var type = (SkillAuthoring.SkillType)skillTypeProp.enumValueIndex;
             //serialize rest of skill according to skill type
             
             switch (type)
             {
                 case SkillAuthoring.SkillType.Shot:
-                    SerializeShotSkill(skillProp);
+                    SerializeCommonData(commonDataProp);
+                    spawnPrefabProp.ShowField();
                     break;
                 case SkillAuthoring.SkillType.Teleport:
-                    SerializeTeleportSkill(skillProp);
+                    SerializeCommonData(commonDataProp);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -44,33 +47,12 @@ namespace Object703.Authoring.Editor
             serializedObject.ApplyModifiedProperties();
         }
 
-        private void SerializeShotSkill(SerializedProperty skillElement)
+        private void SerializeCommonData(SerializedProperty commonData)
         {
-            var commonData = skillElement.FindPropertyRelative("data");
-            var radiusProp = commonData.FindPropertyRelative("radius");
-            EditorGUILayout.PropertyField(radiusProp, new GUIContent("Radius"));
-            var rangeProp = commonData.FindPropertyRelative("range");
-            EditorGUILayout.PropertyField(rangeProp, new GUIContent("Range"));
-            var delayBetweenActivateProp = commonData.FindPropertyRelative("coolDown");
-            EditorGUILayout.PropertyField(delayBetweenActivateProp, new GUIContent("coolDown"));
-            var lifeSpanProp = commonData.FindPropertyRelative("lifeSpan");
-            EditorGUILayout.PropertyField(lifeSpanProp, new GUIContent("LifeSpan"));
-            
-            var spawnPrefabProp = skillElement.FindPropertyRelative("spawnPrefab");
-            EditorGUILayout.PropertyField(spawnPrefabProp, new GUIContent("SpawnPrefab"));
-        }
-        
-        private void SerializeTeleportSkill(SerializedProperty skillElement)
-        {
-            var commonData = skillElement.FindPropertyRelative("data");
-            var radiusProp = commonData.FindPropertyRelative("radius");
-            EditorGUILayout.PropertyField(radiusProp, new GUIContent("Radius"));
-            var rangeProp = commonData.FindPropertyRelative("range");
-            EditorGUILayout.PropertyField(rangeProp, new GUIContent("Range"));
-            var delayBetweenActivateProp = commonData.FindPropertyRelative("coolDown");
-            EditorGUILayout.PropertyField(delayBetweenActivateProp, new GUIContent("coolDown"));
-            var lifeSpanProp = commonData.FindPropertyRelative("lifeSpan");
-            EditorGUILayout.PropertyField(lifeSpanProp, new GUIContent("LifeSpan"));
+            commonData.ShowRelativeField("radius")
+                .ShowRelativeField("range")
+                .ShowRelativeField("coolDown")
+                .ShowRelativeField("lifeSpan");
         }
     }
 }
