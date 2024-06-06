@@ -46,12 +46,12 @@ namespace Object703.Core.Moving
             public float rotateDampMotion;
             [Range(0,300)]
             public float rotateDampStop;
-            public ShipMoveConfig ToComponentData(NetCodeConfig config) => new ShipMoveConfig
+            public ShipMoveConfig ToComponentData(int tickRate) => new ShipMoveConfig
             {
-                moveSpeedPerTick = moveSpeedPerSecond/config.ClientServerTickRate.SimulationTickRate,
+                moveSpeedPerTick = moveSpeedPerSecond/tickRate,
                 moveDampMotion = moveDampMotion,
                 moveDampStop = moveDampStop,
-                RotateRadiusPerTick = rotateDegreePerSecond/config.ClientServerTickRate.SimulationTickRate,
+                RotateRadiusPerTick = rotateDegreePerSecond/tickRate,
                 rotateDampMotion = rotateDampMotion,
                 rotateDampStop = rotateDampStop
             };
@@ -112,9 +112,9 @@ namespace Object703.Core.Moving
         public struct AuthoringBox
         {
             public float speedPerSecond;
-            public ArrowMoveConfig ToComponentData(NetCodeConfig config)
+            public ArrowMoveConfig ToComponentData(int tickRate)
             {
-                return new ArrowMoveConfig() { speedPerTick = speedPerSecond / config.ClientServerTickRate.SimulationTickRate };
+                return new ArrowMoveConfig() { speedPerTick = speedPerSecond / tickRate };
             }
         }
     }

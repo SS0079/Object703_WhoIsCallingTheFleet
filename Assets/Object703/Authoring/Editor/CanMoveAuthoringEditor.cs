@@ -22,34 +22,26 @@ namespace Object703.Authoring.Editor
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
-<<<<<<< Updated upstream
-            EditorGUILayout.LabelField("NetCodeConfig",EditorStyles.boldLabel);
-=======
->>>>>>> Stashed changes
+
+            // EditorGUILayout.LabelField("MoveConfig",EditorStyles.boldLabel);
+
             EditorGUI.indentLevel++;
-            EditorGUILayout.PropertyField(netConfigProp, new GUIContent("Config"));
-            EditorGUI.indentLevel--;
-            if (netConfigProp.objectReferenceValue!=null)
+            EditorGUILayout.PropertyField(moveStyleProp, new GUIContent("Style"));
+            var style = (CanMoveAuthoring.MoveStyle)moveStyleProp.enumValueIndex;
+            switch (style)
             {
-                // EditorGUILayout.LabelField("MoveConfig",EditorStyles.boldLabel);
-                EditorGUI.indentLevel++;
-                EditorGUILayout.PropertyField(moveStyleProp, new GUIContent("Style"));
-                var style = (CanMoveAuthoring.MoveStyle)moveStyleProp.enumValueIndex;
-                switch (style)
-                {
-                    case CanMoveAuthoring.MoveStyle.Arrow:
-                        SerializeArrowMove(arrowMoveProp);
-                        break;
-                    case CanMoveAuthoring.MoveStyle.Ship:
-                        SerializeShipMove(shipMoveProp);
-                        break;
-                    case CanMoveAuthoring.MoveStyle.Hover:
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-                EditorGUI.indentLevel--;
+                case CanMoveAuthoring.MoveStyle.Arrow:
+                    SerializeArrowMove(arrowMoveProp);
+                    break;
+                case CanMoveAuthoring.MoveStyle.Ship:
+                    SerializeShipMove(shipMoveProp);
+                    break;
+                case CanMoveAuthoring.MoveStyle.Hover:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
+            EditorGUI.indentLevel--;
             
             serializedObject.ApplyModifiedProperties();
         }

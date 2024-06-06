@@ -19,7 +19,6 @@ namespace Object703.Authoring
             Ship,
             Hover
         }
-        public NetCodeConfig netConfig;
         public MoveStyle style;
         public ShipMoveConfig.AuthoringBox shipMoveConfig;
         public ArrowMoveConfig.AuthoringBox arrowMoveConfig; 
@@ -29,16 +28,17 @@ namespace Object703.Authoring
     {
         public override void Bake(CanMoveAuthoring authoring)
         {
-            if (authoring.netConfig == null) return;
+            if (NetCodeConfig.Global == null) return;
+            var tickRate = NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;
             var self = GetEntity(TransformUsageFlags.Dynamic);
             switch (authoring.style)
             {
                 case CanMoveAuthoring.MoveStyle.Arrow:
-                    AddComponent(self,authoring.arrowMoveConfig.ToComponentData(authoring.netConfig));
+                    AddComponent(self,authoring.arrowMoveConfig.ToComponentData(tickRate));
                     break;
                 case CanMoveAuthoring.MoveStyle.Ship:
                     AddComponent(self,new MoveAsShipTag());
-                    AddComponent(self,authoring.shipMoveConfig.ToComponentData(authoring.netConfig));
+                    AddComponent(self,authoring.shipMoveConfig.ToComponentData(tickRate));
                     AddComponent(self,new MoveAxis());
                     AddComponent(self,new RotateAxis());
                     AddComponent(self,new MoveSpeed());
