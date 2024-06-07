@@ -26,7 +26,6 @@ namespace Object703.Core.Recycle
     {
     }
     
-    [UpdateBefore(typeof(PredictedSimulationSystemGroup))]
     public partial struct PrepareDestructTimerSystem : ISystem
     {
         public void OnCreate(ref SystemState state)

@@ -21,8 +21,6 @@ namespace Object703.Authoring.Editor
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
-            EditorGUILayout.LabelField("Skill",EditorStyles.boldLabel);
-            EditorGUI.indentLevel++;
             //serialize skill
             //serialize skill slot
             slotProp.ShowField();
@@ -31,19 +29,17 @@ namespace Object703.Authoring.Editor
             var type = (SkillAuthoring.SkillType)skillTypeProp.enumValueIndex;
             //serialize rest of skill according to skill type
             
+            commonDataProp.ShowField("commonData");
             switch (type)
             {
                 case SkillAuthoring.SkillType.Shot:
-                    SerializeCommonData(commonDataProp);
                     spawnPrefabProp.ShowField();
                     break;
                 case SkillAuthoring.SkillType.Teleport:
-                    SerializeCommonData(commonDataProp);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            EditorGUI.indentLevel--;
             serializedObject.ApplyModifiedProperties();
         }
 

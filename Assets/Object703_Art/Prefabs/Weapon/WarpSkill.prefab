@@ -110,7 +110,7 @@ MonoBehaviour:
   type: 1
   data:
     radius: 0
-    range: 100
+    range: 50
     coolDown: 0.5
     lifeSpan: 0
   spawnPrefab: {fileID: 0}
