@@ -229,7 +229,6 @@ namespace Object703.Core.Skill
                         flags.ValueRW.status = SkillStatus.Ready;
                         continue;
                     }
-                    Debug.Log(performerPos);
                     var localShot=state.EntityManager.Instantiate(shot.ValueRO.charge);
                     //force shot towards target position
                     var rot = quaternion.LookRotationSafe(playerInput.mouseWorldPoint-playerInput.playerPosition,math.up());

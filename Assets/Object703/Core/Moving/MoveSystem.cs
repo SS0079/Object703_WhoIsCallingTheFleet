@@ -86,11 +86,6 @@ namespace Object703.Core.Moving
         public float3 value;
     }
     
-    [Serializable]
-    public struct MoveAsShipTag : IComponentData
-    {
-        
-    }
     
     [Serializable]
     public struct MoveAxis : IInputComponentData
@@ -126,7 +121,6 @@ namespace Object703.Core.Moving
         /// perform a moving behaviour that move a entity like a ship
         /// </summary>
         [BurstCompile]
-        [WithAll(typeof(MoveAsShipTag))]
         public partial struct ShipMoveJob : IJobEntity
         {
             // public float Δt;
@@ -158,7 +152,7 @@ namespace Object703.Core.Moving
         /// </summary>
         [BurstCompile]
         [WithDisabled(typeof(DestructTag))]
-        public partial struct ProjectileMoveJob : IJobEntity
+        public partial struct ArrowMoveJob : IJobEntity
         {
             public void Execute(
                 [EntityIndexInQuery] int index,
@@ -218,13 +212,39 @@ namespace Object703.Core.Moving
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var Δt = SystemAPI.Time.DeltaTime;
-            var shipMoveHandle = new MoveSystemJobs.ShipMoveJob().ScheduleParallel(state.Dependency);
-            shipMoveHandle.Complete();
-            new MoveSystemJobs.ProjectileMoveJob().ScheduleParallel();
+            foreach (var (localTrans,moveConfig,moveAxis,rotateAxis,moveSpeed,rotateSpeed) in SystemAPI
+                         .Query<RefRW<LocalTransform>,
+                         RefRO<ShipMoveConfig>,
+                         RefRO<MoveAxis>,
+                         RefRO<RotateAxis>,
+                         RefRW<MoveSpeed>,
+                         RefRW<RotateSpeed>>().WithAll<Simulate>())
+            {
+                var targetEuler = rotateAxis.ValueRO.rotateEuler*moveConfig.ValueRO.RotateRadiusPerTick;
+                var rotateDamp =rotateAxis.ValueRO.rotateEuler.y==0 ? moveConfig.ValueRO.rotateDampStop : moveConfig.ValueRO.rotateDampMotion;
+                rotateSpeed.ValueRW.value = math.lerp(rotateSpeed.ValueRO.value, targetEuler, 1f/ (rotateDamp+1));
+                var quaternion = Unity.Mathematics.quaternion.Euler(rotateSpeed.ValueRO.value);
+                localTrans.ValueRW=localTrans.ValueRW.Rotate(quaternion);
+                
+                var speedDir = localTrans.ValueRW.TransformDirection(moveAxis.ValueRO.moveDirection);
+                var speed=moveConfig.ValueRO.moveSpeedPerTick * speedDir;
+                var speedDamp = math.lengthsq(moveAxis.ValueRO.moveDirection)==0 ? moveConfig.ValueRO.moveDampStop : moveConfig.ValueRO.moveDampMotion;
+                moveSpeed.ValueRW.value = math.lerp(moveSpeed.ValueRO.value, speed, 1f / (speedDamp + 1));
+                localTrans.ValueRW.Position += new float3(moveSpeed.ValueRO.value);
+            }
+
+            foreach (var (localTrans,moveConfig) in SystemAPI    
+                         .Query<RefRW<LocalTransform>,RefRO<ArrowMoveConfig>>().WithAll<Simulate>())
+            {
+                localTrans.ValueRW.Position += localTrans.ValueRW.Forward() * moveConfig.ValueRO.speedPerTick;
+            }
+            
+            // var shipMoveHandle = new MoveSystemJobs.ShipMoveJob().ScheduleParallel(state.Dependency);
+            // shipMoveHandle.Complete();
+            // new MoveSystemJobs.ArrowMoveJob().ScheduleParallel();
             ltwLp.Update(ref state);
             simulateLp.Update(ref state);
-            new MoveSystemJobs.HomingJob(ltwLp, simulateLp).ScheduleParallel();
+            // new MoveSystemJobs.HomingJob(ltwLp, simulateLp).ScheduleParallel();
         }
 
         [BurstCompile]

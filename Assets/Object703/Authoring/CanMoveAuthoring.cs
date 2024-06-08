@@ -37,7 +37,6 @@ namespace Object703.Authoring
                     AddComponent(self,authoring.arrowMoveConfig.ToComponentData(tickRate));
                     break;
                 case CanMoveAuthoring.MoveStyle.Ship:
-                    AddComponent(self,new MoveAsShipTag());
                     AddComponent(self,authoring.shipMoveConfig.ToComponentData(tickRate));
                     AddComponent(self,new MoveAxis());
                     AddComponent(self,new RotateAxis());

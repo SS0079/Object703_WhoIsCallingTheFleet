@@ -76,15 +76,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14845fc57f4744fcafae25f811a61321, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  move: 0
-  moveConfig:
-    speed: 100
-    motionDamp: 0
-    stopDamp: 0
-  rotateConfig:
-    degree: 0
-    motionDamp: 0
-    stopDamp: 0
+  style: 0
+  shipMoveConfig:
+    moveSpeedPerSecond: 0
+    moveDampMotion: 0
+    moveDampStop: 0
+    rotateDegreePerSecond: 0
+    rotateDampMotion: 0
+    rotateDampStop: 0
+  arrowMoveConfig:
+    speedPerSecond: 10
   isHoming: 0
 --- !u!114 &6600771990197655127
 MonoBehaviour:
@@ -113,7 +114,7 @@ MonoBehaviour:
   DefaultGhostMode: 2
   SupportedGhostModes: 3
   OptimizationMode: 0
-  Importance: 1
+  Importance: 500
   prefabId: 57782b7233ec83840a75b4790fe14492
   HasOwner: 1
   SupportAutoCommandTarget: 1
