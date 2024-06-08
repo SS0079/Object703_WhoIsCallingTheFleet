@@ -222,15 +222,14 @@ namespace Object703.Core.Skill
                     if(!inputLp.HasComponent(performer)) continue;
                     var playerInput = inputLp[performer];
                     // stop fire skill if out of range
-                    var targetPos = localTransLp[playerInput.mousePointEntity].Position;
                     var performerPos = playerInput.playerPosition;
-                    var distancesq = math.distancesq(targetPos, performerPos);
+                    var distancesq = playerInput.GetSqDstFromPlayerToMouseEntity2D(localTransLp);
                     if (distancesq>commonData.ValueRO.RangeSq)
                     {
                         flags.ValueRW.status = SkillStatus.Ready;
                         continue;
                     }
-
+                    Debug.Log(performerPos);
                     var localShot=state.EntityManager.Instantiate(shot.ValueRO.charge);
                     //force shot towards target position
                     var rot = quaternion.LookRotationSafe(playerInput.mouseWorldPoint-playerInput.playerPosition,math.up());

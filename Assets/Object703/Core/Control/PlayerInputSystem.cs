@@ -22,7 +22,14 @@ namespace Object703.Core.Control
         public float2 mouseDelta;
         public float mouseScroll;
         public float3 playerPosition,mouseWorldPoint;
-        public float fromTo2DDisSq => math.distancesq(new float3(playerPosition.x, 0, playerPosition.z), new float3(mouseWorldPoint.x, 0, mouseWorldPoint.z));
+        public float GetSqDstFromPlayerToMousePoint2D() => math.distancesq(new float3(playerPosition.x, 0, playerPosition.z), new float3(mouseWorldPoint.x, 0, mouseWorldPoint.z));
+        public float GetSqDstFromPlayerToMouseEntity2D(ComponentLookup<LocalTransform> transLp)
+        {
+            if (!transLp.HasComponent(mousePointEntity)) return -1f;
+            var targetPos = transLp[mousePointEntity].Position;
+            return math.distancesq(new float3(playerPosition.x, 0, playerPosition.z), new float3(targetPos.x, 0, targetPos.z));
+        }
+
         public Entity mousePointEntity;
         public InputEvent skill0, skill1, skill2, skill3;
 

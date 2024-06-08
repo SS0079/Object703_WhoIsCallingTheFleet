@@ -80,10 +80,10 @@ namespace Object703.Core.Control
     
     public enum SkillSlot
     {
-        Skill0=1<<0,
-        Skill1=1<<1,
-        Skill2=1<<2,
-        Skill3=1<<3,
+        Skill0,
+        Skill1,
+        Skill2,
+        Skill3,
     }
 
     // public static class ControlBitExtension
