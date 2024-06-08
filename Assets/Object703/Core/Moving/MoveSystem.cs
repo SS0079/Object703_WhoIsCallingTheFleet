@@ -60,7 +60,7 @@ namespace Object703.Core.Moving
     
     [Serializable]
     [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
-    public struct RotateSpeed : IComponentData
+    public struct RotateSpeed : IInputComponentData
     {
         [GhostField(Quantization = 1000)]
         public float3 value;
@@ -80,7 +80,7 @@ namespace Object703.Core.Moving
     
     [Serializable]
     [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
-    public struct MoveSpeed : IComponentData
+    public struct MoveSpeed : IInputComponentData
     {
         [GhostField(Quantization = 1000)]
         public float3 value;
