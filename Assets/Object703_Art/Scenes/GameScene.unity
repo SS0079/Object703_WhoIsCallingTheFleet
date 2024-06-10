@@ -1008,7 +1008,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DDOL: 0
-  poolIniSize: 1
   poolMaxSize: 10000
 --- !u!4 &1556689713
 Transform:

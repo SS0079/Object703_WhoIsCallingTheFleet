@@ -11,8 +11,6 @@ GameObject:
   - component: {fileID: 7808562441384349439}
   - component: {fileID: 3914845087410136311}
   - component: {fileID: 121480823748754646}
-  - component: {fileID: 6456987865727508348}
-  - component: {fileID: -6821218680203348289}
   m_Layer: 0
   m_Name: SphereExplodeVFX
   m_TagString: Untagged
@@ -88,31 +86,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &6456987865727508348
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5947900406849159328}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a65cc80949cd48529684a630de4fa997, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scale:
-    value: 20
---- !u!114 &-6821218680203348289
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5947900406849159328}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 809ae8568bfc4c979be75ab1993bea44, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  selfDestructCountDown: 0.5
-  immediatelyDestruct: 0

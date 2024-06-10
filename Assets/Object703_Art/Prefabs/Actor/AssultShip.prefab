@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 1971346011113762417}
   - component: {fileID: -8611890597019736684}
   - component: {fileID: -7192766500637367178}
+  - component: {fileID: 3206706223712171733}
   m_Layer: 0
   m_Name: AssultShip
   m_TagString: Untagged
@@ -309,3 +310,16 @@ MonoBehaviour:
   - TomatoCannonSkill
   - MarcoGunBattery_Player
   - WarpSkill
+--- !u!114 &3206706223712171733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 296525712884165657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfdaa6c06fe64fbda2b16e07a4ee0b25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ComponentOverrides: []

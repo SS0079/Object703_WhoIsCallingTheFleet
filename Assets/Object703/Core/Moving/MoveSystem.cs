@@ -67,6 +67,7 @@ namespace Object703.Core.Moving
     }
     
     [Serializable]
+    [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
     public struct RotateAxis : IInputComponentData
     {
         [GhostField] public float3 rotateEuler;
@@ -88,6 +89,7 @@ namespace Object703.Core.Moving
     
     
     [Serializable]
+    [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
     public struct MoveAxis : IInputComponentData
     {
         [GhostField] public float3 moveDirection;

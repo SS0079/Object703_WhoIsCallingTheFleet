@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using KittyHelpYouOut;
+using Object703.UI;
+using QFramework;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Networking.Transport;
@@ -66,7 +68,12 @@ namespace Object703.Core.NetCode
 
         private IEnumerator LoadSceneAdditiveAsync()
         {
-            SceneManager.UnloadSceneAsync("Frontend",UnloadSceneOptions.None);
+            UIKit.HidePanel<FrontendNetworkPanel>();
+            var unloadSceneAsync = SceneManager.UnloadSceneAsync("Frontend",UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
+            while (!unloadSceneAsync.isDone)
+            {
+                yield return null;
+            }
             var loadSceneAsync = SceneManager.LoadSceneAsync("GameScene", LoadSceneMode.Additive);
             while (!loadSceneAsync.isDone)
             {

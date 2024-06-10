@@ -28,7 +28,7 @@ namespace Object703.Authoring
     {
         public override void Bake(CanMoveAuthoring authoring)
         {
-            if (NetCodeConfig.Global == null) return;
+            // if (NetCodeConfig.Global == null) return;
             var tickRate = NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;
             var self = GetEntity(TransformUsageFlags.Dynamic);
             switch (authoring.style)

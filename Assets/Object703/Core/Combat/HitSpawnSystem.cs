@@ -67,6 +67,7 @@ namespace Object703.Core.Combat
             foreach (var (hitSpawns,ltw) in SystemAPI
                          .Query<DynamicBuffer<HitEffectBufferElement>,RefRO<LocalTransform>>().WithAll<DestructTag>())
             {
+                //TODO: change this to spawn a game object
                 for (int i = 0; i < hitSpawns.Length; i++)
                 {
                     var e = state.EntityManager.Instantiate(hitSpawns[i].value);

@@ -1,3 +1,4 @@
+using System.Collections;
 using Object703.UI;
 using QFramework;
 using UnityEngine;
@@ -12,13 +13,15 @@ namespace Object703
         private int fixFramerate=60;
 
 
-        private void Start()
+        private void Awake()
         {
             ResKit.Init();
             Application.targetFrameRate = fixFramerate;
             Application.runInBackground = true;
-            SceneManager.LoadScene("MainScene", LoadSceneMode.Additive);
-            UIKit.OpenPanel<FrontendNetworkPanel>();
+            SceneManager.LoadScene("Frontend", LoadSceneMode.Additive);
+            
         }
+
+    
     }
 }

@@ -22,6 +22,7 @@ namespace Object703.UI
 		private void Wrapper_CreatGame()
 		{
 			var port =(ushort)InputField_Port.text.ParseToInt();
+			// UIKit.HidePanel<FrontendNetworkPanel>();
 			FrontendConnectionManager.Instance.StartClientServer(port);
 		}
 
@@ -29,6 +30,7 @@ namespace Object703.UI
 		{
 			var ip = InputField_IP.text;
 			var port = (ushort)InputField_Port.text.ParseToInt();
+			// UIKit.HidePanel<FrontendNetworkPanel>();
 			FrontendConnectionManager.Instance.ConnectToServer(ip,port);
 		}
 		
@@ -46,6 +48,8 @@ namespace Object703.UI
 		
 		protected override void OnClose()
 		{
+			Button_CreatGame.onClick.RemoveAllListeners();
+			Button_JoinGame.onClick.RemoveAllListeners();
 		}
 	}
 }

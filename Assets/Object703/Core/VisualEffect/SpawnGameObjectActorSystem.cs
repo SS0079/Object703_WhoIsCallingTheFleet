@@ -97,7 +97,7 @@ namespace Object703.Authoring
                 foreach (var gameObjectActor in SystemAPI.Query<GameObjectActor>().WithNone<LocalTransform>())
                 {
                     Debug.Log($"Cleaning");
-                    gameObjectActor.actor.gameObject.SetActive(false);
+                    gameObjectActor.actor.gameObject.RecyclePoolObject();
                 }
                 var cleanUpQuery = SystemAPI.QueryBuilder().WithAll<GameObjectActor>().WithNone<LocalTransform>().Build();
                 EntityManager.RemoveComponent<GameObjectActor>(cleanUpQuery);
@@ -126,7 +126,7 @@ namespace Object703.Authoring
                 foreach (var line in SystemAPI.Query<LineRendererActor>().WithNone<LocalTransform>())
                 {
                     Debug.Log($"Cleaning");
-                    line.value.gameObject.SetActive(false);
+                    line.value.gameObject.RecyclePoolObject();
                 }
                 var cleanUpQuery = SystemAPI.QueryBuilder().WithAll<LineRendererActor>().WithNone<LocalTransform>().Build();
                 EntityManager.RemoveComponent<LineRendererActor>(cleanUpQuery);
