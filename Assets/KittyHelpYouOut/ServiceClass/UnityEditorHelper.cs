@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace KittyHelpYouOut
 {
+#if UNITY_EDITOR
     public static class UnityEditorHelper
     {
         public static SerializedProperty ShowRelativeField(this SerializedProperty prop,string propName, string propLabel=null)
@@ -38,4 +39,5 @@ namespace KittyHelpYouOut
             return editor.serializedObject.FindProperty(propName);
         }
     }
+#endif
 }
