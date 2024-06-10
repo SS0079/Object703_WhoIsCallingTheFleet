@@ -1,9 +1,21 @@
 ManifestFileVersion: 0
 UnityVersion: 6000.0.0b16
-CRC: 573813134
+CRC: 602120009
 HashAppended: 0
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
+      Name: tomatoshottrail_prefab
+      Dependencies: {}
+    Info_1:
+      Name: assultshipmesh_local_prefab
+      Dependencies: {}
+    Info_2:
+      Name: assultshipmesh_remote_prefab
+      Dependencies: {}
+    Info_3:
+      Name: fanline_prefab
+      Dependencies: {}
+    Info_4:
       Name: frontendnetworkpanel_prefab
       Dependencies: {}
