@@ -1,4 +1,5 @@
-﻿using KittyHelpYouOut;
+﻿using System.Collections;
+using KittyHelpYouOut;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Networking.Transport;
@@ -10,7 +11,6 @@ namespace Object703.Core.NetCode
     public class FrontendConnectionManager : KittyMonoSingletonManual<FrontendConnectionManager>
     {
         private string oldFrontendWorldName;
-
         public void StartClientServer(ushort port)
         {
             if (ClientServerBootstrap.RequestedPlayType != ClientServerBootstrap.PlayType.ClientAndServer)
@@ -22,7 +22,7 @@ namespace Object703.Core.NetCode
             var serverWorld = ClientServerBootstrap.CreateServerWorld("ServerWorld");
             DisposeLocalWorld();
             World.DefaultGameObjectInjectionWorld = serverWorld;
-            SceneManager.LoadSceneAsync("SampleScene");
+            StartCoroutine(LoadSceneAdditiveAsync());
             NetworkEndpoint nep = NetworkEndpoint.AnyIpv4.WithPort(port);
             {
                 using var entityQuery = serverWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
@@ -45,7 +45,7 @@ namespace Object703.Core.NetCode
             var clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWorld");
             DisposeLocalWorld();
             World.DefaultGameObjectInjectionWorld = clientWorld;
-            SceneManager.LoadSceneAsync("SampleScene");
+            StartCoroutine(LoadSceneAdditiveAsync());
             var nep = NetworkEndpoint.Parse(ip,port);
             var entityQuery = clientWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
             entityQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.Connect(clientWorld.EntityManager,nep);
@@ -62,6 +62,17 @@ namespace Object703.Core.NetCode
                     break;
                 }
             }
+        }
+
+        private IEnumerator LoadSceneAdditiveAsync()
+        {
+            SceneManager.UnloadSceneAsync("Frontend",UnloadSceneOptions.None);
+            var loadSceneAsync = SceneManager.LoadSceneAsync("GameScene", LoadSceneMode.Additive);
+            while (!loadSceneAsync.isDone)
+            {
+                yield return null;
+            }
+            SceneManager.SetActiveScene(SceneManager.GetSceneByName("GameScene"));
         }
     }
 }

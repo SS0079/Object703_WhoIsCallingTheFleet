@@ -10,22 +10,23 @@ namespace Object703.Core.NetCode
     {
         public override bool Initialize(string defaultWorldName)
         {
-            bool isFrontend = true;
-#if UNITY_EDITOR
-            var curSceneName = SceneManager.GetActiveScene().name;
-            isFrontend = curSceneName.Equals("Frontend", StringComparison.InvariantCultureIgnoreCase);
-#endif
-            if (isFrontend)
-            {
-                AutoConnectPort = 0;
-                CreateLocalWorld("LocalWorld");
-            }
-            else
-            {
-                AutoConnectPort = 7979;
-                CreateDefaultClientServerWorlds();
-            }
-            return true;
+//             bool isFrontend = true;
+// #if UNITY_EDITOR
+//             var curSceneName = SceneManager.GetActiveScene().name;
+//             isFrontend = curSceneName.Equals("Frontend", StringComparison.InvariantCultureIgnoreCase);
+// #endif
+//             if (isFrontend)
+//             {
+//                 AutoConnectPort = 0;
+//                 CreateLocalWorld("LocalWorld");
+//             }
+            // else
+            // {
+            //     AutoConnectPort = 7979;
+            //     CreateDefaultClientServerWorlds();
+            // }
+            AutoConnectPort = 0;
+            return false;
         }
     }
 }

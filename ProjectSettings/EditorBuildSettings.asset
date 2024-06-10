@@ -9,6 +9,10 @@ EditorBuildSettings:
     path: Assets/Object703_Art/Scenes/Frontend.unity
     guid: 4cebc836f1049af43b145d511c424f14
   - enabled: 1
-    path: Assets/Object703_Art/Scenes/SampleScene.unity
+    path: Assets/Object703_Art/Scenes/MainScene.unity
+    guid: ab4d40f0422784746866913521ce17eb
+  - enabled: 1
+    path: Assets/Object703_Art/Scenes/GameScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   m_configObjects: {}
+  m_UseUCBPForAssetBundles: 0
