@@ -3,158 +3,174 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Reflection;
 using System;
+using System.Text;
+using KittyHelpYouOut.ServiceClass;
 
 namespace KittyHelpYouOut
 {
     public class KittyPool : KittyMonoSingletonAuto<KittyPool>
     {
-        private Dictionary<string, Queue<GameObject>> GameObjectPoolDictionary=new Dictionary<string, Queue<GameObject>>();
-        public int poolIniSize = 1;
-        public int poolMaxSize = 10000;
-
-
-        private void AddGameObjectPool(GameObject addObj)
+        public enum HideStyle
         {
-            Queue<GameObject> objectPool = new Queue<GameObject>();
-
-            for (int i = 0; i < poolIniSize; i++)
-            {
-                GameObject obj = Instantiate(addObj);
-                obj.gameObject.SetActive(false);
-                obj.name = addObj.name;
-                objectPool.Enqueue(obj);
-            }
-            GameObjectPoolDictionary.Add(addObj.gameObject.name, objectPool);
+            Faraway,
+            Inactive
         }
 
+        private class Pool
+        {
+            private Pool(){}
+
+            public Pool(int maxSize)
+            {
+                available = new(maxSize);
+                occupied = new(maxSize);
+                max = maxSize;
+            }
+            
+            private readonly KittyRingBuffer<GameObject> available;
+            private readonly KittyRingBuffer<GameObject> occupied;
+            private readonly int max;
+            public int Count => available.Count + occupied.Count;
+
+            public GameObject Get(GameObject prefab)
+            {
+                GameObject result = null;
+                if (available.Count>0)
+                {
+                    //if there is available object, get object and move it to occupied
+                    result = available.GetFromHead();
+                    available.RemoveFromHead();
+                    occupied.AddTail(result);
+                }else if (Count < max)
+                {
+                    //if here is no available but count didnt reach max, instantiate game object and move it to occupied
+                    result = Instantiate(prefab);
+                    occupied.AddTail(result);
+                }
+                else
+                {
+                    //set eldest occupied object as result and return
+                    result = occupied.GetFromHead();
+                }
+                return result;
+            }
+
+            public void Recycle(GameObject go)
+            {
+                for (int i = 0; i < occupied.Count; i++)
+                {
+                    var localGo = occupied.GetFromHead(i);
+                    if (localGo==go)
+                    {
+                        occupied.RemoveFromHead(i);
+                        available.AddTail(localGo);
+                        return;
+                    }
+                }
+                Debug.LogWarning($"{go.name} not found in occupied");
+            }
+        }
+        private Dictionary<string, Pool> poolDic;
+        public int poolMaxSize = 10000;
+        private StringBuilder sb;
+        private const char DASH = '_';
+        private static Vector3 FAR_AWAY = new Vector3(0, 100000, 0);
+        private const float HIT_DEP_DELY = 3f;
+        private const float RIGHT_NOW = 0f;
+        protected override void Awake()
+        {
+            base.Awake();
+            poolDic = new(poolMaxSize);
+        }
+
+        //write a pool class that contain 2 list(or other collection),one for occupied pool object, the other for available object
+        //the kitty pool should have a dictionary<string,pool>, to hold pools for all object, and differ them by game object name
+        //every time try get a pool object, first check if there is a related pool in the dictionary
+        //if pool exist, try get object from available list. if available list is empty, instantiate a new game object and add it to this list
+        //if there is available object in the list, return that game object and move it from available to occupied
+        //to recycle occupied object, move it from occupied to available
+        //if sum count of occupied and available reach the maximum object count of the pool, fetch and return the eldest object in the occupied
+        //if there is no such pool in the first place, add a pool to pool dic and populate it with available object, remember we should hide the populated fresh object
+        
+        private void AddPool(GameObject addObj)
+        {
+            var newPool = new Pool(poolMaxSize);
+            poolDic.Add(addObj.gameObject.name, newPool);
+        }
+
+        // private GameObject AddPoolObject(GameObject prefab)
+        // {
+        //     if (!poolDic.TryGetValue(prefab.name, out var objectPool))
+        //     {
+        //         Debug.LogWarning($"Pool missing : {prefab.name}");
+        //         return null;
+        //     }
+        //     GameObject newObj = Instantiate(prefab);
+        //     if (!newObj.TryGetComponent(out KittyPoolObject poolObject))
+        //     {
+        //         poolObject=newObj.AddComponent<KittyPoolObject>();
+        //     }
+        //     sb.Clear();
+        //     sb.Append(prefab.name);
+        //     sb.Append(DASH);
+        //     sb.Append(objectPool.Count);
+        //     newObj.name = sb.ToString();
+        //     occupationDic.Add(newObj.name,poolObject);
+        //     objectPool.Enqueue(newObj);
+        //     return newObj;
+        // }
 
         /// <summary>
         /// 返回一个active的GameObject
         /// </summary>
-        /// <param name="go"></param>
+        /// <param name="prefab"></param>
         /// <param name="pos"></param>
         /// <param name="rot"></param>
         /// <param name="parent"></param>
-        /// <param name="setActive"></param>
         /// <returns></returns>
-        public GameObject GetPoolObject(GameObject go, Vector3 pos = default, Quaternion rot = default, Transform parent=null)
+        public GameObject GetPoolObject(GameObject prefab, Vector3 pos = default, Quaternion rot = default, Transform parent=null)
         {
             GameObject objToSpawn;
-            if (!GameObjectPoolDictionary.ContainsKey(go.name))
+            if (!poolDic.ContainsKey(prefab.name))
             {
-                AddGameObjectPool(go);
+                AddPool(prefab);
             }
-            Queue<GameObject> queue = GameObjectPoolDictionary[go.name];
-            objToSpawn = Bubble(queue);
-            if (objToSpawn==null)
-            {
-                if (queue.Count<poolMaxSize)
-                {
-                    objToSpawn = Instantiate(go);
-                }
-                else
-                {
-                    objToSpawn = queue.Dequeue();
-                    objToSpawn.Recycle();
-                }
-            }
-            queue.Enqueue(objToSpawn);
+            var pool = poolDic[prefab.name];
+            objToSpawn=pool.Get(prefab);
             objToSpawn.transform.SetPositionAndRotation(pos, rot);
             objToSpawn.transform.SetParent(parent);
-            objToSpawn.name = go.name;
+            objToSpawn.name = prefab.name;
             objToSpawn.SetActive(true);
             return objToSpawn;
         }
-        //================================================================================
 
-        private GameObject Bubble(Queue<GameObject> queue)
+        public void RecyclePoolObject(GameObject go,HideStyle style)
         {
-            for (int i = 0; i < queue.Count; i++)
+            if (!poolDic.TryGetValue(go.name, out var pool)) return;
+            pool.Recycle(go);
+            switch (style)
             {
-                while (queue.Count>0 && queue.Peek() == null)
-                {
-                    queue.Dequeue();
-                }
-                if (queue.Count==0)
-                {
-                    return null;
-                }
-                if (queue.Peek().activeSelf)
-                {
-                    queue.Enqueue(queue.Dequeue());
-                }
-                else
-                {
-                    return queue.Dequeue();
-                }
+                case HideStyle.Faraway:
+                    go.transform.position = FAR_AWAY;
+                    break;
+                case HideStyle.Inactive:
+                    go.SetActive(false);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(style), style, null);
             }
-            return null;
         }
 
     }
     
     public static class PoolHelper
     {
-        private static Vector3 FAR_AWAY = new Vector3(0, -100000, 0);
-        private const float HIT_DEP_DELY = 3f;
-        private const float RIGHT_NOW = 0f;
-  
-
-        public static GameObject Recycle(this GameObject go)
+        public static GameObject RecyclePoolObject(this GameObject go,KittyPool.HideStyle style=KittyPool.HideStyle.Inactive)
         {
-            ExecuteRecycle(go);
+            KittyPool.Instance.RecyclePoolObject(go,style);
             return go;
         }
 
-        public static GameObject RecycleOnTime(this GameObject go,float second)
-        {
-            KittyCoroutine.Instance.StartCoroutine(ExecuteRecycleOnTime(go, second));
-            return go;
-        }
-
-
-        public static MonoBehaviour RecycleOnTime(this MonoBehaviour cp, float second)
-        {
-            cp.StartCoroutine(ExecuteRecycleOnTime(cp.gameObject, second));
-            return cp;
-        }
-
-        public static T Recycle<T>(this T cpt)where T : MonoBehaviour
-        {
-            ExecuteRecycle(cpt.gameObject);
-            return cpt;
-        }
-
-        public static MonoBehaviour DelayedRecycle(this MonoBehaviour mono, float second=3f)
-        {
-            mono.StartCoroutine(ExecuteDelayedRecycle(mono.gameObject,second));
-            return mono;
-        }
-
-        public static GameObject DelayedRecycle(this GameObject go, float second=3f)
-        {
-            KittyCoroutine.Instance.StartCoroutine(ExecuteDelayedRecycle(go, second));
-            return go;
-        }
-
-        private static void ExecuteRecycle(GameObject go)
-        {
-            go.SetActive(false);
-            go.transform.position = FAR_AWAY;
-        }
-
-        private static IEnumerator ExecuteDelayedRecycle(GameObject go, float second)
-        {
-            go.transform.position = FAR_AWAY;
-            yield return new WaitForSeconds(second);
-            go.SetActive(false); 
-        }
-
-        private static IEnumerator ExecuteRecycleOnTime(GameObject go,float second)
-        {
-            yield return new WaitForSeconds(second);
-            go.SetActive(false);
-        }
         
         public static GameObject GetPoolObjectHere(this Transform reference, GameObject go,Transform parent=null)
         {

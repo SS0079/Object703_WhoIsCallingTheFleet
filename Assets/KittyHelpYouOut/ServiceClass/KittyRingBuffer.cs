@@ -10,27 +10,27 @@ namespace KittyHelpYouOut
         /// </summary>
         /// <param name="item">新成员</param>
         /// <returns>返回是否成功添加</returns>
-        bool AddTail(T item);
+        int AddTail(T item);
 
         /// <summary>
         /// 在队尾添加成员数组，并后移队尾
         /// </summary>
         /// <param name="items"></param>
         /// <returns></returns>
-        bool AddTail(T[] items);
+        int[] AddTail(T[] items);
         /// <summary>
         /// 在队首前一位添加成员，并前移队首
         /// </summary>
         /// <param name="item">新成员</param>
         /// <returns>返回是否成功添加</returns>
-        bool AddHead(T item);
+        int AddHead(T item);
 
         /// <summary>
         /// 在队首前添加成员数组，保持数组的顺序，并前移队首
         /// </summary>
         /// <param name="items"></param>
         /// <returns></returns>
-        bool AddHead(T[] items);
+        int[] AddHead(T[] items);
         /// <summary>
         /// 从后向前数移除一个成员，后方成员向前缩进
         /// </summary>
@@ -106,32 +106,30 @@ namespace KittyHelpYouOut
         public int Count=>count;
         private bool Full =>count>0 && count >= size;
         private bool Empty => count == 0;
-        public bool AddTail(T item)
+        public int AddTail(T item)
         {
             if (Full)
             {
                 Expend();
             }
             buffer[tail] = item;
+            var index = tail;
             tail=(tail+1)% size;
             count++;
-            return true;
+            return index;
         }
 
-        public bool AddTail(T[] items)
+        public int[] AddTail(T[] items)
         {
+            int[] indice = new int[items.Length];
             for (int i = 0; i < items.Length; i++)
             {
-                if(!AddTail(items[i]))
-                {
-                    Debug.LogWarning($"你有什么地方搞错了");
-                    return false;
-                }
+                indice[i] = AddTail(items[i]);
             }
-            return true;
+            return indice;
         }
 
-        public bool AddHead(T item)
+        public int AddHead(T item)
         {
             if (Full)
             {
@@ -140,22 +138,19 @@ namespace KittyHelpYouOut
             head = (head - 1 + size) % size;
             buffer[head] = item;
             count++;
-            return true;
+            return head;
         }
 
       
 
-        public bool AddHead(T[] items)
+        public int[] AddHead(T[] items)
         {
+            int[] indice = new int[items.Length];
             for (int i = items.Length-1; i >=0; i--)
             {
-                if(!AddHead(items[i]))
-                {
-                    Debug.LogWarning($"你有什么地方搞错了");
-                    return false;
-                }
+                indice[i] = AddHead(items[i]);
             }
-            return true;
+            return indice;
         }
 
         private void Expend()
