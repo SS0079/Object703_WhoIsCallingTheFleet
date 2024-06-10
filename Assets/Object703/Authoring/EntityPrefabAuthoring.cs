@@ -9,12 +9,12 @@ using Random = Unity.Mathematics.Random;
 namespace Object703.Authoring
 {
     [DisallowMultipleComponent]
-    public class WeaponAndSkillPrefabAuthoring : MonoBehaviour
+    public class EntityPrefabAuthoring : MonoBehaviour
     {
         public GameObject[] prefabs;
-        public class WeaponAndSkillPrefabBaker : Baker<WeaponAndSkillPrefabAuthoring>
+        public class EntityPrefabAuthoringBaker : Baker<EntityPrefabAuthoring>
         {
-            public override void Bake(WeaponAndSkillPrefabAuthoring authoring)
+            public override void Bake(EntityPrefabAuthoring authoring)
             {
                 var self = GetEntity(TransformUsageFlags.None);
                 if (authoring.prefabs.Length > 0)

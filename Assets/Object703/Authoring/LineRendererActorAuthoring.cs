@@ -13,7 +13,7 @@ namespace Object703.Authoring
             public override void Bake(LineRendererActorAuthoring authoring)
             {
                 var self = GetEntity(TransformUsageFlags.None);
-                AddComponentObject(self,new LineRendererActorPrefab(){prefab = authoring.prefab.gameObject});
+                AddComponentObject(self,new AttachLineRenderer(){prefab = authoring.prefab.gameObject});
             }
         }
     }
