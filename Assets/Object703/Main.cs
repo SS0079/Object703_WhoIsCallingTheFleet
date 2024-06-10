@@ -14,6 +14,7 @@ namespace Object703
 
         private void Start()
         {
+            ResKit.Init();
             Application.targetFrameRate = fixFramerate;
             Application.runInBackground = true;
             SceneManager.LoadScene("MainScene", LoadSceneMode.Additive);
