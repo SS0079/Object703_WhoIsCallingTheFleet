@@ -9,10 +9,10 @@ using UnityEngine.Serialization;
 namespace Object703.Core.Recycle
 {
     [Serializable]
-    public struct SelfDestructTimer : IComponentData
+    public struct LifeSpanTick : IComponentData
     {
-        [FormerlySerializedAs("Value")]
-        public float value;
+        [FormerlySerializedAs("tick")]
+        [GhostField]public uint value;
     }
 
     public struct SelfDestructAtTick : IComponentData , IEnableableComponent
@@ -38,7 +38,7 @@ namespace Object703.Core.Recycle
             var simulationTickRate = NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;
             var serverTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
             //calculate the target net tick of target timer
-            foreach (var (timer,tick) in SystemAPI.Query<RefRO<SelfDestructTimer>,RefRW<SelfDestructAtTick>>().WithAll<Simulate>().WithDisabled<SelfDestructAtTick>())
+            foreach (var (timer,tick) in SystemAPI.Query<RefRO<LifeSpanTick>,RefRW<SelfDestructAtTick>>().WithAll<Simulate>().WithDisabled<SelfDestructAtTick>())
             {
                 var lifeTimeInTick = (uint)(timer.ValueRO.value*simulationTickRate);
                 var targetTick = serverTick;
@@ -46,7 +46,7 @@ namespace Object703.Core.Recycle
                 tick.ValueRW.value = targetTick;
             }
             //set destruct time tick to enable to avoid repeat tick setting
-            foreach (var enableTick in SystemAPI.Query<EnabledRefRW<SelfDestructAtTick>>().WithAll<Simulate,SelfDestructTimer>().WithDisabled<SelfDestructAtTick>())
+            foreach (var enableTick in SystemAPI.Query<EnabledRefRW<SelfDestructAtTick>>().WithAll<Simulate,LifeSpanTick>().WithDisabled<SelfDestructAtTick>())
             {
                 enableTick.ValueRW = true;
             }
@@ -113,7 +113,7 @@ namespace Object703.Core.Recycle
         {
             var Δt = SystemAPI.Time.DeltaTime;
             //count down self-destruct timer
-            foreach (var (timer,destructEn) in SystemAPI.Query<RefRW<SelfDestructTimer>,EnabledRefRW<DestructTag>>().WithAll<Simulate>().WithDisabled<DestructTag>()
+            foreach (var (timer,destructEn) in SystemAPI.Query<RefRW<LifeSpanTick>,EnabledRefRW<DestructTag>>().WithAll<Simulate>().WithDisabled<DestructTag>()
                     .WithNone<SelfDestructAtTick>())
             {
                 if (timer.ValueRO.value<=0)
