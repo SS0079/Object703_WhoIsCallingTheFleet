@@ -224,6 +224,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14845fc57f4744fcafae25f811a61321, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  netConfig: {fileID: 11400000, guid: 5fafff5fa10047c46a2040db1c8fb7ea, type: 2}
   style: 1
   shipMoveConfig:
     moveSpeedPerSecond: 5

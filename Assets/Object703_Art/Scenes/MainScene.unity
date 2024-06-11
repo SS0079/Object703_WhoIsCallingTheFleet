@@ -156,7 +156,7 @@ MonoBehaviour:
   - AssultShipMesh_Local
   - AssultShipMesh_Remote
   - FanLine
-  - TomatoShotTrail
+  - TomatoShotTrail_Local
 --- !u!114 &808124496
 MonoBehaviour:
   m_ObjectHideFlags: 0
