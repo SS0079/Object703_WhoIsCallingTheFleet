@@ -8,12 +8,14 @@ namespace Object703.Authoring.Editor
     [CustomEditor(typeof(CanMoveAuthoring))]
     public class CanMoveAuthoringEditor : UnityEditor.Editor
     {
+        private SerializedProperty netConfigProp;
         private SerializedProperty moveStyleProp;
         private SerializedProperty arrowMoveProp;
         private SerializedProperty shipMoveProp;
         // private SerializedProperty hoverMoveProp;
         private void OnEnable()
         {
+            netConfigProp = this.Find("netConfig");
             moveStyleProp = this.Find("style");
             arrowMoveProp = this.Find("arrowMoveConfig");
             shipMoveProp = this.Find("shipMoveConfig");
@@ -24,24 +26,28 @@ namespace Object703.Authoring.Editor
             serializedObject.Update();
 
             // EditorGUILayout.LabelField("MoveConfig",EditorStyles.boldLabel);
-
-            EditorGUI.indentLevel++;
-            EditorGUILayout.PropertyField(moveStyleProp, new GUIContent("Style"));
-            var style = (CanMoveAuthoring.MoveStyle)moveStyleProp.enumValueIndex;
-            switch (style)
+            netConfigProp.ShowField();
+            if (netConfigProp.objectReferenceValue != null)
             {
-                case CanMoveAuthoring.MoveStyle.Arrow:
-                    SerializeArrowMove(arrowMoveProp);
-                    break;
-                case CanMoveAuthoring.MoveStyle.Ship:
-                    SerializeShipMove(shipMoveProp);
-                    break;
-                case CanMoveAuthoring.MoveStyle.Hover:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                EditorGUI.indentLevel++;
+                EditorGUILayout.PropertyField(moveStyleProp, new GUIContent("Style"));
+                var style = (CanMoveAuthoring.MoveStyle)moveStyleProp.enumValueIndex;
+                switch (style)
+                {
+                    case CanMoveAuthoring.MoveStyle.Arrow:
+                        SerializeArrowMove(arrowMoveProp);
+                        break;
+                    case CanMoveAuthoring.MoveStyle.Ship:
+                        SerializeShipMove(shipMoveProp);
+                        break;
+                    case CanMoveAuthoring.MoveStyle.Hover:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+                EditorGUI.indentLevel--;
+                
             }
-            EditorGUI.indentLevel--;
             
             serializedObject.ApplyModifiedProperties();
         }

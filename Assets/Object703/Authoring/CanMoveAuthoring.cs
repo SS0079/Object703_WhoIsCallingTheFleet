@@ -19,6 +19,7 @@ namespace Object703.Authoring
             Ship,
             Hover
         }
+        public NetCodeConfig netConfig;
         public MoveStyle style;
         public ShipMoveConfig.AuthoringBox shipMoveConfig;
         public ArrowMoveConfig.AuthoringBox arrowMoveConfig; 
@@ -28,8 +29,12 @@ namespace Object703.Authoring
     {
         public override void Bake(CanMoveAuthoring authoring)
         {
-            // if (NetCodeConfig.Global == null) return;
-            var tickRate = NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;
+            if (authoring.netConfig == null)
+            {
+                Debug.LogWarning($"Net code config missing!",authoring.gameObject);
+                return;
+            };
+            var tickRate = authoring.netConfig.ClientServerTickRate.SimulationTickRate;
             var self = GetEntity(TransformUsageFlags.Dynamic);
             switch (authoring.style)
             {

@@ -106,6 +106,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef645b74334f4c70ac1170435bed1a6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  netConfig: {fileID: 11400000, guid: 5fafff5fa10047c46a2040db1c8fb7ea, type: 2}
   slot: 0
   type: 1
   data:

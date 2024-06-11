@@ -17,6 +17,7 @@ namespace Object703.Authoring
             Shot,
             Teleport,
         }
+        public NetCodeConfig netConfig;
         public SkillSlot slot;
         public SkillType type;
         public SkillCommonData.AuthoringBox data;
@@ -25,8 +26,12 @@ namespace Object703.Authoring
         {
             public override void Bake(SkillAuthoring authoring)
             {
-                if (NetCodeConfig.Global == null) return;
-                var tickRate = NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;
+                if (authoring.netConfig == null)
+                {
+                    Debug.LogWarning($"Net code config missing",authoring.gameObject);
+                    return;
+                };
+                var tickRate = authoring.netConfig.ClientServerTickRate.SimulationTickRate;
                 var self = GetEntity(TransformUsageFlags.None);
                 switch (authoring.type)
                 {
