@@ -10,24 +10,22 @@ namespace KittyHelpYouOut
         private Vector3 lastVector = default;
         public float DeltaFloat(float crtValue)
         {
-            float delta;
             if (lastValue == 0)
             {
                 lastValue = crtValue;
             }
-            delta = crtValue - lastValue;
+            var delta = crtValue - lastValue;
             lastValue = crtValue;
             return delta;
         }
 
         public float DeltaVectorSignedAngle(Vector3 crtVector, Vector3 axis)
         {
-            float delta;
             if (lastVector == default)
             {
                 lastVector = crtVector;
             }
-            delta = Vector3.SignedAngle(crtVector, lastVector, axis);
+            var delta = Vector3.SignedAngle(crtVector, lastVector, axis);
             lastVector = crtVector;
             return delta;
         }

@@ -1,7 +1,4 @@
-﻿/*
- * By: Fox.Huang 黄文叶, Date:2018.12.18
- */
-using UnityEngine;
+﻿using UnityEngine;
 using System.IO;
 using System.Text;
 
@@ -9,39 +6,39 @@ namespace KittyHelpYouOut
 {
     public class DebugLogOutput
     {
-        static bool s_HasInit = false;
-        static string s_LogPath = null;
+        static bool hasInit = false;
+        static string logPath = null;
 
-        static int s_LastCount = 0; // 这个变量相关的逻辑,是用来做重新信息处理的.因为有时候错误会噼里啪啦的跳,减缓一点IO压力.
-        static string s_LastLog = "";
+        static int lastCount = 0;
+        static string lastLog = "";
 
-        public static void InitLogFile(string logPath)
+        public static void Init(string path)
         {
-            if (!string.IsNullOrEmpty(logPath))
+            if (!string.IsNullOrEmpty(path))
             {
-                s_HasInit = true;
-                s_LogPath = logPath;
+                hasInit = true;
+                logPath = path;
             }
         }
 
         public static void HandleLog(string logString, string stackTrace, LogType type)
         {
-            if (s_HasInit)
+            if (hasInit)
             {
                 string logContent = "[" + type.ToString() + "]" + logString;
 
-                if (s_LastCount < 10 || s_LastLog != logContent)
+                if (lastCount < 10 || lastLog != logContent)
                 {
-                    if (s_LastLog == logContent)
+                    if (lastLog == logContent)
                     {
-                        ++s_LastCount;
+                        ++lastCount;
                     }
                     else
                     {
-                        s_LastCount = 1;
-                        s_LastLog = logContent;
+                        lastCount = 1;
+                        lastLog = logContent;
                     }
-                    using (StreamWriter sw = new StreamWriter(s_LogPath, true, Encoding.GetEncoding("UTF-8")))
+                    using (StreamWriter sw = new StreamWriter(logPath, true, Encoding.GetEncoding("UTF-8")))
                     {
                         sw.WriteLine(logContent);
                         sw.Close();
