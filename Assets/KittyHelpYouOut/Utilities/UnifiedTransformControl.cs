@@ -21,7 +21,6 @@ namespace KittyHelpYouOut
     [AddComponentMenu("KittyHelpYouOut/UnifiedTransformControl")]
     public class UnifiedTransformControl : MonoBehaviour
 	{
-        #region Variable
         public AnimeType Type;
         public Axis Axis;
         [Header("ControlValue")]
@@ -37,9 +36,7 @@ namespace KittyHelpYouOut
                 return _Children;
             }
         }
-        #endregion
 
-        #region CustomMethod
         private void TransformControl()
         {
             switch (Type)
@@ -123,25 +120,7 @@ namespace KittyHelpYouOut
                     break;
             }
         }
-        #endregion
 
-        #region BuildInMethod
-        private void Awake()
-        {
-
-        }
-        private void OnEnable()
-        {
-
-        }
-        private void Start()
-        {
-
-        }
-        private void FixedUpdate()
-        {
-
-        }
         private void Update()
         {
             TransformControl();
@@ -151,10 +130,5 @@ namespace KittyHelpYouOut
             }
 
         }
-        private void LateUpdate()
-        {
-
-        }
-        #endregion
     }
 }

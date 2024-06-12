@@ -8,7 +8,7 @@ namespace KittyHelpYouOut
     {
         private void Update()
         {
-            var installAttributes = (InstallerAttribute[])Attribute.GetCustomAttributes(GetType(),typeof(InstallerAttribute));
+            var installAttributes = (InstallComponentAttribute[])Attribute.GetCustomAttributes(GetType(),typeof(InstallComponentAttribute));
             for (int i = 0,j=installAttributes.Length; i < j; i++)
             {
                 installAttributes[i].Install(this);
@@ -18,11 +18,11 @@ namespace KittyHelpYouOut
     }
     
     [AttributeUsage(AttributeTargets.Class,AllowMultiple = true)]
-    public class InstallerAttribute : Attribute
+    public class InstallComponentAttribute : Attribute
     {
         private readonly Type[] requiredComponentTypes;
 
-        public InstallerAttribute(params Type[] requiredComponentTypes)
+        public InstallComponentAttribute(params Type[] requiredComponentTypes)
         {
             this.requiredComponentTypes = requiredComponentTypes;
         }

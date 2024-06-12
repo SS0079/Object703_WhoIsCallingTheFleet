@@ -11,24 +11,24 @@ namespace KittyHelpYouOut
 
         public static List<T> GetComponentsOnlyInChildren<T>(this Component go)
         {
-            List<T> list = new List<T>();
-            list.AddRange(go.GetComponentsInChildren<T>());
+            List<T> TList = new List<T>();
+            TList.AddRange(go.GetComponentsInChildren<T>());
             if (go.GetComponent<T>() != null)
             {
-                list.RemoveAt(0);
+                TList.RemoveAt(0);
             }
-            return list;
+            return TList;
         }
 
-        public static List<T> GetComponentsOnlyInChildren<T>(this GameObject go)
+        public static T[] GetComponentsOnlyInChildren<T>(this GameObject go)
         {
-            List<T> list = new List<T>();
-            list.AddRange(go.GetComponentsInChildren<T>(true));
+            List<T> TList = new List<T>();
+            TList.AddRange(go.GetComponentsInChildren<T>(true));
             if (go.GetComponent<T>() != null)
             {
-                list.RemoveAt(0);
+                TList.RemoveAt(0);
             }
-            return list;
+            return TList.ToArray();
         }
 
         public static List<T> GetNamedInChildren<T>(this GameObject user, string name) where T : Component

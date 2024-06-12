@@ -67,24 +67,6 @@ namespace KittyHelpYouOut
             indexCache--;
         }
     }
-//#if UNITY_EDITOR
-//    public class TestTryCacheClass
-//    {
-//        public void TestTryCache()
-//        {
-//            List<int> sampleList = new List<int>();
-//            LoopIndex<int> sampleLoopIndex = new LoopIndex<int>(sampleList);
-//            sampleList.Add(1);
-//            Debug.Log(sampleLoopIndex.Index);
-//            sampleList.Add(1);
-//            sampleLoopIndex.Next();
-//            Debug.Log(sampleLoopIndex.Index);
-//            sampleList.Add(1);
-//            sampleLoopIndex.Next();
-//            Debug.Log(sampleLoopIndex.Index);
-//        }
-//    }
-//#endif
 }
 
 

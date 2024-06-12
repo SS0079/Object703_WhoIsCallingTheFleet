@@ -1,3 +1,7 @@
+/*******************************
+Version: 1.0
+Project Boon
+*******************************/
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -9,113 +13,130 @@ namespace KittyHelpYouOut.ServiceClass
 {
     public class INIParser
     {
-        //  Error: In case there're errors, this will changed to some value other than 1 
+        #region "Declarations"
+
+        // *** Error: In case there're errors, this will changed to some value other than 1 ***
         // Error codes: 
         // 1: Null TextAsset
         public int error = 0;
 
-        //  Lock for thread-safe access to file and local cache 
-        private object mLock = new object();
+        // *** Lock for thread-safe access to file and local cache ***
+        private object m_Lock = new object();
 
-        //  File name 
-        private string fileName = null;
-        public string FileName => fileName;
+        // *** File name ***
+        private string m_FileName = null;
+        public string FileName
+        {
+            get
+            {
+                return m_FileName;
+            }
+        }
 
         // ** String represent Ini
-        private string iniString = null;
-        public string IniString => iniString;
+        private string m_iniString = null;
+        public string iniString
+        {
+            get
+            {
+                return m_iniString;
+            }
+        }
 
-        //  Automatic flushing flag 
-        private bool autoFlush = false;
+        // *** Automatic flushing flag ***
+        private bool m_AutoFlush = false;
 
-        //  Local cache 
-        private Dictionary<string, Dictionary<string, string>> sections = new();
-        private Dictionary<string, Dictionary<string, string>> modified = new();
+        // *** Local cache ***
+        private Dictionary<string, Dictionary<string, string>> m_Sections = new Dictionary<string, Dictionary<string, string>>();
+        private Dictionary<string, Dictionary<string, string>> m_Modified = new Dictionary<string, Dictionary<string, string>>();
 
-        //  Local cache modified flag 
-        private bool cacheModified = false;
+        // *** Local cache modified flag ***
+        private bool m_CacheModified = false;
 
+        #endregion
 
-        //  Open ini file by path 
+        #region "Methods"
+
+        // *** Open ini file by path ***
         public void Open(string path)
         {
-            fileName = path;
+            m_FileName = path;
 
-            if (File.Exists(fileName))
+            if (File.Exists(m_FileName))
             {
-                iniString = File.ReadAllText(fileName);
+                m_iniString = File.ReadAllText(m_FileName);
             }
             else
             {
                 //If file does not exist, create one
-                var temp = File.Create(fileName);
+                var temp = File.Create(m_FileName);
                 temp.Close();
                 Debug.LogWarning($"Ini at {path} not exist");
-                iniString = "";
+                m_iniString = "";
             }
 
-            Initialize(iniString, false);
+            Initialize(m_iniString, false);
         }
 
-        //  Open ini file by TextAsset: All changes is saved to local storage 
+        // *** Open ini file by TextAsset: All changes is saved to local storage ***
         public void Open(TextAsset name)
         {
             if (name == null)
             {
                 // In case null asset, treat as opened an empty file
                 error = 1;
-                iniString = "";
-                fileName = null;
-                Initialize(iniString, false);
+                m_iniString = "";
+                m_FileName = null;
+                Initialize(m_iniString, false);
             }
             else
             {
-                fileName = Application.persistentDataPath + name.name;
+                m_FileName = Application.persistentDataPath + name.name;
 
-                // Find the TextAsset in the local storage first 
-                if (File.Exists(fileName))
+                //*** Find the TextAsset in the local storage first ***
+                if (File.Exists(m_FileName))
                 {
-                    iniString = File.ReadAllText(fileName);
+                    m_iniString = File.ReadAllText(m_FileName);
                 }
-                else iniString = name.text;
-                Initialize(iniString, false);
+                else m_iniString = name.text;
+                Initialize(m_iniString, false);
             }
         }
 
-        //  Open ini file from string 
+        // *** Open ini file from string ***
         public void OpenFromString(string str)
         {
-            fileName = null;
+            m_FileName = null;
             Initialize(str, false);
         }
 
-        //  Get the string content of ini file 
+        // *** Get the string content of ini file ***
         public override string ToString()
         {
-            return iniString;
+            return m_iniString;
         }
 
         private void Initialize(string iniString, bool AutoFlush)
         {
-            this.iniString = iniString;
-            autoFlush = AutoFlush;
+            m_iniString = iniString;
+            m_AutoFlush = AutoFlush;
             Refresh();
         }
 
-        //  Close, save all changes to ini file 
+        // *** Close, save all changes to ini file ***
         public void Close()
         {
-            lock (mLock)
+            lock (m_Lock)
             {
                 PerformFlush();
 
                 //Clean up memory
-                fileName = null;
-                iniString = null;
+                m_FileName = null;
+                m_iniString = null;
             }
         }
 
-        //  Parse section name 
+        // *** Parse section name ***
         private string ParseSectionName(string Line)
         {
             if (!Line.StartsWith("[")) return null;
@@ -124,10 +145,10 @@ namespace KittyHelpYouOut.ServiceClass
             return Line.Substring(1, Line.Length - 2);
         }
 
-        //  Parse key+value pair 
+        // *** Parse key+value pair ***
         private bool ParseKeyValuePair(string Line, ref string Key, ref string Value)
         {
-            //  Check for key+value pair 
+            // *** Check for key+value pair ***
             int i;
             if ((i = Line.IndexOf('=')) <= 0) return false;
 
@@ -139,7 +160,7 @@ namespace KittyHelpYouOut.ServiceClass
             return true;
         }
 
-        //  If a line is neither SectionName nor key+value pair, it's a comment 
+        // *** If a line is neither SectionName nor key+value pair, it's a comment ***
         private bool isComment(string Line)
         {
             string tmpKey = null, tmpValue = null;
@@ -148,23 +169,23 @@ namespace KittyHelpYouOut.ServiceClass
             return true;
         }
 
-        //  Read file contents into local cache 
+        // *** Read file contents into local cache ***
         private void Refresh()
         {
-            lock (mLock)
+            lock (m_Lock)
             {
                 StringReader sr = null;
                 try
                 {
-                    //  Clear local cache 
-                    sections.Clear();
-                    modified.Clear();
+                    // *** Clear local cache ***
+                    m_Sections.Clear();
+                    m_Modified.Clear();
 
-                    //  String Reader 
-                    sr = new StringReader(iniString);
+                    // *** String Reader ***
+                    sr = new StringReader(m_iniString);
 
 
-                    //  Read up the file content 
+                    // *** Read up the file content ***
                     Dictionary<string, string> CurrentSection = null;
                     string s;
                     string SectionName;
@@ -174,27 +195,27 @@ namespace KittyHelpYouOut.ServiceClass
                     {
                         s = s.Trim();
 
-                        //  Check for section names 
+                        // *** Check for section names ***
                         SectionName = ParseSectionName(s);
                         if (SectionName != null)
                         {
-                            //  Only first occurrence of a section is loaded 
-                            if (sections.ContainsKey(SectionName))
+                            // *** Only first occurrence of a section is loaded ***
+                            if (m_Sections.ContainsKey(SectionName))
                             {
                                 CurrentSection = null;
                             }
                             else
                             {
                                 CurrentSection = new Dictionary<string, string>();
-                                sections.Add(SectionName, CurrentSection);
+                                m_Sections.Add(SectionName, CurrentSection);
                             }
                         }
                         else if (CurrentSection != null)
                         {
-                            //  Check for key+value pair 
+                            // *** Check for key+value pair ***
                             if (ParseKeyValuePair(s, ref Key, ref Value))
                             {
-                                //  Only first occurrence of a key is loaded 
+                                // *** Only first occurrence of a key is loaded ***
                                 if (!CurrentSection.ContainsKey(Key))
                                 {
                                     CurrentSection.Add(Key, Value);
@@ -205,7 +226,7 @@ namespace KittyHelpYouOut.ServiceClass
                 }
                 finally
                 {
-                    //  Cleanup: close file 
+                    // *** Cleanup: close file ***
                     if (sr != null) sr.Close();
                     sr = null;
                 }
@@ -214,11 +235,11 @@ namespace KittyHelpYouOut.ServiceClass
 
         private void PerformFlush()
         {
-            //  If local cache was not modified, exit 
-            if (!cacheModified) return;
-            cacheModified = false;
+            // *** If local cache was not modified, exit ***
+            if (!m_CacheModified) return;
+            m_CacheModified = false;
 
-            //  Copy content of original iniString to temporary string, replace modified values 
+            // *** Copy content of original iniString to temporary string, replace modified values ***
             StringWriter sw = new StringWriter();
 
             try
@@ -228,10 +249,10 @@ namespace KittyHelpYouOut.ServiceClass
                 StringReader sr = null;
                 try
                 {
-                    //  Open the original file 
-                    sr = new StringReader(iniString);
+                    // *** Open the original file ***
+                    sr = new StringReader(m_iniString);
 
-                    //  Read the file original content, replace changes with local cache values 
+                    // *** Read the file original content, replace changes with local cache values ***
                     string s;
                     string SectionName;
                     string Key = null;
@@ -250,7 +271,7 @@ namespace KittyHelpYouOut.ServiceClass
                         s = sr.ReadLine();
                         Reading = (s != null);
 
-                        //  Check for end of iniString 
+                        // *** Check for end of iniString ***
                         if (Reading)
                         {
                             Unmodified = true;
@@ -263,15 +284,15 @@ namespace KittyHelpYouOut.ServiceClass
                             SectionName = null;
                         }
 
-                        //  Check for section names 
+                        // *** Check for section names ***
                         if ((SectionName != null) || (!Reading))
                         {
                             if (CurrentSection != null)
                             {
-                                //  Write all remaining modified values before leaving a section *
+                                // *** Write all remaining modified values before leaving a section ****
                                 if (CurrentSection.Count > 0)
                                 {
-                                    //  Optional: All blank lines before new values and sections are removed *
+                                    // *** Optional: All blank lines before new values and sections are removed ****
                                     sb_temp = sw.GetStringBuilder();
                                     while ((sb_temp[sb_temp.Length - 1] == '\n') || (sb_temp[sb_temp.Length - 1] == '\r'))
                                     {
@@ -295,8 +316,8 @@ namespace KittyHelpYouOut.ServiceClass
 
                             if (Reading)
                             {
-                                //  Check if current section is in local modified cache 
-                                if (!modified.TryGetValue(SectionName, out CurrentSection))
+                                // *** Check if current section is in local modified cache ***
+                                if (!m_Modified.TryGetValue(SectionName, out CurrentSection))
                                 {
                                     CurrentSection = null;
                                 }
@@ -304,12 +325,12 @@ namespace KittyHelpYouOut.ServiceClass
                         }
                         else if (CurrentSection != null)
                         {
-                            //  Check for key+value pair 
+                            // *** Check for key+value pair ***
                             if (ParseKeyValuePair(s, ref Key, ref Value))
                             {
                                 if (CurrentSection.TryGetValue(Key, out Value))
                                 {
-                                    //  Write modified value to temporary file 
+                                    // *** Write modified value to temporary file ***
                                     Unmodified = false;
                                     CurrentSection.Remove(Key);
 
@@ -320,12 +341,12 @@ namespace KittyHelpYouOut.ServiceClass
                             }
                         }
 
-                        // ** Check if the section/key in current line has been deleted 
+                        // ** Check if the section/key in current line has been deleted ***
                         if (Unmodified)
                         {
                             if (SectionName != null)
                             {
-                                if (!sections.ContainsKey(SectionName))
+                                if (!m_Sections.ContainsKey(SectionName))
                                 {
                                     Deleted = true;
                                     CurrentSection2 = null;
@@ -333,7 +354,7 @@ namespace KittyHelpYouOut.ServiceClass
                                 else
                                 {
                                     Deleted = false;
-                                    sections.TryGetValue(SectionName, out CurrentSection2);
+                                    m_Sections.TryGetValue(SectionName, out CurrentSection2);
                                 }
 
                             }
@@ -348,7 +369,7 @@ namespace KittyHelpYouOut.ServiceClass
                         }
 
 
-                        //  Write unmodified lines from the original iniString 
+                        // *** Write unmodified lines from the original iniString ***
                         if (Unmodified)
                         {
                             if (isComment(s)) sw.WriteLine(s);
@@ -356,34 +377,34 @@ namespace KittyHelpYouOut.ServiceClass
                         }
                     }
 
-                    //  Close string reader 
+                    // *** Close string reader ***
                     sr.Close();
                     sr = null;
                 }
                 finally
                 {
-                    //  Cleanup: close string reader                   
+                    // *** Cleanup: close string reader ***                  
                     if (sr != null) sr.Close();
                     sr = null;
                 }
 
-                //  Cycle on all remaining modified values 
-                foreach (KeyValuePair<string, Dictionary<string, string>> SectionPair in modified)
+                // *** Cycle on all remaining modified values ***
+                foreach (KeyValuePair<string, Dictionary<string, string>> SectionPair in m_Modified)
                 {
                     CurrentSection = SectionPair.Value;
                     if (CurrentSection.Count > 0)
                     {
                         sw.WriteLine();
 
-                        //  Write the section name 
+                        // *** Write the section name ***
                         sw.Write('[');
                         sw.Write(SectionPair.Key);
                         sw.WriteLine(']');
 
-                        //  Cycle on all key+value pairs in the section 
+                        // *** Cycle on all key+value pairs in the section ***
                         foreach (KeyValuePair<string, string> ValuePair in CurrentSection)
                         {
-                            //  Write the key+value pair 
+                            // *** Write the key+value pair ***
                             sw.Write(ValuePair.Key);
                             sw.Write('=');
                             sw.WriteLine(ValuePair.Value);
@@ -391,42 +412,42 @@ namespace KittyHelpYouOut.ServiceClass
                         CurrentSection.Clear();
                     }
                 }
-                modified.Clear();
+                m_Modified.Clear();
 
-                //  Get result to iniString 
-                iniString = sw.ToString();
+                // *** Get result to iniString ***
+                m_iniString = sw.ToString();
                 sw.Close();
                 sw = null;
 
-                // ** Write iniString to file 
-                if (fileName != null)
+                // ** Write iniString to file ***
+                if (m_FileName != null)
                 {
-                    File.WriteAllText(fileName, iniString);
+                    File.WriteAllText(m_FileName, m_iniString);
                 }
             }
             finally
             {
-                //  Cleanup: close string writer                   
+                // *** Cleanup: close string writer ***                  
                 if (sw != null) sw.Close();
                 sw = null;
             }
         }
 
-        //  Check if the section exists 
+        // *** Check if the section exists ***
         public bool IsSectionExists(string SectionName)
         {
-            return sections.ContainsKey(SectionName);
+            return m_Sections.ContainsKey(SectionName);
         }
 
-        //  Check if the key exists 
+        // *** Check if the key exists ***
         public bool IsKeyExists(string SectionName, string Key)
         {
             Dictionary<string, string> Section;
 
-            //  Check if the section exists 
-            if (sections.ContainsKey(SectionName))
+            // *** Check if the section exists ***
+            if (m_Sections.ContainsKey(SectionName))
             {
-                sections.TryGetValue(SectionName, out Section);
+                m_Sections.TryGetValue(SectionName, out Section);
 
                 // If the key exists
                 return Section.ContainsKey(Key);
@@ -434,27 +455,27 @@ namespace KittyHelpYouOut.ServiceClass
             else return false;
         }
 
-        //  Delete a section in local cache 
+        // *** Delete a section in local cache ***
         public void SectionDelete(string SectionName)
         {
-            //  Delete section if exists 
+            // *** Delete section if exists ***
             if (IsSectionExists(SectionName))
             {
-                lock (mLock)
+                lock (m_Lock)
                 {
-                    cacheModified = true;
-                    sections.Remove(SectionName);
+                    m_CacheModified = true;
+                    m_Sections.Remove(SectionName);
 
                     //Also delete in modified cache if exist
-                    modified.Remove(SectionName);
+                    m_Modified.Remove(SectionName);
 
-                    //  Automatic flushing : immediately write any modification to the file 
-                    if (autoFlush) PerformFlush();
+                    // *** Automatic flushing : immediately write any modification to the file ***
+                    if (m_AutoFlush) PerformFlush();
                 }
             }
         }
 
-        //  Delete a key in local cache 
+        // *** Delete a key in local cache ***
         public void KeyDelete(string SectionName, string Key)
         {
             Dictionary<string, string> Section;
@@ -462,87 +483,87 @@ namespace KittyHelpYouOut.ServiceClass
             //Delete key if exists
             if (IsKeyExists(SectionName, Key))
             {
-                lock (mLock)
+                lock (m_Lock)
                 {
-                    cacheModified = true;
-                    sections.TryGetValue(SectionName, out Section);
+                    m_CacheModified = true;
+                    m_Sections.TryGetValue(SectionName, out Section);
                     Section.Remove(Key);
 
                     //Also delete in modified cache if exist
-                    if (modified.TryGetValue(SectionName, out Section)) Section.Remove(SectionName);
+                    if (m_Modified.TryGetValue(SectionName, out Section)) Section.Remove(SectionName);
 
-                    //  Automatic flushing : immediately write any modification to the file 
-                    if (autoFlush) PerformFlush();
+                    // *** Automatic flushing : immediately write any modification to the file ***
+                    if (m_AutoFlush) PerformFlush();
                 }
             }
 
         }
 
-        //  Read a value from local cache 
+        // *** Read a value from local cache ***
         public string ReadValue(string SectionName, string Key, string DefaultValue)
         {
-            lock (mLock)
+            lock (m_Lock)
             {
-                //  Check if the section exists 
+                // *** Check if the section exists ***
                 Dictionary<string, string> Section;
-                if (!sections.TryGetValue(SectionName, out Section)) return DefaultValue;
+                if (!m_Sections.TryGetValue(SectionName, out Section)) return DefaultValue;
 
-                //  Check if the key exists 
+                // *** Check if the key exists ***
                 string Value;
                 if (!Section.TryGetValue(Key, out Value)) return DefaultValue;
 
-                //  Return the found value 
+                // *** Return the found value ***
                 return Value;
             }
         }
 
         public Dictionary<string, string> ReadWholeSection(string sectionName)
         {
-            lock (mLock)
+            lock (m_Lock)
             {
                 Dictionary<string, string> result=null;
-                sections.TryGetValue(sectionName, out result);
+                m_Sections.TryGetValue(sectionName, out result);
                 return result;
             }
         }
 
-        //  Insert or modify a value in local cache 
+        // *** Insert or modify a value in local cache ***
         public void WriteValue(string SectionName, string Key, string Value)
         {
-            lock (mLock)
+            lock (m_Lock)
             {
-                //  Flag local cache modification 
-                cacheModified = true;
+                // *** Flag local cache modification ***
+                m_CacheModified = true;
 
-                //  Check if the section exists 
+                // *** Check if the section exists ***
                 Dictionary<string, string> Section;
-                if (!sections.TryGetValue(SectionName, out Section))
+                if (!m_Sections.TryGetValue(SectionName, out Section))
                 {
-                    //  If it doesn't, add it 
+                    // *** If it doesn't, add it ***
                     Section = new Dictionary<string, string>();
-                    sections.Add(SectionName, Section);
+                    m_Sections.Add(SectionName, Section);
                 }
 
-                //  Modify the value 
+                // *** Modify the value ***
                 if (Section.ContainsKey(Key)) Section.Remove(Key);
                 Section.Add(Key, Value);
 
-                //  Add the modified value to local modified values cache 
-                if (!modified.TryGetValue(SectionName, out Section))
+                // *** Add the modified value to local modified values cache ***
+                if (!m_Modified.TryGetValue(SectionName, out Section))
                 {
                     Section = new Dictionary<string, string>();
-                    modified.Add(SectionName, Section);
+                    m_Modified.Add(SectionName, Section);
                 }
 
                 if (Section.ContainsKey(Key)) Section.Remove(Key);
                 Section.Add(Key, Value);
 
-                //  Automatic flushing : immediately write any modification to the file 
-                if (autoFlush) PerformFlush();
+                // *** Automatic flushing : immediately write any modification to the file ***
+                if (m_AutoFlush) PerformFlush();
             }
         }
 
-        //  Encode byte array 
+        // *** Encode byte array ***
         private string EncodeByteArray(byte[] Value)
         {
             if (Value == null) return null;
@@ -565,7 +586,7 @@ namespace KittyHelpYouOut.ServiceClass
             return sb.ToString();
         }
 
-        //  Decode byte array 
+        // *** Decode byte array ***
         private byte[] DecodeByteArray(string Value)
         {
             if (Value == null) return null;
@@ -579,7 +600,7 @@ namespace KittyHelpYouOut.ServiceClass
             return Result;
         }
 
-        //  Getters for various types 
+        // *** Getters for various types ***
         public bool ReadValue(string SectionName, string Key, bool DefaultValue)
         {
             string StringValue = ReadValue(SectionName, Key, DefaultValue.ToString(System.Globalization.CultureInfo.InvariantCulture));
@@ -633,7 +654,7 @@ namespace KittyHelpYouOut.ServiceClass
             return DefaultValue;
         }
 
-        //  Setters for various types 
+        // *** Setters for various types ***
         public void WriteValue(string SectionName, string Key, bool Value)
         {
             WriteValue(SectionName, Key, (Value) ? ("1") : ("0"));
@@ -664,6 +685,7 @@ namespace KittyHelpYouOut.ServiceClass
             WriteValue(SectionName, Key, Value.ToString(CultureInfo.InvariantCulture));
         }
 
+        #endregion
     }
 }
 

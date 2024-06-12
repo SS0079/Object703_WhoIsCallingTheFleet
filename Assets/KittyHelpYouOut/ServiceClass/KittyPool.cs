@@ -98,27 +98,6 @@ namespace KittyHelpYouOut
             poolDic.Add(addObj.gameObject.name, newPool);
         }
 
-        // private GameObject AddPoolObject(GameObject prefab)
-        // {
-        //     if (!poolDic.TryGetValue(prefab.name, out var objectPool))
-        //     {
-        //         Debug.LogWarning($"Pool missing : {prefab.name}");
-        //         return null;
-        //     }
-        //     GameObject newObj = Instantiate(prefab);
-        //     if (!newObj.TryGetComponent(out KittyPoolObject poolObject))
-        //     {
-        //         poolObject=newObj.AddComponent<KittyPoolObject>();
-        //     }
-        //     sb.Clear();
-        //     sb.Append(prefab.name);
-        //     sb.Append(DASH);
-        //     sb.Append(objectPool.Count);
-        //     newObj.name = sb.ToString();
-        //     occupationDic.Add(newObj.name,poolObject);
-        //     objectPool.Enqueue(newObj);
-        //     return newObj;
-        // }
 
         /// <summary>
         /// 返回一个active的GameObject

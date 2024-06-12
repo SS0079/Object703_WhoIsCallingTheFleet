@@ -10,14 +10,11 @@ namespace KittyHelpYouOut
     [AddComponentMenu("KittyHelpYouOut/ScaleMeter")]
 	public class ScaleMeter : MonoBehaviour
 	{
-        #region Variable
         public Vector3 realScale=new Vector3();
         public Vector3 originalScale = new Vector3();
         private MeshRenderer meshRenderer;
         private MeshFilter meshFilter;
-		#endregion
 
-		#region CustomMethod
         private void GetRealScale()
         {
             realScale = meshRenderer.bounds.size;
@@ -27,9 +24,7 @@ namespace KittyHelpYouOut
         {
             originalScale = meshFilter.sharedMesh.bounds.size;
         }
-		#endregion	
 	
-		#region BuildInMethod
         private void Awake()
         {
             if (!this.TryGetComponent<MeshRenderer>(out meshRenderer))
@@ -42,20 +37,6 @@ namespace KittyHelpYouOut
             }
         }
 
-		private void OnEnable()
-        {
-            
-        }
-		
-        private void Start()
-        {
-            
-        }
-
-        private void FixedUpdate()
-        {
-            
-        }
 
         private void Update()
         {
@@ -69,12 +50,6 @@ namespace KittyHelpYouOut
             }
         }
 
-        private void LateUpdate()
-        {
-            
-        }
-
-        #endregion
     }
 }
 

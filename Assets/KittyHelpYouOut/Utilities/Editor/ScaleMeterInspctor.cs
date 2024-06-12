@@ -11,15 +11,8 @@ namespace KittyHelpYouOut
     [CustomEditor(typeof(ScaleMeter))]
 	public class ScaleMeterInspector : Editor
 	{
-        #region Variable
         private ScaleMeter scaleMeter;
-        #endregion
 
-        #region CustomMethod
-
-        #endregion
-
-        #region BuildInMethod
         private void OnEnable()
         {
             scaleMeter = (ScaleMeter)target;
@@ -37,7 +30,7 @@ namespace KittyHelpYouOut
             EditorGUILayout.LabelField("x=" + scaleMeter.originalScale.x.ToString() + "   |   y=" + scaleMeter.originalScale.y.ToString() + "   |   z=" + scaleMeter.originalScale.z.ToString());
             EditorGUILayout.EndVertical();
         }
-        #endregion
+
     }
 
 #endif
