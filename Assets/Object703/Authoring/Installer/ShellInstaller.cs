@@ -2,7 +2,7 @@
 
 namespace Object703.Authoring.Installer
 {
-    [RequireComponent(typeof(CanBeDestructAuthoring),
+    [RequireComponent(typeof(CanSelfDestructAuthoring),
         typeof(CanHitTargetAuthoring),
         typeof(CanMoveAuthoring))]
     public class ShellInstaller : MonoBehaviour

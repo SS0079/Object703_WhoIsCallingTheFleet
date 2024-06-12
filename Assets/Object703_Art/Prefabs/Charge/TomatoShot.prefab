@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 4049057718123654887}
   - component: {fileID: 486855160659545231}
   - component: {fileID: 2240850014214129405}
+  - component: {fileID: 8777367067508380315}
   m_Layer: 0
   m_Name: TomatoShot
   m_TagString: Untagged
@@ -133,8 +134,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 809ae8568bfc4c979be75ab1993bea44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selfDestructCountDown: 3
-  immediatelyDestruct: 0
+  netConfig: {fileID: 11400000, guid: 5fafff5fa10047c46a2040db1c8fb7ea, type: 2}
+  lifeSpan: 2
+  startCountDownImmediately: 1
 --- !u!114 &2240850014214129405
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -148,3 +150,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefabName: TomatoShotTrail
+--- !u!114 &8777367067508380315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4033528821912424}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93fba12987b04b77ae86734b1b8ae518, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  destructImmediately: 0

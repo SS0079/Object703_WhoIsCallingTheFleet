@@ -15,8 +15,18 @@ namespace Object703.Core.Recycle
         [GhostField]public uint value;
     }
 
-    public struct SelfDestructAtTick : IComponentData , IEnableableComponent
+    public struct LifeSpanSecond : IComponentData ,IEnableableComponent
     {
+        public float value;
+    }
+
+    public struct SelfDestructPrepared : IComponentData , IEnableableComponent
+    {
+        
+    }
+    public struct SelfDestructAtTick : ICommandData
+    {
+        [GhostField]public NetworkTick Tick { get; set; }
         [GhostField]public NetworkTick value;
     }
     
@@ -26,37 +36,37 @@ namespace Object703.Core.Recycle
     {
     }
     
-    public partial struct PrepareDestructTimerSystem : ISystem
-    {
-        public void OnCreate(ref SystemState state)
-        {
-            state.RequireForUpdate<NetworkTime>();
-        }
-
-        public void OnUpdate(ref SystemState state)
-        {
-            var simulationTickRate = NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;
-            var serverTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
-            //calculate the target net tick of target timer
-            foreach (var (timer,tick) in SystemAPI.Query<RefRO<LifeSpanTick>,RefRW<SelfDestructAtTick>>().WithAll<Simulate>().WithDisabled<SelfDestructAtTick>())
-            {
-                var lifeTimeInTick = (uint)(timer.ValueRO.value*simulationTickRate);
-                var targetTick = serverTick;
-                targetTick.Add(lifeTimeInTick);
-                tick.ValueRW.value = targetTick;
-            }
-            //set destruct time tick to enable to avoid repeat tick setting
-            foreach (var enableTick in SystemAPI.Query<EnabledRefRW<SelfDestructAtTick>>().WithAll<Simulate,LifeSpanTick>().WithDisabled<SelfDestructAtTick>())
-            {
-                enableTick.ValueRW = true;
-            }
-        }
-    }
+    // public partial struct PrepareDestructTimerSystem : ISystem
+    // {
+    //     public void OnCreate(ref SystemState state)
+    //     {
+    //         state.RequireForUpdate<NetworkTime>();
+    //     }
+    //
+    //     public void OnUpdate(ref SystemState state)
+    //     {
+    //         var simulationTickRate = NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;
+    //         var serverTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
+    //         //calculate the target net tick of target timer
+    //         foreach (var (timer,tick) in SystemAPI.Query<RefRO<LifeSpanTick>,RefRW<SelfDestructAtTick>>().WithAll<Simulate>().WithDisabled<SelfDestructAtTick>())
+    //         {
+    //             var lifeTimeInTick = (uint)(timer.ValueRO.value*simulationTickRate);
+    //             var targetTick = serverTick;
+    //             targetTick.Add(lifeTimeInTick);
+    //             tick.ValueRW.value = targetTick;
+    //         }
+    //         //set destruct time tick to enable to avoid repeat tick setting
+    //         foreach (var enableTick in SystemAPI.Query<EnabledRefRW<SelfDestructAtTick>>().WithAll<Simulate,LifeSpanTick>().WithDisabled<SelfDestructAtTick>())
+    //         {
+    //             enableTick.ValueRW = true;
+    //         }
+    //     }
+    // }
     
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
+    [UpdateInGroup(typeof(SimulationSystemGroup),OrderLast = true)]
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
-    public partial struct PredicatedDestructSystem : ISystem
+    public partial struct DestructSystem : ISystem
     {
         private float3 hideOutPos;
         public void OnCreate(ref SystemState state)
@@ -68,10 +78,27 @@ namespace Object703.Core.Recycle
         public void OnUpdate(ref SystemState state)
         {
             var currentTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
-            //check if current tick reach the destruct tick
-            foreach (var (destructTick,destructEn) in SystemAPI.Query<RefRO<SelfDestructAtTick>,EnabledRefRW<DestructTag>>().WithAll<Simulate>().WithDisabled<DestructTag>())
+            //prepare SelfDestructAtTick
+            foreach (var (lifeSpan,destructAtTick,prepared) in SystemAPI
+                         .Query<RefRO<LifeSpanTick>
+                             ,DynamicBuffer<SelfDestructAtTick>
+                             ,EnabledRefRW<SelfDestructPrepared>>().WithAll<Simulate>().WithDisabled<SelfDestructPrepared>())
             {
-                if (currentTick.Equals(destructTick.ValueRO.value) || currentTick.IsNewerThan(destructTick.ValueRO.value))
+                var localTick = currentTick;
+                localTick.Add(lifeSpan.ValueRO.value);
+                destructAtTick.AddCommandData(new SelfDestructAtTick
+                {
+                    Tick = currentTick,
+                    value = localTick
+                });
+                prepared.ValueRW = true;
+            }
+            
+            //check if current tick reach the destruct tick
+            foreach (var (destructTick,destructEn) in SystemAPI.Query<DynamicBuffer<SelfDestructAtTick>,EnabledRefRW<DestructTag>>().WithAll<Simulate>().WithDisabled<DestructTag>())
+            {
+                destructTick.GetDataAtTick(currentTick, out var localTick);
+                if (currentTick.Equals(localTick.value) || currentTick.IsNewerThan(localTick.value))
                 {
                     destructEn.ValueRW = true;
                 }
@@ -113,7 +140,7 @@ namespace Object703.Core.Recycle
         {
             var Δt = SystemAPI.Time.DeltaTime;
             //count down self-destruct timer
-            foreach (var (timer,destructEn) in SystemAPI.Query<RefRW<LifeSpanTick>,EnabledRefRW<DestructTag>>().WithAll<Simulate>().WithDisabled<DestructTag>()
+            foreach (var (timer,destructEn) in SystemAPI.Query<RefRW<LifeSpanSecond>,EnabledRefRW<DestructTag>>().WithAll<Simulate>().WithDisabled<DestructTag>()
                     .WithNone<SelfDestructAtTick>())
             {
                 if (timer.ValueRO.value<=0)
@@ -127,10 +154,6 @@ namespace Object703.Core.Recycle
             }
             //destruct local entity but leave network entity alone
             var clientDestructQuery = SystemAPI.QueryBuilder().WithAll<DestructTag>().WithNone<GhostInstance,SelfDestructAtTick>().Build().ToEntityArray(state.WorldUpdateAllocator);
-            foreach (var item in clientDestructQuery)
-            {
-                
-            }
             state.EntityManager.DestroyEntity(clientDestructQuery);
         }
 

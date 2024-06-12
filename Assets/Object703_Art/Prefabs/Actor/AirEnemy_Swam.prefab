@@ -99,6 +99,7 @@ GameObject:
   - component: {fileID: 1935047822043273232}
   - component: {fileID: 1089778217068874534}
   - component: {fileID: 489435223402386316}
+  - component: {fileID: -5543730633165994978}
   m_Layer: 0
   m_Name: AirEnemy_Swam
   m_TagString: Untagged
@@ -316,6 +317,19 @@ MonoBehaviour:
   TrackInterpolationDelay: 0
   GhostGroup: 0
   UsePreSerialization: 0
+--- !u!114 &-5543730633165994978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3787357270112046097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93fba12987b04b77ae86734b1b8ae518, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  destructImmediately: 0
 --- !u!1 &9076594229523543102
 GameObject:
   m_ObjectHideFlags: 0

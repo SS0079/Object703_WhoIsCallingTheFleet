@@ -99,6 +99,7 @@ GameObject:
   - component: {fileID: 8207947292603878326}
   - component: {fileID: -4322821038498000365}
   - component: {fileID: 1390223968049945437}
+  - component: {fileID: 8014367273811757449}
   m_Layer: 0
   m_Name: SurfaceEnemy_Sniper
   m_TagString: Untagged
@@ -316,6 +317,19 @@ MonoBehaviour:
   TrackInterpolationDelay: 0
   GhostGroup: 0
   UsePreSerialization: 0
+--- !u!114 &8014367273811757449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3787357270112046097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93fba12987b04b77ae86734b1b8ae518, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  destructImmediately: 0
 --- !u!1 &5890612009785015796
 GameObject:
   m_ObjectHideFlags: 0
