@@ -1,5 +1,5 @@
 using System.Collections;
-using KittyHelpYouOut.ServiceClass;
+using KittyHelpYouOut;
 using Object703.UI;
 using QFramework;
 using UnityEngine;
@@ -16,7 +16,7 @@ namespace Object703
 
         private void Awake()
         {
-            testSerializeDic = new(3);
+            // testSerializeDic = new(3);
             // testSerializeDic.Add("a",0);
             // testSerializeDic.Add("b",1);
             // testSerializeDic.Add("c",2);

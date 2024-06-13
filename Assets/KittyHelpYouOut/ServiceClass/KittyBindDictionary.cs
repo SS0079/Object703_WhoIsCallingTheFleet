@@ -4,190 +4,221 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace KittyHelpYouOut.ServiceClass
+namespace KittyHelpYouOut
 {
     /// <summary>
-    /// 猫猫可绑定大字典！大概可以适应所有需要绑定数据的场合
+    /// 猫猫可绑定大字典！可以绑定增删改事件,大概能适应所有需要绑定数据的场合。不光可绑定，甚至可以序列化！
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="T1"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
     [Serializable]
-    public class KittyBindDictionary<T,T1> : IEnumerable<KeyValuePair<T,T1>>,ISerializationCallbackReceiver
+    public class KittyBindDictionary<TKey,TValue> : IEnumerable<KeyValuePair<TKey, TValue>>,ISerializationCallbackReceiver
     {
         private KittyBindDictionary()
         {
         }
-
         public KittyBindDictionary(int initSize)
         {
-            this.data = new(initSize);
-            keys = new(initSize);
-            values = new(initSize);
+            data = new(initSize);
+            keyIndices = new(initSize);
         }
+        [Serializable]
+        private struct SerializableKeyValuePair
+        {
+            public TKey key;
+            public TValue value;
 
+            public SerializableKeyValuePair(TKey key, TValue value)
+            {
+                this.key = key;
+                this.value = value;
+            }
+        }
+        private Dictionary<TKey, int> keyIndices;
         [SerializeField]
-        private List<T> keys;
-        [SerializeField]
-        private List<T1> values;
-        private Dictionary<T, T1> data;
-        public Action<T, T1> onAddCallback;
-        public Action<T, T1> onRemoveCallback;
-        public Action<T, T1> onChangeCallback;
+        private List<SerializableKeyValuePair> data;
+        public Action<TKey, TValue> onAddCallback;
+        public Action<TKey, TValue> onRemoveCallback;
+        public Action<TKey, TValue> onChangeCallback;
+        public Action onClearCallback;
 
-        public void Add(T key, T1 value)
+        private TValue GetValue(TKey key) => data[keyIndices[key]].value;
+
+        private void SetValue(TKey key, TValue value)
         {
-            if (data.ContainsKey(key))
+            if (keyIndices.TryGetValue(key,out var index))
             {
-                Debug.LogWarning($"Key {key} has already been added");
-                return;
-            }
-            data.Add(key,value);
-            onAddCallback?.Invoke(key,value);
-        }
-
-        public void Remove(T key)
-        {
-            if (!data.ContainsKey(key))
-            {
-                Debug.LogWarning($"Key {key} not found");
-                return;
-            }
-            var value = data[key];
-            data.Remove(key);
-            onRemoveCallback?.Invoke(key,value);
-        }
-
-        public void Clear()
-        {
-            data.Clear();
-            onRemoveCallback?.Invoke(default,default);
-        }
-
-        public bool TryAdd(T key, T1 value)
-        {
-            var success = data.TryAdd(key, value);
-            if (success)
-            {
-                onAddCallback?.Invoke(key,value);
-            }
-            return success;
-        }
-
-        public bool TryGetValue(T key, out T1 result)
-        {
-            return data.TryGetValue(key, out result);
-        }
-
-        public T1 this[T key]
-        {
-            get
-            {
-                if (data.TryGetValue(key,out T1 result))
-                {
-                    return result;
-                }
-                else
-                {
-                    Debug.LogWarning($"Key {key} not found");
-                    return default;
-                }
-            }
-            set
-            {
-                if (data.ContainsKey(key))
-                {
-                    data[key] = value;
-                    onChangeCallback?.Invoke(key,value);
-                }
-                else
-                {
-                    Debug.LogWarning($"Key {key} not found");
-                }
-            }
-        }
-
-        public void SetSilence(T key, T1 value)
-        {
-            if (data.ContainsKey(key))
-            {
-                data[key] = value;
+                var kvp = data[index];
+                kvp.value = value;
+                data[index] = kvp;
             }
             else
             {
-                Debug.LogWarning($"key not found : {key}");
-            }
-        }
-
-        public void RemoveSilence(T key)
-        {
-            if (data.ContainsKey(key))
-            {
-                data.Remove(key);
-            }else
-            {
-                Debug.LogWarning($"key not found : {key}");
-            }
-        }
-        public void AddSilence(T key,T1 value)
-        {
-            if (!data.ContainsKey(key))
-            {
-                data.Add(key,value);
-            }else
-            {
-                Debug.LogWarning($"key already exist : {key}");
+                Debug.LogWarning($"key not found: {key}");
             }
         }
         
-
-        public void ForceInvokeAddWithKey(T key)
+        public bool TryGetValue(TKey key, out TValue value)
         {
-            onAddCallback?.Invoke(key,data[key]);
+            if (!keyIndices.ContainsKey(key))
+            {
+                value = default;
+                Debug.LogWarning($"key not found: {key}");
+                return false;
+            }
+            value = GetValue(key);
+            return true;
+        }
+
+        public TValue this[TKey key]
+        {
+            get
+            {
+                if (keyIndices.ContainsKey(key))
+                {
+                    return GetValue(key);
+                }
+                Debug.LogWarning($"key not found: {key}");
+                return default;
+            }
+            set
+            {
+                SetValue(key, value);
+                onChangeCallback?.Invoke(key,value);
+            }
+        }
+        public ICollection<TKey> Keys => data.Select(tuple => tuple.key).ToArray();
+        public ICollection<TValue> Values => data.Select(tuple => tuple.value).ToArray();
+        
+        public bool ContainsKey(TKey key)
+        {
+            return keyIndices.ContainsKey(key);
+        }
+
+        public void Add(TKey key, TValue value)
+        {
+            if (!ContainsKey(key))
+            {
+                onAddCallback?.Invoke(key,value);
+                keyIndices.Add(key,data.Count);
+                data.Add(new SerializableKeyValuePair(key,value));
+            }
+            else
+            {
+                Debug.LogWarning($"key already exist: {key}");
+            }
         }
         
-        public void ForceInvokeRemoveWithKey(T key)
+        public void Remove(TKey key)
         {
-            onRemoveCallback?.Invoke(key,data[key]);
+            if (ContainsKey(key))
+            {
+                onRemoveCallback?.Invoke(key,GetValue(key));
+                data.RemoveAt(keyIndices[key]);
+            }
+            else
+            {
+                Debug.LogWarning($"key not found: {key}");
+            }
         }
-        public void ForceInvokeChangeWithKey(T key)
+        
+        public void Clear()
         {
-            onChangeCallback?.Invoke(key,data[key]);
+            data.Clear();
+            keyIndices.Clear();
+            onClearCallback?.Invoke();
+        }
+        
+        public void AddSilence(TKey key,TValue value)
+        {
+            
+            if (!ContainsKey(key))
+            {
+#if UNITY_EDITOR
+                Debug.Log($"Silence add, key={key}, value={value}");
+#endif
+                keyIndices.Add(key,data.Count);
+                data.Add(new SerializableKeyValuePair(key,value));
+            }
+            else
+            {
+                Debug.LogWarning($"key already exist: {key}");
+            }
         }
 
-        public int Count => data==null? 0 : data.Count;
-
-        public (T, T1) GetRandom()
+        public void SetSilence(TKey key, TValue value)
         {
-            (T,T1) result=default;
+            SetValue(key,value);
+#if UNITY_EDITOR
+            Debug.Log($"Silence set, key={key}, value={value}");
+#endif
+        }
+
+        
+        public void RemoveSilence(TKey key)
+        {
+            if (ContainsKey(key))
+            {
+#if UNITY_EDITOR
+                Debug.Log($"Silence remove, key={key}, value={GetValue(key)}");
+#endif
+                data.RemoveAt(keyIndices[key]);
+            }
+            else
+            {
+                Debug.LogWarning($"key not found: {key}");
+            }
+        }
+       
+        public void ClearSilence()
+        {
+            data.Clear();
+            keyIndices.Clear();
+#if UNITY_EDITOR
+            Debug.Log($"Silence clear");
+#endif
+        }
+        
+
+        public void ForceInvokeAddWithKey(TKey key)
+        {
+            onAddCallback?.Invoke(key,GetValue(key));
+        }
+        
+        public void ForceInvokeRemoveWithKey(TKey key)
+        {
+            onRemoveCallback?.Invoke(key,GetValue(key));
+        }
+        public void ForceInvokeChangeWithKey(TKey key)
+        {
+            onChangeCallback?.Invoke(key,GetValue(key));
+        }
+
+        public int Count => data?.Count ?? 0;
+
+        public (TKey, TValue) GetRandom()
+        {
+            (TKey,TValue) result=default;
             if (data==null || data.Count==0)
             {
                 Debug.LogWarning($"Data not init or is empty");
             }
             else
             {
-                foreach (var item in data)
-                {
-                    result = (item.Key, item.Value);
-                    break;
-                }
+                result = (data[0].key, data[0].value);
             }
             return result;
         }
 
-        public bool ContainsKey(T key)
+        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            return data.ContainsKey(key);
+            return data.Select(ToKeyValuePair).GetEnumerator();
         }
-
-        public IEnumerator<KeyValuePair<T, T1>> GetEnumerator()
+        static KeyValuePair<TKey, TValue> ToKeyValuePair(SerializableKeyValuePair skvp)
         {
-            // return new DataEnumerator(data);
-            foreach (var item in data)
-            {
-                yield return item;
-            }
+            return new KeyValuePair<TKey, TValue>(skvp.key, skvp.value);
         }
-
+        
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
@@ -195,21 +226,168 @@ namespace KittyHelpYouOut.ServiceClass
 
         public void OnBeforeSerialize()
         {
-            keys.Clear();
-            values.Clear();
-            foreach (var kvp in data)
-            {
-                keys.Add(kvp.Key);
-                values.Add(kvp.Value);
-            }
         }
 
         public void OnAfterDeserialize()
         {
-            for (int i = 0; i < keys.Count; i++)
-            {
-                data.Add(keys[i], values[i]);
-            }
         }
     }
 }
+
+//  
+// public class SerializableDictionary { }
+//  
+// [Serializable]
+// public class SerializableDictionary<TKey, TValue> :
+//     SerializableDictionary,
+//     ISerializationCallbackReceiver,
+//     IDictionary<TKey, TValue>
+// {
+//     [SerializeField] private List<SerializableKeyValuePair> list = new List<SerializableKeyValuePair>();
+//  
+//     [Serializable]
+//     private struct SerializableKeyValuePair
+//     {
+//         public TKey Key;
+//         public TValue Value;
+//  
+//         public SerializableKeyValuePair(TKey key, TValue value)
+//         {
+//             Key = key;
+//             Value = value;
+//         }
+//     }
+//  
+//     private Dictionary<TKey, int> KeyPositions => _keyPositions.Value;
+//     private Lazy<Dictionary<TKey, int>> _keyPositions;
+//     public SerializableDictionary()
+//     {
+//         _keyPositions = new Lazy<Dictionary<TKey, int>>(MakeKeyPositions);
+//     }
+//  
+//     private Dictionary<TKey, int> MakeKeyPositions()
+//     {
+//         var dictionary = new Dictionary<TKey, int>(list.Count);
+//         for (var i = 0; i < list.Count; i++)
+//         {
+//             dictionary[list[i].Key] = i;
+//         }
+//         return dictionary;
+//     }
+//  
+//     public void OnBeforeSerialize() { }
+//  
+//     public void OnAfterDeserialize()
+//     {
+//         _keyPositions = new Lazy<Dictionary<TKey, int>>(MakeKeyPositions);
+//     }
+//  
+//     #region IDictionary<TKey, TValue>
+//  
+//     public TValue this[TKey key]
+//     {
+//         get => list[KeyPositions[key]].Value;
+//         set
+//         {
+//             var pair = new SerializableKeyValuePair(key, value);
+//             if (KeyPositions.ContainsKey(key))
+//             {
+//                 list[KeyPositions[key]] = pair;
+//             }
+//             else
+//             {
+//                 KeyPositions[key] = list.Count;
+//                 list.Add(pair);
+//             }
+//         }
+//     }
+//  
+//     public ICollection<TKey> Keys => list.Select(tuple => tuple.Key).ToArray();
+//     public ICollection<TValue> Values => list.Select(tuple => tuple.Value).ToArray();
+//  
+//     public void Add(TKey key, TValue value)
+//     {
+//         if (KeyPositions.ContainsKey(key))
+//             throw new ArgumentException("An element with the same key already exists in the dictionary.");
+//         else
+//         {
+//             KeyPositions[key] = list.Count;
+//             list.Add(new SerializableKeyValuePair(key, value));
+//         }
+//     }
+//  
+//     public bool ContainsKey(TKey key) => KeyPositions.ContainsKey(key);
+//  
+//     public bool Remove(TKey key)
+//     {
+//         if (KeyPositions.TryGetValue(key, out var index))
+//         {
+//             KeyPositions.Remove(key);
+//  
+//             list.RemoveAt(index);
+//             for (var i = index; i < list.Count; i++)
+//                 KeyPositions[list[i].Key] = i;
+//  
+//             return true;
+//         }
+//         else
+//             return false;
+//     }
+//  
+//     public bool TryGetValue(TKey key, out TValue value)
+//     {
+//         if (KeyPositions.TryGetValue(key, out var index))
+//         {
+//             value = list[index].Value;
+//             return true;
+//         }
+//         else
+//         {
+//             value = default;
+//             return false;
+//         }
+//     }
+//  
+//     #endregion
+//  
+//     #region ICollection <KeyValuePair<TKey, TValue>>
+//     public int Count => list.Count;
+//     public bool IsReadOnly => false;
+//  
+//     public void Add(KeyValuePair<TKey, TValue> kvp) => Add(kvp.Key, kvp.Value);
+//  
+//     public void Clear() => list.Clear();
+//     public bool Contains(KeyValuePair<TKey, TValue> kvp) => KeyPositions.ContainsKey(kvp.Key);
+//  
+//     public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+//     {
+//         var numKeys = list.Count;
+//         if (array.Length - arrayIndex < numKeys)
+//             throw new ArgumentException("arrayIndex");
+//         for (var i = 0; i < numKeys; i++, arrayIndex++)
+//         {
+//             var entry = list[i];
+//             array[arrayIndex] = new KeyValuePair<TKey, TValue>(entry.Key, entry.Value);
+//         }
+//     }
+//  
+//     public bool Remove(KeyValuePair<TKey, TValue> kvp) => Remove(kvp.Key);
+//  
+//     #endregion
+//  
+//     #region IEnumerable <KeyValuePair<TKey, TValue>>
+//     public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+//     {
+//         return list.Select(ToKeyValuePair).GetEnumerator();
+//  
+//  
+//     }
+//     static KeyValuePair<TKey, TValue> ToKeyValuePair(SerializableKeyValuePair skvp)
+//     {
+//         return new KeyValuePair<TKey, TValue>(skvp.Key, skvp.Value);
+//     }
+//  
+//     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+//  
+//     #endregion
+// }
