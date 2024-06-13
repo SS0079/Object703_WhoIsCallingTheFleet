@@ -11,7 +11,8 @@ namespace KittyHelpYouOut.ServiceClass
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="T1"></typeparam>
-    public class KittyBindDictionary<T,T1> : IEnumerable<KeyValuePair<T,T1>>
+    [Serializable]
+    public class KittyBindDictionary<T,T1> : IEnumerable<KeyValuePair<T,T1>>,ISerializationCallbackReceiver
     {
         private KittyBindDictionary()
         {
@@ -20,8 +21,14 @@ namespace KittyHelpYouOut.ServiceClass
         public KittyBindDictionary(int initSize)
         {
             this.data = new(initSize);
+            keys = new(initSize);
+            values = new(initSize);
         }
 
+        [SerializeField]
+        private List<T> keys;
+        [SerializeField]
+        private List<T1> values;
         private Dictionary<T, T1> data;
         public Action<T, T1> onAddCallback;
         public Action<T, T1> onRemoveCallback;
@@ -186,6 +193,23 @@ namespace KittyHelpYouOut.ServiceClass
             return GetEnumerator();
         }
 
-        
+        public void OnBeforeSerialize()
+        {
+            keys.Clear();
+            values.Clear();
+            foreach (var kvp in data)
+            {
+                keys.Add(kvp.Key);
+                values.Add(kvp.Value);
+            }
+        }
+
+        public void OnAfterDeserialize()
+        {
+            for (int i = 0; i < keys.Count; i++)
+            {
+                data.Add(keys[i], values[i]);
+            }
+        }
     }
 }
