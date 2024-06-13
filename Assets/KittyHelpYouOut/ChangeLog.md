@@ -1,4 +1,5 @@
 ﻿# 更新记录
+- 20240613：改进KittyBindDictionary，现在可以序列化了
 - 20240612：添加InstallerBase和相关的InstallerAttribute，用来直接给game object挂载component然后删除自己
 - 20240610：改进KittyPool，现在它不依赖GameObject的SetActive来标识此物体是否可用了。改进Kitty Ring Buffer，现在在AddHead和AddTail时会当前成员现在的index（会随着buffer expend失效）
 - 20240606：添加一个UnityEditorHelper，方便Editor编写。把所有的Extension转移到ServiceClass里

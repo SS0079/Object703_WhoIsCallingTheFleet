@@ -11,7 +11,7 @@
 #### DeltaCalculator：用来计算每次输入和前次输入插值的容器，目前可以计算float和Vector3的角度差。好处在于能少打几行代码
 #### IniParser：Ini文件读写器，抄来的，正在修改
 #### JsonFileHandler：Json文件读写器
-#### KittyBindDictionary：可绑定的字典容器，增删改查皆可绑定事件。在不想触发事件的场合，还提供Silence方法
+#### KittyBindDictionary：可绑定的字典容器，增删改查皆可绑定事件。在不想触发事件的场合，还提供Silence方法。甚至可以序列化！
 #### KittyBindHashSet：可绑定事件的哈希表，同样提供Silence方法
 #### KittyRingBuffer：环状缓存，支持以头尾为起点的增删改查，并且会自动扩容
 #### KittyCoroutine：一个单例，用来在KYHO工具箱内部运行协程，没有业务逻辑
