@@ -1,0 +1,3 @@
+[submodule "Assets/KittyHelpYouOut"]
+	path = Assets/KittyHelpYouOut
+	url = git@github.com:SS0079/KittyHelpYouOut.git
