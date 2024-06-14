@@ -16,10 +16,16 @@ namespace Object703
 
         private void Awake()
         {
-            // testSerializeDic = new(3);
-            // testSerializeDic.Add("a",0);
-            // testSerializeDic.Add("b",1);
-            // testSerializeDic.Add("c",2);
+            testSerializeDic = new(3);
+            testSerializeDic.Add("a",0);
+            testSerializeDic.Add("b",1);
+            testSerializeDic.Add("c",2);
+            testSerializeDic.Remove("b");
+            testSerializeDic.Add("d",10);
+            testSerializeDic.Remove("a");
+            testSerializeDic.Remove("c");
+            testSerializeDic.Add("x",11);
+            testSerializeDic.Add("y",12);
             ResKit.Init();
             Application.targetFrameRate = fixFramerate;
             Application.runInBackground = true;
