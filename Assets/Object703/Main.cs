@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using KittyHelpYouOut;
 using Object703.UI;
 using QFramework;
@@ -12,11 +13,11 @@ namespace Object703
     {
         [SerializeField]
         private int fixFramerate=60;
-        public KittyBindDictionary<string, int> testSerializeDic;
+        public KittyBindDictionary<string, int> testSerializeDic=new(3);
+        public List<int> testIntlist;
 
         private void Awake()
         {
-            testSerializeDic = new(3);
             testSerializeDic.Add("a",0);
             testSerializeDic.Add("b",1);
             testSerializeDic.Add("c",2);
@@ -33,6 +34,14 @@ namespace Object703
             
         }
 
+        [ContextMenu("Log")]
+        private void TestDrawer()
+        {
+            foreach (var item in testSerializeDic)
+            {
+                Debug.Log($"{item.Key} | {item.Value}");
+            }
+        }
     
     }
 }
