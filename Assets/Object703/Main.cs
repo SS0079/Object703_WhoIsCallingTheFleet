@@ -13,20 +13,10 @@ namespace Object703
     {
         [SerializeField]
         private int fixFramerate=60;
-        public KittyBindDictionary<string, int> testSerializeDic=new(3);
-        public List<int> testIntlist;
+        public KittyBindDictionary<int, GameObject> testSerializeDic=new(3);
 
         private void Awake()
         {
-            testSerializeDic.Add("a",0);
-            testSerializeDic.Add("b",1);
-            testSerializeDic.Add("c",2);
-            testSerializeDic.Remove("b");
-            testSerializeDic.Add("d",10);
-            testSerializeDic.Remove("a");
-            testSerializeDic.Remove("c");
-            testSerializeDic.Add("x",11);
-            testSerializeDic.Add("y",12);
             ResKit.Init();
             Application.targetFrameRate = fixFramerate;
             Application.runInBackground = true;
