@@ -224,11 +224,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fixFramerate: 120
   testSerializeDic:
-    Drawer_AddingKey: 
-    Drawer_AddingValue: 0
+    Drawer_AddingKey: 1
+    Drawer_AddingValue: {fileID: 0}
     data: []
     unusedIndices: 
-  testIntlist: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
