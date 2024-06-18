@@ -13,7 +13,6 @@ namespace Object703
     {
         [SerializeField]
         private int fixFramerate=60;
-        public KittyBindDictionary<int, GameObject> testSerializeDic=new(3);
 
         private void Awake()
         {
@@ -24,14 +23,5 @@ namespace Object703
             
         }
 
-        [ContextMenu("Log")]
-        private void TestDrawer()
-        {
-            foreach (var item in testSerializeDic)
-            {
-                Debug.Log($"{item.Key} | {item.Value}");
-            }
-        }
-    
     }
 }

@@ -73,36 +73,33 @@ namespace Object703.Core.Skill
         public SkillStatus status;
     }
 
+    
     public enum SkillStatus
     {
+        /// <summary>
+        /// Ready means that cool down is finished but skill key not been pressed
+        /// </summary>
         Ready,
+        /// <summary>
+        /// Firing means that skill key has been pressed and cool down is finished
+        /// </summary>
         Firing,
+        /// <summary>
+        /// Cool down means skill is in cool down, thus network tick haven't reached the cool down target tick yet
+        /// </summary>
         Cooldown,
+        /// <summary>
+        /// Fired state is set just after skill been fired in OnUpdate logic, waiting for cool down at tick component to be reset, this state shouldn't last long
+        /// </summary>
         Fired,
+        
     }
     
-    // [BurstCompile]
-    // [RequireMatchingQueriesForUpdate]
-    // [UpdateInGroup(typeof(SimulationSystemGroup))]
-    // public partial struct PrepareSkillSystem : ISystem
-    // {
-    //     public void OnCreate(ref SystemState state)
-    //     {
-    //         state.RequireForUpdate<NetworkTime>();
-    //     }
-    //
-    //     public void OnUpdate(ref SystemState state)
-    //     {
-    //         //update the target tick of skill
-    //         var networkTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
-    //   
-    //     }
-    // }
     
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
-    [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation | WorldSystemFilterFlags.ClientSimulation)]
+    [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation | WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
     public partial struct SkillSystem : ISystem
     {
         private ComponentLookup<LocalTransform> localTransLp;
@@ -123,6 +120,7 @@ namespace Object703.Core.Skill
             inputLp.Update(ref state);
             var networkTime = SystemAPI.GetSingleton<NetworkTime>();
             
+            //prepare skill cool down finish at tick and skill lifespan exhaust at tick
             foreach (var (commonData,invokeAtTick,flags) in SystemAPI
                          .Query<RefRO<SkillCommonData>,DynamicBuffer<SkillInvokeAtTick>,RefRW<SkillFlags>>().WithAll<Simulate>())
             {
@@ -139,7 +137,6 @@ namespace Object703.Core.Skill
                 flags.ValueRW.status = SkillStatus.Cooldown;
             }
             
-            // var ecb = new EntityCommandBuffer(Allocator.TempJob);
             
             //first we check if skill is finish cool down and relate input key is pressed (in parent), if so , set the fireSkill field to true, set to false if not.
             //Then invoke each skill according to the fireSkill field
@@ -147,7 +144,7 @@ namespace Object703.Core.Skill
             foreach (var (flags,invokeAtTick,parent) in SystemAPI
                          .Query<RefRW<SkillFlags>,DynamicBuffer<SkillInvokeAtTick>,RefRO<Parent>>().WithAll<Simulate>())
             {
-                // fired skill status indicate cooldown tick havent been reset after previous skill execution. wait until it reset
+                // fired skill status indicate cooldown tick haven't been reset after previous skill execution. wait until it reset
                 if(flags.ValueRO.status==SkillStatus.Fired) continue;
                 var parentEntity = parent.ValueRO.Value;
                 if(!inputLp.HasComponent(parentEntity)) continue;
@@ -187,7 +184,6 @@ namespace Object703.Core.Skill
                 if(!inputLp.HasComponent(performer)) continue;
                 var playerInput = inputLp[performer];
                 
-                if (!localTransLp.HasComponent(performer)) return;
                 var performerPos = playerInput.playerPosition;
                 var targetPos = playerInput.mouseWorldPoint;
                 var distancesq = math.distancesq(performerPos,targetPos);
@@ -238,27 +234,9 @@ namespace Object703.Core.Skill
 
                     flags.ValueRW.status = SkillStatus.Fired;
                 }
-                
             }
-            //
-            // foreach (var (flags,invokeAtTick,commonData) in SystemAPI
-            //              .Query<RefRW<SkillFlags>,RefRW<SkillInvokeAtTick>,RefRO<SkillCommonData>>().WithAll<Simulate>())
-            // {
-            //     flags.ValueRW.status = false;
-            //     var nextTick = networkTime.ServerTick;
-            //     nextTick.Add(commonData.ValueRO.coolDownTick);
-            //     invokeAtTick.ValueRW.coolDownAtTick = nextTick;
-            // }
-            
-            // ecb.Playback(state.EntityManager);
-            // ecb.Dispose();
         }
 
-        [BurstCompile]
-        public void OnDestroy(ref SystemState state)
-        {
-
-        }
 
         
 
