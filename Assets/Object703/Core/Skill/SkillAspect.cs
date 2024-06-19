@@ -45,6 +45,7 @@ namespace Object703.Core.Skill
         {
             invokeAtTick.GetDataAtTick(now, out var newTickCommand);
             newTickCommand.coolDownAtTick = now.AddSpan(commonData.ValueRO.coolDownTick);
+            newTickCommand.Tick = now.AddSpan(1u);
             invokeAtTick.AddCommandData(newTickCommand);
         }
         
