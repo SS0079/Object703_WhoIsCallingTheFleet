@@ -36,33 +36,6 @@ namespace Object703.Core.Recycle
     {
     }
     
-    // public partial struct PrepareDestructTimerSystem : ISystem
-    // {
-    //     public void OnCreate(ref SystemState state)
-    //     {
-    //         state.RequireForUpdate<NetworkTime>();
-    //     }
-    //
-    //     public void OnUpdate(ref SystemState state)
-    //     {
-    //         var simulationTickRate = NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;
-    //         var serverTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
-    //         //calculate the target net tick of target timer
-    //         foreach (var (timer,tick) in SystemAPI.Query<RefRO<LifeSpanTick>,RefRW<SelfDestructAtTick>>().WithAll<Simulate>().WithDisabled<SelfDestructAtTick>())
-    //         {
-    //             var lifeTimeInTick = (uint)(timer.ValueRO.value*simulationTickRate);
-    //             var targetTick = serverTick;
-    //             targetTick.Add(lifeTimeInTick);
-    //             tick.ValueRW.value = targetTick;
-    //         }
-    //         //set destruct time tick to enable to avoid repeat tick setting
-    //         foreach (var enableTick in SystemAPI.Query<EnabledRefRW<SelfDestructAtTick>>().WithAll<Simulate,LifeSpanTick>().WithDisabled<SelfDestructAtTick>())
-    //         {
-    //             enableTick.ValueRW = true;
-    //         }
-    //     }
-    // }
-    
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(SimulationSystemGroup),OrderLast = true)]
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
