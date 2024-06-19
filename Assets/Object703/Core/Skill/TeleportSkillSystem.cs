@@ -107,16 +107,42 @@ namespace Object703.Core.Skill
             var networkTime = SystemAPI.GetSingleton<NetworkTime>();
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
             if(!networkTime.IsFirstTimeFullyPredictingTick) return;
-            //perform teleport skill,also check if mouse aim is in skill range. perform skill at maximum range if mouse aim is out of range
-            foreach (var (skill,parent) in 
+            // //perform teleport skill,also check if mouse aim is in skill range. perform skill at maximum range if mouse aim is out of range
+            // foreach (var (skill,parent) in 
+            //          SystemAPI.Query<SkillAspect,
+            //              RefRO<Parent>>()
+            //              .WithAll<Simulate,TeleportSkill>())
+            // {
+            //     if(!skill.IsReady(networkTime.ServerTick)) continue;
+            //     var performer = parent.ValueRO.Value;
+            //     if(!inputLp.HasComponent(performer)) continue;
+            //     var playerInput = inputLp[performer];
+            //     if(!skill.IsPressed(playerInput)) continue;
+            //     
+            //     var performerPos = playerInput.playerPosition;
+            //     var targetPos = playerInput.mouseWorldPoint;
+            //     var distancesq = math.distancesq(performerPos,targetPos);
+            //     //clamp target position according to skill range
+            //     if (!skill.IsInRange(distancesq))
+            //     {
+            //         var targetDir = math.normalizesafe(targetPos-performerPos);
+            //         targetPos = performerPos + targetDir * skill.Range;
+            //     }
+            //     var newPos = new float3(targetPos.x, performerPos.y, targetPos.z);
+            //     var newRot = quaternion.LookRotationSafe(newPos - performerPos, math.up());
+            //     var newTrans = LocalTransform.FromPositionRotation(newPos,newRot);
+            //     // ecb.SetComponent(performer,newTrans);
+            //     localTransLp[performer] = newTrans;
+            //
+            //     skill.StartCoolDown(networkTime.ServerTick);
+            // }
+            foreach (var (skill,playerInput,trans) in 
                      SystemAPI.Query<SkillAspect,
-                         RefRO<Parent>>()
+                             PlayerInput
+                         ,RefRW<LocalTransform>>()
                          .WithAll<Simulate,TeleportSkill>())
             {
                 if(!skill.IsReady(networkTime.ServerTick)) continue;
-                var performer = parent.ValueRO.Value;
-                if(!inputLp.HasComponent(performer)) continue;
-                var playerInput = inputLp[performer];
                 if(!skill.IsPressed(playerInput)) continue;
                 
                 var performerPos = playerInput.playerPosition;
@@ -131,12 +157,10 @@ namespace Object703.Core.Skill
                 var newPos = new float3(targetPos.x, performerPos.y, targetPos.z);
                 var newRot = quaternion.LookRotationSafe(newPos - performerPos, math.up());
                 var newTrans = LocalTransform.FromPositionRotation(newPos,newRot);
-                // ecb.SetComponent(performer,newTrans);
-                localTransLp[performer] = newTrans;
+                trans.ValueRW = newTrans;
 
                 skill.StartCoolDown(networkTime.ServerTick);
             }
-            
             
         }
 

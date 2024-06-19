@@ -16,12 +16,12 @@ namespace Object703.Core.Control
     [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
     public struct PlayerInput : IInputComponentData
     {
-        public float forwardBackward;
-        public float leftRight;
-        public float turn;
-        public float2 mouseDelta;
-        public float mouseScroll;
-        public float3 playerPosition,mouseWorldPoint;
+        [GhostField]public float forwardBackward;
+        [GhostField]public float leftRight;
+        [GhostField]public float turn;
+        [GhostField]public float2 mouseDelta;
+        [GhostField]public float mouseScroll;
+        [GhostField]public float3 playerPosition,mouseWorldPoint;
         public float GetSqDstFromPlayerToMousePoint2D() => math.distancesq(new float3(playerPosition.x, 0, playerPosition.z), new float3(mouseWorldPoint.x, 0, mouseWorldPoint.z));
         public float GetSqDstFromPlayerToMouseEntity2D(ComponentLookup<LocalTransform> transLp)
         {
@@ -30,8 +30,8 @@ namespace Object703.Core.Control
             return math.distancesq(new float3(playerPosition.x, 0, playerPosition.z), new float3(targetPos.x, 0, targetPos.z));
         }
 
-        public Entity mousePointEntity;
-        public InputEvent skill0, skill1, skill2, skill3;
+        [GhostField]public Entity mousePointEntity;
+        [GhostField]public InputEvent skill0, skill1, skill2, skill3;
 
         public readonly bool CheckPress(SkillSlot slot)
         {

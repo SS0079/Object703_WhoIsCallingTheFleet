@@ -30,11 +30,17 @@ namespace Object703.Core.Control
         {
             state.Dependency.Complete();
             playerInputLp.Update(ref state);
-            new PlayerControlJobs.PlayerMoveControlJob().Run();
+            // new PlayerControlJobs.PlayerMoveControlJob().Run();
             new PlayerControlJobs.CheckSkillTriggerJob
             {
                 inputLp = playerInputLp
             }.Run();
+            foreach (var (moveAxis,playerInput,rotateAxis) in SystemAPI
+                         .Query<RefRW<MoveAxis>,PlayerInput,RefRW<RotateAxis>>().WithAll<Simulate>())
+            {   
+                moveAxis.ValueRW.moveDirection = new float3(playerInput.leftRight, 0, playerInput.forwardBackward);
+                rotateAxis.ValueRW.rotateEuler = new float3(0, playerInput.turn, 0);
+            }
         }
 
         [BurstCompile]
