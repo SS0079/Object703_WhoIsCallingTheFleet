@@ -48,12 +48,12 @@ namespace Object703.Authoring
                 AddComponent(self,authoring.data.ToComponentData(tickRate));
                 var startTick = new NetworkTick(0);
                 AddBuffer<SkillInvokeAtTick>(self);
-                AppendToBuffer(self,new SkillInvokeAtTick
-                {
-                    Tick = new NetworkTick(0),
-                    coolDownAtTick = new NetworkTick(0),
-                    lifeSpanAtTick = new NetworkTick(0)
-                });
+                // AppendToBuffer(self,new SkillInvokeAtTick
+                // {
+                //     Tick = new NetworkTick(0),
+                //     coolDownAtTick = new NetworkTick(0),
+                //     lifeSpanAtTick = new NetworkTick(0)
+                // });
                 AddComponent(self,new SkillFlags(){slot = authoring.slot});
             }
         }

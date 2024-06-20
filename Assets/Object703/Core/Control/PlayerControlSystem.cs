@@ -16,13 +16,13 @@ namespace Object703.Core.Control
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
     public partial struct PlayerControlSystem : ISystem
     {
-        private ComponentLookup<PlayerInput> playerInputLp;
+        private ComponentLookup<PlayerMoveInput> playerInputLp;
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<NetworkId>();
-            state.RequireForUpdate<PlayerInput>();
-            playerInputLp=SystemAPI.GetComponentLookup<PlayerInput>();
+            state.RequireForUpdate<PlayerMoveInput>();
+            playerInputLp=SystemAPI.GetComponentLookup<PlayerMoveInput>();
         }
 
         [BurstCompile]
@@ -30,13 +30,8 @@ namespace Object703.Core.Control
         {
             state.Dependency.Complete();
             playerInputLp.Update(ref state);
-            // new PlayerControlJobs.PlayerMoveControlJob().Run();
-            new PlayerControlJobs.CheckSkillTriggerJob
-            {
-                inputLp = playerInputLp
-            }.Run();
             foreach (var (moveAxis,playerInput,rotateAxis) in SystemAPI
-                         .Query<RefRW<MoveAxis>,PlayerInput,RefRW<RotateAxis>>().WithAll<Simulate>())
+                         .Query<RefRW<MoveAxis>,PlayerMoveInput,RefRW<RotateAxis>>().WithAll<Simulate>())
             {   
                 moveAxis.ValueRW.moveDirection = new float3(playerInput.leftRight, 0, playerInput.forwardBackward);
                 rotateAxis.ValueRW.rotateEuler = new float3(0, playerInput.turn, 0);
@@ -63,11 +58,11 @@ namespace Object703.Core.Control
         {
             public void Execute(
                 ref MoveAxis moveAxis,
-                in PlayerInput input,
+                in PlayerMoveInput moveInput,
                 ref RotateAxis rotateAxis)
             {
-                moveAxis.moveDirection = new float3(input.leftRight, 0, input.forwardBackward);
-                rotateAxis.rotateEuler = new float3(0, input.turn, 0);
+                moveAxis.moveDirection = new float3(moveInput.leftRight, 0, moveInput.forwardBackward);
+                rotateAxis.rotateEuler = new float3(0, moveInput.turn, 0);
             }
         }
 
@@ -79,7 +74,7 @@ namespace Object703.Core.Control
         public partial struct CheckSkillTriggerJob : IJobEntity
         {
             [ReadOnly]
-            public ComponentLookup<PlayerInput> inputLp;
+            public ComponentLookup<PlayerMoveInput> inputLp;
             public void Execute(
                 in Parent parent,
                 ref SkillFlags flags)

@@ -339,10 +339,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   netConfig: {fileID: 11400000, guid: 5fafff5fa10047c46a2040db1c8fb7ea, type: 2}
   slot: 0
-  type: 1
+  type: 0
   data:
     radius: 0
-    range: 50
+    range: 300
     coolDown: 2
     lifeSpan: 0
-  spawnPrefab: {fileID: 0}
+  spawnPrefab: {fileID: 4033528821912424, guid: 57782b7233ec83840a75b4790fe14492,
+    type: 3}

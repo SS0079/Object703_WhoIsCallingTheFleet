@@ -88,14 +88,14 @@ namespace Object703.Core.Skill
     public partial struct TeleportSkillSystem : ISystem
     {
         private ComponentLookup<LocalTransform> localTransLp;
-        private ComponentLookup<PlayerInput> inputLp;
+        private ComponentLookup<PlayerMoveInput> inputLp;
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
                 state.RequireForUpdate<NetworkTime>();
             localTransLp = SystemAPI.GetComponentLookup<LocalTransform>(false);
-            inputLp = SystemAPI.GetComponentLookup<PlayerInput>(true);
+            inputLp = SystemAPI.GetComponentLookup<PlayerMoveInput>(true);
         }
 
         [BurstCompile]
@@ -136,17 +136,17 @@ namespace Object703.Core.Skill
             //
             //     skill.StartCoolDown(networkTime.ServerTick);
             // }
-            foreach (var (skill,playerInput,trans) in 
+            foreach (var (skill,input,trans,entity) in 
                      SystemAPI.Query<SkillAspect,
-                             PlayerInput
+                             PlayerSkillInput
                          ,RefRW<LocalTransform>>()
-                         .WithAll<Simulate,TeleportSkill>())
+                         .WithAll<Simulate,TeleportSkill>().WithEntityAccess())
             {
-                if(!skill.IsReady(networkTime.ServerTick)) continue;
-                if(!skill.IsPressed(playerInput)) continue;
+                if(!skill.IsReady(networkTime)) continue;
+                if(!skill.IsPressed(input)) continue;
                 
-                var performerPos = playerInput.playerPosition;
-                var targetPos = playerInput.mouseWorldPoint;
+                var performerPos = input.playerPosition;
+                var targetPos = input.mouseWorldPoint;
                 var distancesq = math.distancesq(performerPos,targetPos);
                 //clamp target position according to skill range
                 if (!skill.IsInRange(distancesq))
@@ -158,7 +158,9 @@ namespace Object703.Core.Skill
                 var newRot = quaternion.LookRotationSafe(newPos - performerPos, math.up());
                 var newTrans = LocalTransform.FromPositionRotation(newPos,newRot);
                 trans.ValueRW = newTrans;
-
+                // ecb.SetComponent(entity,newTrans);
+                
+                if(state.WorldUnmanaged.IsServer()) continue;
                 skill.StartCoolDown(networkTime.ServerTick);
             }
             

@@ -11,30 +11,42 @@ namespace Object703.Core.Skill
         private readonly RefRO<SkillCommonData> commonData;
         private readonly RefRW<SkillFlags> flags;
         private readonly DynamicBuffer<SkillInvokeAtTick> invokeAtTick;
-
+    
         public bool IsInRange(float distanceSq)
         {
             return distanceSq <= commonData.ValueRO.RangeSq;
         }
 
-        public bool IsReady(NetworkTick now)
+        public bool IsReady(NetworkTime now)
         {
-            invokeAtTick.GetDataAtTick(now, out var curAtTick);
-            return curAtTick.coolDownAtTick != NetworkTick.Invalid && now.IsNewerThan(curAtTick.coolDownAtTick);
+            for (uint i = 0u; i < now.SimulationStepBatchSize; i++)
+            {
+                var testTick = now.ServerTick;
+                testTick.Subtract(i);
+                if (!invokeAtTick.GetDataAtTick(testTick, out var curAtTick))
+                {
+                    curAtTick.coolDownAtTick=NetworkTick.Invalid;
+                }
+                var a = curAtTick.coolDownAtTick == NetworkTick.Invalid;
+                if (a) return true;
+                var b = testTick.IsNewerThan(curAtTick.coolDownAtTick);
+                if (b) return true;
+            }
+            return false;
         }
 
-        public bool IsPressed(PlayerInput input)
+        public bool IsPressed(PlayerSkillInput skillInput)
         {
             switch (flags.ValueRO.slot)
             {
                 case SkillSlot.Skill0:
-                    return input.skill0.IsSet;
+                    return skillInput.skill0.IsSet;
                 case SkillSlot.Skill1:
-                    return input.skill1.IsSet;
+                    return skillInput.skill1.IsSet;
                 case SkillSlot.Skill2:
-                    return input.skill2.IsSet;
+                    return skillInput.skill2.IsSet;
                 case SkillSlot.Skill3:
-                    return input.skill3.IsSet;
+                    return skillInput.skill3.IsSet;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

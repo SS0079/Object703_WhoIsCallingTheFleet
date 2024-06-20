@@ -19,7 +19,8 @@ namespace Object703.Authoring
         {
             var self = GetEntity(TransformUsageFlags.None);
             AddComponent(self,new PlayerTag());
-            AddComponent(self,new PlayerInput());
+            AddComponent(self,new PlayerMoveInput());
+            AddComponent(self,new PlayerSkillInput());
         }
     }
 }
