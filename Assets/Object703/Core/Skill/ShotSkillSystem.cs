@@ -42,69 +42,72 @@ namespace Object703.Core.Skill
 
             if (!networkTime.IsFirstTimeFullyPredictingTick) return;
 
+            // // // perform shot skill, also check if aim target is in skill range. if not, dont fire skill, and set skill flag to false, avoid later skill target tick reset
+            foreach (var (shot, skill, owner,  ltw, parent, entity) in
+                     SystemAPI.Query<RefRO<ShotSkill>,
+                             SkillAspect,
+                             RefRW<GhostOwner>,
+                             RefRO<LocalToWorld>,
+                             RefRO<Parent>>()
+                         .WithAll<Simulate>().WithEntityAccess())
+            {
+                if (!skill.IsReady(networkTime)) continue;
+                var performer = parent.ValueRO.Value;
+                if (!inputLp.HasComponent(performer)) continue;
+                var playerInput = inputLp[performer];
+                if (!skill.IsPressed(playerInput)) continue;
+            
+                // stop fire skill if out of range
+                var performerPos = playerInput.playerPosition;
+                var distancesq = playerInput.GetSqDstFromPlayerToMouseEntity2D(localTransLp);
+                if (skill.IsInRange(distancesq))
+                {
+                    continue;
+                }
+                var localShot = state.EntityManager.Instantiate(shot.ValueRO.charge);
+            
+                //force shot towards target position
+                var rot = quaternion.LookRotationSafe(playerInput.mouseWorldPoint - playerInput.playerPosition, math.up());
+                var localTrans = LocalTransform.FromPositionRotation(performerPos, rot);
+                state.EntityManager.SetComponentData(localShot, owner.ValueRO);
+                state.EntityManager.SetComponentData(localShot, localTrans);
+            
+                if(state.WorldUnmanaged.IsServer()) continue;
+                skill.StartCoolDown(networkTime.ServerTick);
+            }
+            
             // // perform shot skill, also check if aim target is in skill range. if not, dont fire skill, and set skill flag to false, avoid later skill target tick reset
-            // foreach (var (shot, skill, owner,  ltw, parent, entity) in
+            // foreach (var (shot, skill, owner,  input, ltw, entity) in
             //          SystemAPI.Query<RefRO<ShotSkill>,
             //                  SkillAspect,
             //                  RefRW<GhostOwner>,
-            //                  RefRO<LocalToWorld>,
-            //                  RefRO<Parent>>()
+            //                  PlayerSkillInput,
+            //                  RefRO<LocalToWorld>>()
             //              .WithAll<Simulate>().WithEntityAccess())
             // {
             //     if (!skill.IsReady(networkTime)) continue;
-            //     var performer = parent.ValueRO.Value;
-            //     if (!inputLp.HasComponent(performer)) continue;
-            //     var playerInput = inputLp[performer];
-            //     if (!skill.IsPressed(playerInput)) continue;
+            //     if (!skill.IsPressed(input)) continue;
             //
             //     // stop fire skill if out of range
-            //     var performerPos = playerInput.playerPosition;
-            //     var distancesq = playerInput.GetSqDstFromPlayerToMouseEntity2D(localTransLp);
-            //     if (skill.IsInRange(distancesq))
+            //     var performerPos = input.playerPosition;
+            //     var distancesq = input.GetSqDstFromPlayerToMouseEntity2D(localTransLp);
+            //     if (!skill.IsInRange(distancesq))
             //     {
             //         continue;
             //     }
-            //     var localShot = ecb.Instantiate(shot.ValueRO.charge);
+            //     var localShot = state.EntityManager.Instantiate(shot.ValueRO.charge);
             //
             //     //force shot towards target position
-            //     var rot = quaternion.LookRotationSafe(playerInput.mouseWorldPoint - playerInput.playerPosition, math.up());
+            //     var rot = quaternion.LookRotationSafe(input.mouseWorldPoint - input.playerPosition, math.up());
             //     var localTrans = LocalTransform.FromPositionRotation(performerPos, rot);
-            //     ecb.SetComponent(localShot, owner.ValueRO);
-            //     ecb.SetComponent(localShot, localTrans);
+            //     state.EntityManager.SetComponentData(localShot,owner.ValueRO);
+            //     state.EntityManager.SetComponentData(localShot,localTrans);
+            //     // ecb.SetComponent(localShot, owner.ValueRO);
+            //     // ecb.SetComponent(localShot, localTrans);
             //
             //     if(state.WorldUnmanaged.IsServer()) continue;
             //     skill.StartCoolDown(networkTime.ServerTick);
             // }
-            // perform shot skill, also check if aim target is in skill range. if not, dont fire skill, and set skill flag to false, avoid later skill target tick reset
-            foreach (var (shot, skill, owner,  input, ltw, entity) in
-                     SystemAPI.Query<RefRO<ShotSkill>,
-                             SkillAspect,
-                             RefRW<GhostOwner>,
-                             PlayerSkillInput,
-                             RefRO<LocalToWorld>>()
-                         .WithAll<Simulate>().WithEntityAccess())
-            {
-                if (!skill.IsReady(networkTime)) continue;
-                if (!skill.IsPressed(input)) continue;
-
-                // stop fire skill if out of range
-                var performerPos = input.playerPosition;
-                var distancesq = input.GetSqDstFromPlayerToMouseEntity2D(localTransLp);
-                if (!skill.IsInRange(distancesq))
-                {
-                    continue;
-                }
-                var localShot = ecb.Instantiate(shot.ValueRO.charge);
-
-                //force shot towards target position
-                var rot = quaternion.LookRotationSafe(input.mouseWorldPoint - input.playerPosition, math.up());
-                var localTrans = LocalTransform.FromPositionRotation(performerPos, rot);
-                ecb.SetComponent(localShot, owner.ValueRO);
-                ecb.SetComponent(localShot, localTrans);
-
-                if(state.WorldUnmanaged.IsServer()) continue;
-                skill.StartCoolDown(networkTime.ServerTick);
-            }
         }
     }
 }

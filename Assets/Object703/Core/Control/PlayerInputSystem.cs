@@ -133,7 +133,7 @@ namespace Object703.Core.Control
         }
     }
     
-    [UpdateInGroup(typeof(SimulationSystemGroup))]
+    [UpdateInGroup(typeof(GhostInputSystemGroup))]
     public partial struct PlayerSkillInputSystem : ISystem
     {
         private CollisionFilter mouseClickFilter;
