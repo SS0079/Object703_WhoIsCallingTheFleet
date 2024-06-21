@@ -106,7 +106,7 @@ namespace Object703.Core.Skill
             inputLp.Update(ref state);
             var networkTime = SystemAPI.GetSingleton<NetworkTime>();
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
-            if(!networkTime.IsFirstTimeFullyPredictingTick) return;
+            // if(!networkTime.IsFirstTimeFullyPredictingTick) return;
             // //perform teleport skill,also check if mouse aim is in skill range. perform skill at maximum range if mouse aim is out of range
             // foreach (var (skill,parent) in 
             //          SystemAPI.Query<SkillAspect,
