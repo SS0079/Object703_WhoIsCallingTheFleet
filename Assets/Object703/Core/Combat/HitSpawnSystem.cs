@@ -7,12 +7,12 @@ using UnityEngine;
 
 namespace Object703.Core.Combat
 {
-    public struct HitSpawnBufferElement : IBufferElementData
+    public struct HitSpawnBuffer : IBufferElementData
     {
         public Entity value;
     }
 
-    public struct HitEffectBufferElement : IBufferElementData
+    public struct HitEffectBuffer : IBufferElementData
     {
         public Entity value;
     }
@@ -20,23 +20,27 @@ namespace Object703.Core.Combat
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(SimulationSystemGroup))]
-    [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
-    public partial struct HitSpawnServerSystem : ISystem
+    public partial struct HitSpawnNonGhostSystem : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<NetworkTime>();
         }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            var networkTime = SystemAPI.GetSingleton<NetworkTime>();
+
             // spawn all entity prefab stored in hit spawn buffer where destruct tag is on
-            foreach (var (hitSpawns,ltw) in SystemAPI.Query<DynamicBuffer<HitSpawnBufferElement>,RefRO<LocalTransform>>().WithAll<DestructTag>())
+            foreach (var (hitSpawns,ltw,entity) in SystemAPI
+                         .Query<DynamicBuffer<HitSpawnBuffer>,RefRO<LocalTransform>>().WithAll<DestructTag>().WithEntityAccess())
             {
                 for (int i = 0; i < hitSpawns.Length; i++)
                 {
                     var e = state.EntityManager.Instantiate(hitSpawns[i].value);
+                    Debug.Log($"{e} | {i} | {entity}");
                     SystemAPI.SetComponent(e,ltw.ValueRO);
                 }
             }
@@ -53,7 +57,7 @@ namespace Object703.Core.Combat
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(SimulationSystemGroup))]
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
-    public partial struct HitSpawnClientSystem : ISystem
+    public partial struct HitEffectSystem : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)
@@ -65,7 +69,7 @@ namespace Object703.Core.Combat
         {
             // spawn all entity prefab stored in hit spawn buffer where destruct tag is on
             foreach (var (hitSpawns,ltw) in SystemAPI
-                         .Query<DynamicBuffer<HitEffectBufferElement>,RefRO<LocalTransform>>().WithAll<DestructTag>())
+                         .Query<DynamicBuffer<HitEffectBuffer>,RefRO<LocalTransform>>().WithAll<DestructTag,Simulate>())
             {
                 //TODO: change this to spawn a game object
                 for (int i = 0; i < hitSpawns.Length; i++)

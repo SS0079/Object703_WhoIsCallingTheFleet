@@ -1,5 +1,6 @@
 ﻿using System;
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
@@ -31,7 +32,6 @@ namespace Object703.Core.Recycle
     }
     
     [Serializable]
-    [GhostEnabledBit]
     public struct DestructTag : IComponentData , IEnableableComponent
     {
     }
@@ -39,9 +39,9 @@ namespace Object703.Core.Recycle
     
     
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(PredictedSimulationSystemGroup),OrderLast = true)]
+    [UpdateInGroup(typeof(PredictedSimulationSystemGroup),OrderFirst = true)]
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
-    public partial struct DestructSystem : ISystem
+    public partial struct DestructGhostSystem : ISystem
     {
         private float3 hideOutPos;
         public void OnCreate(ref SystemState state)
@@ -53,13 +53,14 @@ namespace Object703.Core.Recycle
         public void OnUpdate(ref SystemState state)
         {
             var currentTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
-            
+            var ecb = new EntityCommandBuffer(Allocator.Temp);
+
             //check if current tick reach the destruct tick
             foreach (var (destructTick,destructEn) in SystemAPI.Query<DynamicBuffer<SelfDestructAtTick>,EnabledRefRW<DestructTag>>().WithAll<Simulate>().WithDisabled<DestructTag>())
             {
                 destructTick.GetDataAtTick(currentTick, out var localTick);
-                if(localTick.value==NetworkTick.Invalid) continue;
-                if (currentTick.Equals(localTick.value) || currentTick.IsNewerThan(localTick.value))
+                if(localTick.Tick==NetworkTick.Invalid) continue;
+                if (localTick.value==NetworkTick.Invalid || currentTick.Equals(localTick.value) || currentTick.IsNewerThan(localTick.value))
                 {
                     destructEn.ValueRW = true;
                 }
@@ -73,12 +74,14 @@ namespace Object703.Core.Recycle
             if (state.World.Flags==WorldFlags.GameClient || state.World.Flags==WorldFlags.GameThinClient)
             {
                 //hide ghost if this is client world
-                foreach (var (trans,simulateEn) in SystemAPI
-                             .Query<RefRW<LocalTransform>,EnabledRefRW<Simulate>>().WithAll<Simulate,DestructTag,GhostInstance>())
+                foreach (var (trans,simulateEn,entity) in SystemAPI
+                             .Query<RefRW<LocalTransform>,EnabledRefRW<Simulate>>()
+                             .WithAll<Simulate,DestructTag,GhostInstance>().WithEntityAccess())
                 {
                     trans.ValueRW.Position = hideOutPos;
-                    simulateEn.ValueRW = false;
                 }
+                // var destructQuery = SystemAPI.QueryBuilder().WithAll<DestructTag>().Build().ToEntityArray(state.WorldUpdateAllocator);
+                // state.EntityManager.RemoveComponent(destructQuery, ComponentType.ReadWrite<DestructTag>());
             }
             
         }
@@ -86,9 +89,8 @@ namespace Object703.Core.Recycle
     
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(SimulationSystemGroup),OrderLast = true)]
-    [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
-    public partial struct DestructClientSystem : ISystem
+    [UpdateInGroup(typeof(SimulationSystemGroup),OrderFirst = true)]
+    public partial struct DestructNonGhostSystem : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)
@@ -101,7 +103,10 @@ namespace Object703.Core.Recycle
         {
             var Δt = SystemAPI.Time.DeltaTime;
             //count down self-destruct timer
-            foreach (var (timer,destructEn) in SystemAPI.Query<RefRW<LifeSpanSecond>,EnabledRefRW<DestructTag>>().WithAll<Simulate>().WithDisabled<DestructTag>()
+            foreach (var (timer,destructEn) in SystemAPI
+                         .Query<RefRW<LifeSpanSecond>,
+                             EnabledRefRW<DestructTag>>()
+                         .WithAll<Simulate>().WithDisabled<DestructTag>()
                     .WithNone<SelfDestructAtTick>())
             {
                 if (timer.ValueRO.value<=0)
