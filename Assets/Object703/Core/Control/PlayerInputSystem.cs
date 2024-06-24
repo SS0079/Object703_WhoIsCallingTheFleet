@@ -28,13 +28,12 @@ namespace Object703.Core.Control
     [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
     public struct PlayerSkillInput : IInputComponentData
     {
-        [GhostField]public float3 playerPosition,mouseWorldPoint;
-        public float GetSqDstFromPlayerToMousePoint2D() => math.distancesq(new float3(playerPosition.x, 0, playerPosition.z), new float3(mouseWorldPoint.x, 0, mouseWorldPoint.z));
-        public float GetSqDstFromPlayerToMouseEntity2D(ComponentLookup<LocalTransform> transLp)
+        [GhostField]public float3 playerPosition,mouseWorldPoint,aimEntityPosition;
+        public readonly float GetSqDstFromPlayerToMousePoint2D() => math.distancesq(new float3(playerPosition.x, 0, playerPosition.z), new float3(mouseWorldPoint.x, 0, mouseWorldPoint.z));
+        public readonly float GetSqDstFromPlayerToMouseEntity2D()
         {
-            if (!transLp.HasComponent(mousePointEntity)) return -1f;
-            var targetPos = transLp[mousePointEntity].Position;
-            return math.distancesq(new float3(playerPosition.x, 0, playerPosition.z), new float3(targetPos.x, 0, targetPos.z));
+            if (mousePointEntity == Entity.Null) return -1;
+            return math.distancesq(new float3(playerPosition.x, 0, playerPosition.z), new float3(aimEntityPosition.x, 0, aimEntityPosition.z));
         }
         [GhostField]public Entity mousePointEntity;
         [GhostField]public InputEvent skill0, skill1, skill2, skill3;
@@ -65,14 +64,6 @@ namespace Object703.Core.Control
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<PlayerMoveInput>();
-            // state.RequireForUpdate<PhysicsWorldSingleton>();
-            // state.RequireForUpdate<EnableGameTag>();
-            // mouseClickFilter = new CollisionFilter
-            // {
-            //     BelongsTo = (uint)ColliderLayers.Caster,
-            //     CollidesWith = (uint)ColliderLayers.Terran | (uint)ColliderLayers.SurfaceEnemy | (uint)ColliderLayers.AirborneEnemy,
-            //     GroupIndex = 0
-            // };
         }
 
         public void OnUpdate(ref SystemState state)
@@ -92,44 +83,6 @@ namespace Object703.Core.Control
                 //write player current position by the way
                 moveInput.ValueRW = input;
             }
-            
-            // var skill = new PlayerSkillInput();
-            // var cWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().CollisionWorld;
-            // // var curMousePos = Mouse.current.position;
-            // var curMousePos = Input.mousePosition;
-            // var mouseRay = cam.ScreenPointToRay(curMousePos);
-            // RaycastInput ray = new RaycastInput
-            // {
-            //     Filter = mouseClickFilter,
-            //     Start = mouseRay.origin,
-            //     End = mouseRay.GetPoint(1000)
-            // };
-            // cWorld.CastRay(ray, out RaycastHit hit);
-            // skill.mouseWorldPoint = hit.Position;
-            // skill.mousePointEntity = hit.Entity;
-            // //gather key bit
-            // if (PlayerInputManager.Instance.skill0)
-            // {
-            //     skill.skill0.Set();
-            // }
-            // if (PlayerInputManager.Instance.skill1)
-            // {
-            //     skill.skill1.Set();
-            // }
-            // if (PlayerInputManager.Instance.skill2)
-            // {
-            //     skill.skill2.Set();
-            // }
-            // if (PlayerInputManager.Instance.skill3)
-            // {
-            //     skill.skill3.Set();
-            // }
-            // foreach (var (skillInput,trans) in SystemAPI.Query<RefRW<PlayerSkillInput>,LocalTransform>().WithAll<GhostOwnerIsLocal>())
-            // {
-            //     //write player current position by the way
-            //     skillInput.ValueRW = skill;
-            //     skillInput.ValueRW.playerPosition = trans.Position;
-            // }
         }
     }
     
@@ -137,7 +90,7 @@ namespace Object703.Core.Control
     public partial struct PlayerSkillInputSystem : ISystem
     {
         private CollisionFilter mouseClickFilter;
-
+        private ComponentLookup<LocalToWorld> ltwLp;
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<PhysicsWorldSingleton>();
@@ -148,15 +101,16 @@ namespace Object703.Core.Control
                 CollidesWith = (uint)ColliderLayers.Terran | (uint)ColliderLayers.SurfaceEnemy | (uint)ColliderLayers.AirborneEnemy,
                 GroupIndex = 0
             };
+            ltwLp = SystemAPI.GetComponentLookup<LocalToWorld>(true);
         }
 
         public void OnUpdate(ref SystemState state)
         {
             var cam = UnityEngine.Camera.main;
             if (cam == null) return;
+            ltwLp.Update(ref state);
             var skill = new PlayerSkillInput();
             var cWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().CollisionWorld;
-            // var curMousePos = Mouse.current.position;
             var curMousePos = Input.mousePosition;
             var mouseRay = cam.ScreenPointToRay(curMousePos);
             RaycastInput ray = new RaycastInput
@@ -168,6 +122,10 @@ namespace Object703.Core.Control
             cWorld.CastRay(ray, out RaycastHit hit);
             skill.mouseWorldPoint = hit.Position;
             skill.mousePointEntity = hit.Entity;
+            if (ltwLp.HasComponent(skill.mousePointEntity))
+            {
+                skill.aimEntityPosition = ltwLp[skill.mousePointEntity].Position;
+            }
             //gather key bit
             if (PlayerInputManager.Instance.skill0)
             {
@@ -185,11 +143,11 @@ namespace Object703.Core.Control
             {
                 skill.skill3.Set();
             }
-            foreach (var (skillInput,trans) in SystemAPI.Query<RefRW<PlayerSkillInput>,LocalTransform>().WithAll<GhostOwnerIsLocal>())
+            foreach (var (skillInput,parent) in SystemAPI.Query<RefRW<PlayerSkillInput>,Parent>().WithAll<GhostOwnerIsLocal>())
             {
                 //write player current position by the way
                 skillInput.ValueRW = skill;
-                skillInput.ValueRW.playerPosition = trans.Position;
+                skillInput.ValueRW.playerPosition = ltwLp[parent.Value].Position;
             }
         }
     }
