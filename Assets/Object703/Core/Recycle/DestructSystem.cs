@@ -36,8 +36,10 @@ namespace Object703.Core.Recycle
     {
     }
     
+    
+    
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(SimulationSystemGroup),OrderLast = true)]
+    [UpdateInGroup(typeof(PredictedSimulationSystemGroup),OrderLast = true)]
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
     public partial struct DestructSystem : ISystem
     {
@@ -45,32 +47,18 @@ namespace Object703.Core.Recycle
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<NetworkTime>();
-            hideOutPos = new float3(0, 2000, 0);
+            hideOutPos = new float3(10000, 10000, 10000);
         }
 
         public void OnUpdate(ref SystemState state)
         {
             var currentTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
-            //prepare SelfDestructAtTick
-            foreach (var (lifeSpan,destructAtTick,prepared) in SystemAPI
-                         .Query<RefRO<LifeSpanTick>
-                             ,DynamicBuffer<SelfDestructAtTick>
-                             ,EnabledRefRW<SelfDestructPrepared>>().WithAll<Simulate>().WithDisabled<SelfDestructPrepared>())
-            {
-                var localTick = currentTick;
-                localTick.Add(lifeSpan.ValueRO.value);
-                destructAtTick.AddCommandData(new SelfDestructAtTick
-                {
-                    Tick = currentTick,
-                    value = localTick
-                });
-                prepared.ValueRW = true;
-            }
             
             //check if current tick reach the destruct tick
             foreach (var (destructTick,destructEn) in SystemAPI.Query<DynamicBuffer<SelfDestructAtTick>,EnabledRefRW<DestructTag>>().WithAll<Simulate>().WithDisabled<DestructTag>())
             {
                 destructTick.GetDataAtTick(currentTick, out var localTick);
+                if(localTick.value==NetworkTick.Invalid) continue;
                 if (currentTick.Equals(localTick.value) || currentTick.IsNewerThan(localTick.value))
                 {
                     destructEn.ValueRW = true;
@@ -129,14 +117,5 @@ namespace Object703.Core.Recycle
             var clientDestructQuery = SystemAPI.QueryBuilder().WithAll<DestructTag>().WithNone<GhostInstance,SelfDestructAtTick>().Build().ToEntityArray(state.WorldUpdateAllocator);
             state.EntityManager.DestroyEntity(clientDestructQuery);
         }
-
-        [BurstCompile]
-        public void OnDestroy(ref SystemState state)
-        {
-
-        }
-
-        
     }
-
 }
