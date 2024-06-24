@@ -47,14 +47,17 @@ namespace Object703.Core.Skill
                 if (!skill.IsPressed()) continue;
             
                 // stop fire skill if out of range
-                if (skill.IsInRange(skill.TargetDistanceSq)) continue;
-                var localShot = state.EntityManager.Instantiate(shot.ValueRO.charge);
+                if (!skill.IsInRange(skill.AimDistanceSq)) continue;
+                // var localShot = state.EntityManager.Instantiate(shot.ValueRO.charge);
+                var localShot = ecb.Instantiate(shot.ValueRO.charge);
             
                 //force shot towards target position
                 var rot = quaternion.LookRotationSafe(skill.AimPos - skill.OwnerPos, math.up());
                 var localTrans = LocalTransform.FromPositionRotation(skill.OwnerPos, rot);
-                state.EntityManager.SetComponentData(localShot, owner.ValueRO);
-                state.EntityManager.SetComponentData(localShot, localTrans);
+                // state.EntityManager.SetComponentData(localShot, owner.ValueRO);
+                // state.EntityManager.SetComponentData(localShot, localTrans);
+                ecb.SetComponent(localShot, owner.ValueRO);
+                ecb.SetComponent(localShot, localTrans);
             
                 if(state.WorldUnmanaged.IsServer()) continue;
                 skill.StartCoolDown(networkTime.ServerTick);

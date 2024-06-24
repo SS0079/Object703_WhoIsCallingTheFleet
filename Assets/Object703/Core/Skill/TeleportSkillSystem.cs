@@ -13,73 +13,7 @@ using UnityEngine.Serialization;
 
 namespace Object703.Core.Skill
 {
-    [Serializable]
-    public struct SkillFlags : IComponentData
-    {
-        [FormerlySerializedAs("Slot")]
-        public SkillSlot slot;
-    }
     
-    public struct TeleportSkill : IComponentData { }
-
-    [Serializable]
-    public struct SkillCommonData : IComponentData
-    {
-        [GhostField]
-        public float radius;
-        /// <summary>
-        /// Do not access directly
-        /// </summary>
-        [GhostField]
-        public float _range;
-        private float rangeSq;
-        public float Range
-        {
-            get => _range;
-            set
-            {
-                _range = value;
-                rangeSq = _range * _range;
-            }
-        }
-        public float RangeSq => rangeSq;
-        [GhostField]
-        public uint coolDownTick;
-        [GhostField]
-        public uint lifeSpanTick;
-
-        
-        [Serializable]
-        public struct AuthoringBox
-        {
-            public float radius;
-            public float range;
-            public float coolDown;
-            public float lifeSpan;
-            // public bool fireSkillOutOfRange;
-            public SkillCommonData ToComponentData(int tickRate)
-            {
-                return new SkillCommonData()
-                {
-                    radius = radius,
-                    Range = range,
-                    coolDownTick = (uint)(coolDown * tickRate),
-                    lifeSpanTick = (uint)(coolDown * lifeSpan),
-                };
-            }
-        }
-    }
-
-    public struct SkillInvokeAtTick : ICommandData
-    {
-        [GhostField]
-        public NetworkTick Tick { get; set; }
-        [GhostField]
-        public NetworkTick coolDownAtTick;
-        [GhostField]
-        public NetworkTick lifeSpanAtTick;
-
-    }
     
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
@@ -91,8 +25,7 @@ namespace Object703.Core.Skill
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
-            state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-                state.RequireForUpdate<NetworkTime>();
+            state.RequireForUpdate<NetworkTime>();
             localTransLp = SystemAPI.GetComponentLookup<LocalTransform>(false);
         }
 
@@ -102,7 +35,6 @@ namespace Object703.Core.Skill
             state.Dependency.Complete();
             localTransLp.Update(ref state);
             var networkTime = SystemAPI.GetSingleton<NetworkTime>();
-            var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
             
             //perform teleport skill,also check if mouse aim is in skill range. perform skill at maximum range if mouse aim is out of range
             foreach (var skill in 
