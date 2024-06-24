@@ -79,21 +79,21 @@ namespace Object703.Authoring
             {
                 AddComponent(self,new DealDamage(){value = authoring.damage});
             }
-            AddBuffer<HitCheckResultBufferElement>(self);
+            AddBuffer<HitCheckResult>(self);
             if (authoring.hitSpawns.Length > 0)
             {
-                AddBuffer<HitSpawnBufferElement>(self);
+                AddBuffer<HitSpawnBuffer>(self);
                 for (int i = 0; i < authoring.hitSpawns.Length; i++)
                 {
-                    AppendToBuffer(self,new HitSpawnBufferElement(){value = GetEntity(authoring.hitSpawns[i],TransformUsageFlags.Dynamic)});
+                    AppendToBuffer(self,new HitSpawnBuffer(){value = GetEntity(authoring.hitSpawns[i],TransformUsageFlags.Dynamic)});
                 }
             }
             if (authoring.hitEffects.Length>0)
             {
-                AddBuffer<HitEffectBufferElement>(self);
+                AddBuffer<HitEffectBuffer>(self);
                 for (int i = 0; i < authoring.hitEffects.Length; i++)
                 {
-                    var effect = new HitEffectBufferElement(){value = GetEntity(authoring.hitEffects[i],TransformUsageFlags.Dynamic)};
+                    var effect = new HitEffectBuffer(){value = GetEntity(authoring.hitEffects[i],TransformUsageFlags.Dynamic)};
                     AppendToBuffer(self,effect);
                 }
             }

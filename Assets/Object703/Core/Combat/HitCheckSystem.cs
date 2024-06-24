@@ -52,7 +52,7 @@ namespace Object703.Core.Combat
     }
     
     [Serializable]
-    public struct HitCheckResultBufferElement : IBufferElementData
+    public struct HitCheckResult : IBufferElementData
     {
         [FormerlySerializedAs("Value")]
         public Entity target;
@@ -133,13 +133,11 @@ namespace Object703.Core.Combat
     [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation | WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
     public partial struct HitCheckSystem : ISystem
     {
-        // private ComponentLookup<DestructTag> destructTagLp;
         private ComponentLookup<LocalTransform> localTransLp;
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<PhysicsWorldSingleton>();
-            // destructTagLp = SystemAPI.GetComponentLookup<DestructTag>(false);
             localTransLp = SystemAPI.GetComponentLookup<LocalTransform>(true);
         }
 
@@ -147,7 +145,6 @@ namespace Object703.Core.Combat
         public void OnUpdate(ref SystemState state)
         {
             var cWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().CollisionWorld;
-            // destructTagLp.Update(ref state);
             localTransLp.Update(ref state);
             state.Dependency.Complete();
             new SphereCastHitCheckJob() { cWorld = cWorld}.ScheduleParallel();
@@ -179,7 +176,7 @@ namespace Object703.Core.Combat
                 Entity self,
                 ref SphereCastHitCheck castHitCheck,
                 in LocalTransform localTransform,
-                DynamicBuffer<HitCheckResultBufferElement> hitResults,
+                DynamicBuffer<HitCheckResult> hitResults,
                 EnabledRefRW<DestructTag> destructTag)
             {
                 castHitCheck.lastPos = castHitCheck.lastPos.Equals(float3.zero) ? localTransform.Position : castHitCheck.lastPos;
@@ -189,7 +186,7 @@ namespace Object703.Core.Combat
                 {
                    // destructTagLp.SetComponentEnabled(self, true);
                    destructTag.ValueRW = true;
-                   hitResults.Add(new HitCheckResultBufferElement(){target = hit.Entity,point = hit.Position});
+                   hitResults.Add(new HitCheckResult(){target = hit.Entity,point = hit.Position});
                 }
                 else
                 {
@@ -213,7 +210,7 @@ namespace Object703.Core.Combat
                 Entity self,
                 in SphereOverlapCheck check,
                 in LocalTransform localTransform,
-                DynamicBuffer<HitCheckResultBufferElement> hitResults,
+                DynamicBuffer<HitCheckResult> hitResults,
                 EnabledRefRW<DestructTag> destructTag)
             {
                 NativeList<DistanceHit> hits = new NativeList<DistanceHit>(Allocator.TempJob);
@@ -223,7 +220,7 @@ namespace Object703.Core.Combat
                     for (int i = 0; i < hits.Length; i++)
                     {
                         var localHit = hits[i];
-                        hitResults.Add(new HitCheckResultBufferElement() { target = localHit.Entity, point = localHit.Position });
+                        hitResults.Add(new HitCheckResult() { target = localHit.Entity, point = localHit.Position });
                     }
                 }
             }
@@ -244,7 +241,7 @@ namespace Object703.Core.Combat
                 Entity self,
                 in HomingTarget target,
                 in LocalTransform localTransform,
-                DynamicBuffer<HitCheckResultBufferElement> hitResults,
+                DynamicBuffer<HitCheckResult> hitResults,
                 in HomingCheckDistance fuze,
                 EnabledRefRW<DestructTag> destructTag)
 
@@ -253,7 +250,7 @@ namespace Object703.Core.Combat
                 if (math.distancesq(localTransform.Position, localTransformLp[target.value].Position) <= fuze.Sqr)
                 {
                     destructTag.ValueRW = true;
-                    hitResults.Add(new HitCheckResultBufferElement() { target = target.value, point = localTransformLp[target.value].Position });
+                    hitResults.Add(new HitCheckResult() { target = target.value, point = localTransformLp[target.value].Position });
                 }
             }
         }

@@ -294,7 +294,7 @@ MonoBehaviour:
   isAirBorne: 0
   isSurface: 1
   role: 2
-  maxHp: 30
+  maxHp: 150
 --- !u!114 &1390223968049945437
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -307,9 +307,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c79d771cedb4794bf100ce60df5f764, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DefaultGhostMode: 0
-  SupportedGhostModes: 1
-  OptimizationMode: 1
+  DefaultGhostMode: 1
+  SupportedGhostModes: 3
+  OptimizationMode: 0
   Importance: 1
   prefabId: 24a39c7a585a753419689567c7e1a60f
   HasOwner: 0

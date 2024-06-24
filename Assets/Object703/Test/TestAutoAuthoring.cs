@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Object703.Test
 {
-    public class TestAutoAuthoring : BufferAutoAuthoring<DamageBufferElement>
+    public class TestAutoAuthoring : BufferAutoAuthoring<DamageBuffer>
     {
         
     }

@@ -308,8 +308,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DefaultGhostMode: 0
-  SupportedGhostModes: 1
-  OptimizationMode: 1
+  SupportedGhostModes: 2
+  OptimizationMode: 0
   Importance: 1
   prefabId: 0c30efb4ea14507429c223f6bb23936e
   HasOwner: 0

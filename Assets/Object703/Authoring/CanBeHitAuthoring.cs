@@ -72,7 +72,8 @@ namespace Object703.Authoring
             }
             authoring.GetComponent<PhysicsShapeAuthoring>().BelongsTo = new PhysicsCategoryTags() { Value = belongTo };
             AddComponent(self,new Hp(){max = authoring.maxHp,current = authoring.maxHp});
-            AddBuffer<DamageBufferElement>(self);
+            AddBuffer<DamageBuffer>(self);
+            AddBuffer<DamageThisTick>(self);
         }
     }
 }

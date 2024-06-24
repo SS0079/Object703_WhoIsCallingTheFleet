@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: -8927469245073485475}
   - component: {fileID: 3104350494985126027}
   - component: {fileID: 8554381478434034673}
+  - component: {fileID: -6953815273148464983}
   m_Layer: 0
   m_Name: SphereAoe
   m_TagString: Untagged
@@ -65,7 +66,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1432654292428496314}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 809ae8568bfc4c979be75ab1993bea44, type: 3}
   m_Name: 
@@ -85,4 +86,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93fba12987b04b77ae86734b1b8ae518, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  destructImmediately: 0
+  destructImmediately: 1
+--- !u!114 &-6953815273148464983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1432654292428496314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c16549610bfe4458aa9389201d072bb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
