@@ -26,7 +26,7 @@ namespace Object703.Core.Recycle
             foreach (var (lifeSpan,destructAtTick,prepared) in SystemAPI
                          .Query<RefRO<LifeSpanTick>
                              ,DynamicBuffer<SelfDestructAtTick>
-                             ,EnabledRefRW<SelfDestructPrepared>>().WithAll<Simulate>().WithDisabled<SelfDestructPrepared>())
+                             ,EnabledRefRW<SelfDestructPrepared>>().WithAll<Simulate>().WithNone<HideInClient>().WithDisabled<SelfDestructPrepared>())
             {
                 var localTick = currentTick.AddSpan(lifeSpan.ValueRO.value);
                 destructAtTick.AddCommandData(new SelfDestructAtTick
@@ -36,12 +36,6 @@ namespace Object703.Core.Recycle
                 });
                 prepared.ValueRW = true;
             }
-        }
-
-        [BurstCompile]
-        public void OnDestroy(ref SystemState state)
-        {
-
         }
     }
 }

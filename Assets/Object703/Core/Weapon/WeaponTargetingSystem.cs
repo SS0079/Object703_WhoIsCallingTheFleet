@@ -1,4 +1,5 @@
 ﻿using System;
+using Object703.Core.Recycle;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -47,6 +48,7 @@ namespace Object703.Core.Weapon
         /// all target buffer element must be clean up before any targeting job been perform
         /// </summary>
         [BurstCompile]
+        [WithNone(typeof(HideInClient))]
         public partial struct CleanUpTarget : IJobEntity
         {
             public void Execute(
@@ -62,6 +64,7 @@ namespace Object703.Core.Weapon
         /// scan airborne target and cache them in weapon target buffer
         /// </summary>
         [BurstCompile]
+        [WithNone(typeof(HideInClient))]
         public partial struct TargetingJob : IJobEntity
         {
             [ReadOnly]

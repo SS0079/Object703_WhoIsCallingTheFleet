@@ -2,6 +2,7 @@
 using KittyHelpYouOut.Utilities;
 using Object703.Core.Combat;
 using Object703.Core.Control;
+using Object703.Core.Recycle;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -39,7 +40,7 @@ namespace Object703.Core.Skill
             //perform teleport skill,also check if mouse aim is in skill range. perform skill at maximum range if mouse aim is out of range
             foreach (var skill in 
                      SystemAPI.Query<SkillAspect>()
-                         .WithAll<Simulate,TeleportSkill>())
+                         .WithAll<Simulate,TeleportSkill>().WithNone<HideInClient>())
             {
                 if(!skill.IsReady(networkTime)) continue;
                 if(!skill.IsPressed()) continue;

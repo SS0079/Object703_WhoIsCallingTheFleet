@@ -42,7 +42,7 @@ namespace Object703.Core.Combat
             var networkTime = SystemAPI.GetSingleton<NetworkTime>();
             var currentTick = networkTime.ServerTick;
             foreach (var (damageBuffer,damageThisTick) in SystemAPI
-                         .Query<DynamicBuffer<DamageBuffer>,DynamicBuffer<DamageThisTick>>().WithAll<Simulate>().WithDisabled<DestructTag>())
+                         .Query<DynamicBuffer<DamageBuffer>,DynamicBuffer<DamageThisTick>>().WithAll<Simulate>().WithDisabled<DestructTag>().WithNone<HideInClient>())
             {
                 if (damageBuffer.IsEmpty)
                 {
@@ -67,7 +67,7 @@ namespace Object703.Core.Combat
             }
             
             foreach (var (hp, damageThisTickBuffer, enDestructTag) in SystemAPI
-                         .Query<RefRW<Hp>, DynamicBuffer<DamageThisTick>,EnabledRefRW<DestructTag>>().WithAll<Simulate>().WithDisabled<DestructTag>())
+                         .Query<RefRW<Hp>, DynamicBuffer<DamageThisTick>,EnabledRefRW<DestructTag>>().WithAll<Simulate>().WithDisabled<DestructTag>().WithNone<HideInClient>())
             {
                 if(!damageThisTickBuffer.GetDataAtTick(currentTick, out var damageThisTick)) continue;
                 if (damageThisTick.Tick != currentTick) continue;

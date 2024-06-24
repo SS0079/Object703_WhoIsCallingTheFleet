@@ -1,5 +1,6 @@
 ﻿using KittyHelpYouOut;
 using Object703.Authoring;
+using Object703.Core.Recycle;
 using Object703.Core.Weapon;
 using Unity.Burst;
 using Unity.Entities;
@@ -26,7 +27,7 @@ namespace Object703.Core.VisualEffect
         public void OnUpdate(ref SystemState state)
         {
             // sync position and rotation of entities and their game object
-            foreach (var (gameObjectActor,ltw) in SystemAPI.Query<GameObjectActor,RefRO<LocalToWorld>>())
+            foreach (var (gameObjectActor,ltw) in SystemAPI.Query<GameObjectActor,RefRO<LocalToWorld>>().WithNone<HideInClient>())
             {
                 var actorTransform = gameObjectActor.actor.transform;
                 actorTransform.position = ltw.ValueRO.Position;
@@ -34,7 +35,7 @@ namespace Object703.Core.VisualEffect
             }
             
             //sync the lineRenderer positions of entities
-            foreach (var (line,weapon,ltw) in SystemAPI.Query<LineRendererActor,RefRO<Weapon.Weapon>,RefRO<LocalToWorld>>())
+            foreach (var (line,weapon,ltw) in SystemAPI.Query<LineRendererActor,RefRO<Weapon.Weapon>,RefRO<LocalToWorld>>().WithNone<HideInClient>())
             {
                 Vector3 fwd = ltw.ValueRO.Forward;
                 Vector3 start = ltw.ValueRO.Position;
@@ -44,12 +45,6 @@ namespace Object703.Core.VisualEffect
                 lineRenderer.positionCount = fanPoints.Length;
                 lineRenderer.SetPositions(fanPoints);
             }
-        }
-
-        [BurstCompile]
-        public void OnDestroy(ref SystemState state)
-        {
-
         }
 
     }

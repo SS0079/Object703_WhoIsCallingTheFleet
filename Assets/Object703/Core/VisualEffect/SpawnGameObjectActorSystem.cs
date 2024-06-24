@@ -1,24 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using KittyHelpYouOut;
-using Object703.Core.VisualEffect;
-using Object703.Core.Weapon;
+using Object703.Core.Recycle;
 using Object703.Utility;
-using QFramework;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Random = Unity.Mathematics.Random;
-using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.Serialization;
-using ISystem = Unity.Entities.ISystem;
 
 // ReSharper disable Unity.Entities.MustBeSurroundedWithRefRwRo
 
-namespace Object703.Authoring
+namespace Object703.Core.VisualEffect
 {
     [Serializable]
     public class AttachLineRenderer : IComponentData, IEnableableComponent
@@ -69,7 +63,7 @@ namespace Object703.Authoring
                 //spawn game object actor for entities who have game object actor prefab
                 //this foreach spawn for local player
                 foreach (var (prefabName, actor) in SystemAPI
-                             .Query<RefRO<AttachGameObject>, GameObjectActor>().WithAll<GhostOwnerIsLocal>())
+                             .Query<RefRO<AttachGameObject>, GameObjectActor>().WithAll<GhostOwnerIsLocal>().WithNone<HideInClient>())
                 {
                     var localKey = prefabName.ValueRO.prefabName.ToString()+"_Local";
                     var exist = prefabDic.TryGetValue(localKey,out GameObject prefab);
@@ -80,7 +74,7 @@ namespace Object703.Authoring
                 
                 //this foreach spawn for remote player
                 foreach (var (prefabName, actor) in SystemAPI
-                             .Query<RefRO<AttachGameObject>, GameObjectActor>().WithNone<GhostOwnerIsLocal>())
+                             .Query<RefRO<AttachGameObject>, GameObjectActor>().WithNone<GhostOwnerIsLocal>().WithNone<HideInClient>())
                 {
                     var localKey = prefabName.ValueRO.prefabName.ToString()+"_Remote";
                     var exist = prefabDic.TryGetValue(localKey,out GameObject prefab);
@@ -113,7 +107,7 @@ namespace Object703.Authoring
                 }
 
                 //spawn lineRenderer actor for entities who have lineRenderer prefab
-                foreach (var (prefab, actor) in SystemAPI.Query<AttachLineRenderer, LineRendererActor>())
+                foreach (var (prefab, actor) in SystemAPI.Query<AttachLineRenderer, LineRendererActor>().WithNone<HideInClient>())
                 {
                     var line = prefab.prefab.gameObject.GetPoolObject();
                     line.transform.forward = Vector3.up;

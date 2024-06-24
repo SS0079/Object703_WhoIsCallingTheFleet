@@ -1,4 +1,5 @@
 ﻿using System;
+using Object703.Core.Recycle;
 using Unity.Burst;
 using Unity.Entities;
 using Random = Unity.Mathematics.Random;
@@ -41,6 +42,7 @@ namespace Object703.Core.VisualEffect
         }
 
         [BurstCompile]
+        [WithNone(typeof(HideInClient))]
         public partial struct SyncScaleJob : IJobEntity
         {
             public void Execute(

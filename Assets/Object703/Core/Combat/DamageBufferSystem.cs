@@ -42,7 +42,7 @@ namespace Object703.Core.Combat
             damageBufferLp.Update(ref state);
             state.Dependency.Complete();
             foreach (var (hitBuffer,damage) in SystemAPI
-                         .Query<DynamicBuffer<HitCheckResult>,DealDamage>().WithAll<Simulate>())
+                         .Query<DynamicBuffer<HitCheckResult>,DealDamage>().WithAll<Simulate>().WithNone<HideInClient>())
             {
                 for (int i = 0; i < hitBuffer.Length; i++)
                 {

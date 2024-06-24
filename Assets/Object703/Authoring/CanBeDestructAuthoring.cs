@@ -1,4 +1,5 @@
-﻿using Object703.Core.Recycle;
+﻿using KittyDOTS;
+using Object703.Core.Recycle;
 using Unity.Entities;
 using UnityEngine;
 
@@ -13,8 +14,8 @@ namespace Object703.Authoring.Installer
             public override void Bake(CanBeDestructAuthoring authoring)
             {
                 var self = GetEntity(TransformUsageFlags.None);
-                AddComponent(self,new DestructTag());
-                SetComponentEnabled<DestructTag>(self,authoring.destructImmediately);
+                this.AddEnableComponent(self, new DestructTag(), authoring.destructImmediately);
+                this.AddEnableComponent(self, new HideInClient(), false);
             }
         }
     }

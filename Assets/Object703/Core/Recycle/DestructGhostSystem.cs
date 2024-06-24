@@ -16,6 +16,12 @@ namespace Object703.Core.Recycle
         [GhostField]public uint value;
     }
 
+    [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
+    [GhostEnabledBit]
+    public struct HideInClient : IComponentData , IEnableableComponent
+    {
+        
+    }
     public struct LifeSpanSecond : IComponentData ,IEnableableComponent
     {
         public float value;
@@ -74,14 +80,13 @@ namespace Object703.Core.Recycle
             if (state.World.Flags==WorldFlags.GameClient || state.World.Flags==WorldFlags.GameThinClient)
             {
                 //hide ghost if this is client world
-                foreach (var (trans,simulateEn,entity) in SystemAPI
-                             .Query<RefRW<LocalTransform>,EnabledRefRW<Simulate>>()
-                             .WithAll<Simulate,DestructTag,GhostInstance>().WithEntityAccess())
+                foreach (var (trans,enHide) in SystemAPI
+                             .Query<RefRW<LocalTransform>,EnabledRefRW<HideInClient>>()
+                             .WithAll<Simulate,DestructTag,GhostInstance>().WithDisabled<HideInClient>())
                 {
                     trans.ValueRW.Position = hideOutPos;
+                    enHide.ValueRW = true;
                 }
-                // var destructQuery = SystemAPI.QueryBuilder().WithAll<DestructTag>().Build().ToEntityArray(state.WorldUpdateAllocator);
-                // state.EntityManager.RemoveComponent(destructQuery, ComponentType.ReadWrite<DestructTag>());
             }
             
         }

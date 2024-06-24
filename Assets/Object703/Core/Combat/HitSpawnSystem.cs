@@ -19,8 +19,8 @@ namespace Object703.Core.Combat
     
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(SimulationSystemGroup))]
-    public partial struct HitSpawnNonGhostSystem : ISystem
+    [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
+    public partial struct HitSpawnSystem : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)
@@ -33,9 +33,10 @@ namespace Object703.Core.Combat
         {
             var networkTime = SystemAPI.GetSingleton<NetworkTime>();
 
+            if(!networkTime.IsFirstTimeFullyPredictingTick) return;
             // spawn all entity prefab stored in hit spawn buffer where destruct tag is on
             foreach (var (hitSpawns,ltw,entity) in SystemAPI
-                         .Query<DynamicBuffer<HitSpawnBuffer>,RefRO<LocalTransform>>().WithAll<DestructTag>().WithEntityAccess())
+                         .Query<DynamicBuffer<HitSpawnBuffer>,RefRO<LocalTransform>>().WithAll<DestructTag>().WithNone<HideInClient>().WithEntityAccess())
             {
                 for (int i = 0; i < hitSpawns.Length; i++)
                 {
@@ -44,12 +45,6 @@ namespace Object703.Core.Combat
                     SystemAPI.SetComponent(e,ltw.ValueRO);
                 }
             }
-        }
-
-        [BurstCompile]
-        public void OnDestroy(ref SystemState state)
-        {
-
         }
     }
 
@@ -69,7 +64,7 @@ namespace Object703.Core.Combat
         {
             // spawn all entity prefab stored in hit spawn buffer where destruct tag is on
             foreach (var (hitSpawns,ltw) in SystemAPI
-                         .Query<DynamicBuffer<HitEffectBuffer>,RefRO<LocalTransform>>().WithAll<DestructTag,Simulate>())
+                         .Query<DynamicBuffer<HitEffectBuffer>,RefRO<LocalTransform>>().WithAll<DestructTag,Simulate>().WithNone<HideInClient>())
             {
                 //TODO: change this to spawn a game object
                 for (int i = 0; i < hitSpawns.Length; i++)

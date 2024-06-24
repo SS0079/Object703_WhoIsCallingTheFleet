@@ -167,6 +167,7 @@ namespace Object703.Core.Combat
         /// </summary>
         [BurstCompile]
         [WithDisabled(typeof(DestructTag))]
+        [WithNone(typeof(HideInClient))]
         public partial struct SphereCastHitCheckJob : IJobEntity
         {
             [ReadOnly]
@@ -201,6 +202,7 @@ namespace Object703.Core.Combat
         /// </summary>
         [BurstCompile]
         [WithDisabled(typeof(DestructTag))]
+        [WithNone(typeof(HideInClient))]
         public partial struct SphereOverlapHitCheckJob : IJobEntity
         {
             [ReadOnly]

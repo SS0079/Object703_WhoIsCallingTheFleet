@@ -117,84 +117,84 @@ namespace Object703.Core.Moving
     }
     #endregion
 
-    public partial struct MoveSystemJobs
-    {
-        /// <summary>
-        /// perform a moving behaviour that move a entity like a ship
-        /// </summary>
-        [BurstCompile]
-        public partial struct ShipMoveJob : IJobEntity
-        {
-            // public float Δt;
-            public void Execute(
-                [EntityIndexInQuery] int index,
-                ref LocalTransform localTransform,
-                in ShipMoveConfig moveConfig,
-                in MoveAxis moveAxis,
-                in RotateAxis rotateAxis,
-                ref MoveSpeed moveSpeed,
-                ref RotateSpeed rotateSpeed)
-            {
-                var targetEuler = rotateAxis.rotateEuler*moveConfig.RotateRadiusPerTick;
-                var rotateDamp =rotateAxis.rotateEuler.y==0 ? moveConfig.rotateDampStop : moveConfig.rotateDampMotion;
-                rotateSpeed.value = math.lerp(rotateSpeed.value, targetEuler, 1f/ (rotateDamp+1));
-                var quaternion = Unity.Mathematics.quaternion.Euler(rotateSpeed.value);
-                localTransform=localTransform.Rotate(quaternion);
-                
-                var targetSpeed = localTransform.TransformDirection(moveAxis.moveDirection);
-                var speed=moveConfig.moveSpeedPerTick * targetSpeed;
-                var speedDamp = math.lengthsq(moveAxis.moveDirection)==0 ? moveConfig.moveDampStop : moveConfig.moveDampMotion;
-                moveSpeed.value = math.lerp(moveSpeed.value, speed, 1f / (speedDamp + 1));
-                localTransform.Position += new float3(moveSpeed.value);
-            }
-        }
-
-        /// <summary>
-        /// perform a moving behaviour that a entity just move forward
-        /// </summary>
-        [BurstCompile]
-        [WithDisabled(typeof(DestructTag))]
-        public partial struct ArrowMoveJob : IJobEntity
-        {
-            public void Execute(
-                [EntityIndexInQuery] int index,
-                ref LocalTransform localTransform,
-                in ArrowMoveConfig arrowMoveConfig,
-                in LocalToWorld ltw
-                )
-            {
-                localTransform.Position += ltw.Forward * arrowMoveConfig.speedPerTick;
-            }
-        }
-
-        /// <summary>
-        /// perform a look at behaviour that force entity look at a homing target
-        /// </summary>
-        [BurstCompile]
-        public partial struct HomingJob : IJobEntity
-        {
-            public HomingJob(ComponentLookup<LocalToWorld> ltwLp, ComponentLookup<Simulate> simulateLp) : this()
-            {
-                this.ltwLp = ltwLp;
-                this.simulateLp = simulateLp;
-            }
-
-            [ReadOnly]
-            private ComponentLookup<LocalToWorld> ltwLp;
-            [ReadOnly]
-            private ComponentLookup<Simulate> simulateLp;
-            public void Execute(
-                [EntityIndexInQuery] int index,
-                in HomingTarget target,
-                ref LocalTransform localTransform)
-            {
-                if (!simulateLp.HasComponent(target.value) || !ltwLp.HasComponent(target.value)) return;
-                var targetPos = ltwLp[target.value].Position;
-                var targetLookRot = quaternion.LookRotationSafe(targetPos - localTransform.Position, localTransform.Up());
-                localTransform.Rotation = targetLookRot;
-            }
-        }
-    }
+    // public partial struct MoveSystemJobs
+    // {
+    //     /// <summary>
+    //     /// perform a moving behaviour that move a entity like a ship
+    //     /// </summary>
+    //     [BurstCompile]
+    //     public partial struct ShipMoveJob : IJobEntity
+    //     {
+    //         // public float Δt;
+    //         public void Execute(
+    //             [EntityIndexInQuery] int index,
+    //             ref LocalTransform localTransform,
+    //             in ShipMoveConfig moveConfig,
+    //             in MoveAxis moveAxis,
+    //             in RotateAxis rotateAxis,
+    //             ref MoveSpeed moveSpeed,
+    //             ref RotateSpeed rotateSpeed)
+    //         {
+    //             var targetEuler = rotateAxis.rotateEuler*moveConfig.RotateRadiusPerTick;
+    //             var rotateDamp =rotateAxis.rotateEuler.y==0 ? moveConfig.rotateDampStop : moveConfig.rotateDampMotion;
+    //             rotateSpeed.value = math.lerp(rotateSpeed.value, targetEuler, 1f/ (rotateDamp+1));
+    //             var quaternion = Unity.Mathematics.quaternion.Euler(rotateSpeed.value);
+    //             localTransform=localTransform.Rotate(quaternion);
+    //             
+    //             var targetSpeed = localTransform.TransformDirection(moveAxis.moveDirection);
+    //             var speed=moveConfig.moveSpeedPerTick * targetSpeed;
+    //             var speedDamp = math.lengthsq(moveAxis.moveDirection)==0 ? moveConfig.moveDampStop : moveConfig.moveDampMotion;
+    //             moveSpeed.value = math.lerp(moveSpeed.value, speed, 1f / (speedDamp + 1));
+    //             localTransform.Position += new float3(moveSpeed.value);
+    //         }
+    //     }
+    //
+    //     /// <summary>
+    //     /// perform a moving behaviour that a entity just move forward
+    //     /// </summary>
+    //     [BurstCompile]
+    //     [WithDisabled(typeof(DestructTag))]
+    //     public partial struct ArrowMoveJob : IJobEntity
+    //     {
+    //         public void Execute(
+    //             [EntityIndexInQuery] int index,
+    //             ref LocalTransform localTransform,
+    //             in ArrowMoveConfig arrowMoveConfig,
+    //             in LocalToWorld ltw
+    //             )
+    //         {
+    //             localTransform.Position += ltw.Forward * arrowMoveConfig.speedPerTick;
+    //         }
+    //     }
+    //
+    //     /// <summary>
+    //     /// perform a look at behaviour that force entity look at a homing target
+    //     /// </summary>
+    //     [BurstCompile]
+    //     public partial struct HomingJob : IJobEntity
+    //     {
+    //         public HomingJob(ComponentLookup<LocalToWorld> ltwLp, ComponentLookup<Simulate> simulateLp) : this()
+    //         {
+    //             this.ltwLp = ltwLp;
+    //             this.simulateLp = simulateLp;
+    //         }
+    //
+    //         [ReadOnly]
+    //         private ComponentLookup<LocalToWorld> ltwLp;
+    //         [ReadOnly]
+    //         private ComponentLookup<Simulate> simulateLp;
+    //         public void Execute(
+    //             [EntityIndexInQuery] int index,
+    //             in HomingTarget target,
+    //             ref LocalTransform localTransform)
+    //         {
+    //             if (!simulateLp.HasComponent(target.value) || !ltwLp.HasComponent(target.value)) return;
+    //             var targetPos = ltwLp[target.value].Position;
+    //             var targetLookRot = quaternion.LookRotationSafe(targetPos - localTransform.Position, localTransform.Up());
+    //             localTransform.Rotation = targetLookRot;
+    //         }
+    //     }
+    // }
     
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
@@ -202,25 +202,18 @@ namespace Object703.Core.Moving
     // [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
     public partial struct MoveSystem : ISystem
     {
-        private ComponentLookup<LocalToWorld> ltwLp;
-        private ComponentLookup<Simulate> simulateLp;
-        [BurstCompile]
-        public void OnCreate(ref SystemState state)
-        {
-            ltwLp = SystemAPI.GetComponentLookup<LocalToWorld>(true);
-            simulateLp = SystemAPI.GetComponentLookup<Simulate>(true);
-        }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            //ship move
             foreach (var (localTrans,moveConfig,moveAxis,rotateAxis,moveSpeed,rotateSpeed) in SystemAPI
                          .Query<RefRW<LocalTransform>,
                          RefRO<ShipMoveConfig>,
                          RefRO<MoveAxis>,
                          RefRO<RotateAxis>,
                          RefRW<MoveSpeed>,
-                         RefRW<RotateSpeed>>().WithAll<Simulate>())
+                         RefRW<RotateSpeed>>().WithAll<Simulate>().WithNone<HideInClient>())
             {
                 var targetEuler = rotateAxis.ValueRO.rotateEuler*moveConfig.ValueRO.RotateRadiusPerTick;
                 var rotateDamp =rotateAxis.ValueRO.rotateEuler.y==0 ? moveConfig.ValueRO.rotateDampStop : moveConfig.ValueRO.rotateDampMotion;
@@ -235,24 +228,13 @@ namespace Object703.Core.Moving
                 localTrans.ValueRW.Position += new float3(moveSpeed.ValueRO.value);
             }
 
+            //arrow move
             foreach (var (localTrans,moveConfig) in SystemAPI    
-                         .Query<RefRW<LocalTransform>,RefRO<ArrowMoveConfig>>().WithAll<Simulate>())
+                         .Query<RefRW<LocalTransform>,RefRO<ArrowMoveConfig>>().WithAll<Simulate>().WithNone<HideInClient>())
             {
                 localTrans.ValueRW.Position += localTrans.ValueRW.Forward() * moveConfig.ValueRO.speedPerTick;
             }
             
-            // var shipMoveHandle = new MoveSystemJobs.ShipMoveJob().ScheduleParallel(state.Dependency);
-            // shipMoveHandle.Complete();
-            // new MoveSystemJobs.ArrowMoveJob().ScheduleParallel();
-            ltwLp.Update(ref state);
-            simulateLp.Update(ref state);
-            // new MoveSystemJobs.HomingJob(ltwLp, simulateLp).ScheduleParallel();
-        }
-
-        [BurstCompile]
-        public void OnDestroy(ref SystemState state)
-        {
-
         }
 
     }
