@@ -10,5 +10,12 @@ namespace KittyDOTS
             baker.SetComponentEnabled<T>(target,enabled);
             return baker;
         }
+
+        public static IBaker AddBuffer<T>(this IBaker baker, Entity target, T bufferElement) where T : unmanaged, IBufferElementData
+        {
+            baker.AddBuffer<T>(target);
+            baker.AppendToBuffer(target,bufferElement);
+            return baker;
+        }
     }
 }
