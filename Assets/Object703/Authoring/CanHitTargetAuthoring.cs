@@ -2,6 +2,7 @@
 using KittyHelpYouOut.Utilities;
 using Object703.Core.Combat;
 using Object703.Core.Recycle;
+using Object703.Core.VisualEffect;
 using Object703.Core.Weapon;
 using Unity.Entities;
 using Unity.Physics;

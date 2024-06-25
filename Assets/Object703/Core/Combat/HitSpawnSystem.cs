@@ -13,30 +13,6 @@ namespace Object703.Core.Combat
         public Entity value;
     }
 
-    [GhostComponent(PrefabType = GhostPrefabType.Client)]
-    public struct HitEffectBuffer : IBufferElementData
-    {
-        public Entity value;
-    }
-
-    [GhostComponent(PrefabType = GhostPrefabType.Client)]
-    public struct LocalPositionInitializer : IComponentData , IEnableableComponent
-    {
-        public float3 position;
-    }
-    
-    [GhostComponent(PrefabType = GhostPrefabType.Client)]
-    public struct LocalRotationInitializer : IComponentData , IEnableableComponent
-    {
-        public quaternion rotation;
-    }
-    
-    [GhostComponent(PrefabType = GhostPrefabType.Client)]
-    public struct LocalScaleInitializer : IComponentData , IEnableableComponent
-    {
-        public float3 scale;
-    }
-    
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
@@ -62,6 +38,7 @@ namespace Object703.Core.Combat
                 {
                     var e = state.EntityManager.Instantiate(hitSpawns[i].value);
                     SystemAPI.SetComponent(e,ltw.ValueRO);
+                    Debug.Log($"{e} | {i} | {entity} | {state.WorldUnmanaged.IsServer()}");
                 }
             }
         }

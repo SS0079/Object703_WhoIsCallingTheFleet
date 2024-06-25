@@ -2,10 +2,36 @@
 using Object703.Core.Recycle;
 using Unity.Burst;
 using Unity.Entities;
+using Unity.Mathematics;
+using Unity.NetCode;
 using Unity.Transforms;
 
 namespace Object703.Core.VisualEffect
 {
+    [GhostComponent(PrefabType = GhostPrefabType.Client)]
+    public struct HitEffectBuffer : IBufferElementData
+    {
+        public Entity value;
+    }
+
+    [GhostComponent(PrefabType = GhostPrefabType.Client)]
+    public struct LocalPositionInitializer : IComponentData , IEnableableComponent
+    {
+        public float3 position;
+    }
+    
+    [GhostComponent(PrefabType = GhostPrefabType.Client)]
+    public struct LocalRotationInitializer : IComponentData , IEnableableComponent
+    {
+        public quaternion rotation;
+    }
+    
+    [GhostComponent(PrefabType = GhostPrefabType.Client)]
+    public struct LocalScaleInitializer : IComponentData , IEnableableComponent
+    {
+        public float3 scale;
+    }
+    
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(SimulationSystemGroup))]
