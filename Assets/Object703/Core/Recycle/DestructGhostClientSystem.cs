@@ -42,18 +42,14 @@ namespace Object703.Core.Recycle
     {
     }
     
-    
-    
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(PredictedSimulationSystemGroup),OrderFirst = true)]
-    [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
-    public partial struct DestructGhostSystem : ISystem
+    [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
+    public partial struct SelfDestructTickSystem : ISystem
     {
         private float3 hideOutPos;
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<NetworkTime>();
-            hideOutPos = new float3(10000, 10000, 10000);
         }
 
         public void OnUpdate(ref SystemState state)
@@ -70,26 +66,46 @@ namespace Object703.Core.Recycle
                     destructEn.ValueRW = true;
                 }
             }
-            if (state.World.Flags==WorldFlags.GameServer)
-            {
-                //destruct immediately if this is server world
-                var destructQuery = SystemAPI.QueryBuilder().WithAll<DestructTag,GhostInstance>().Build().ToEntityArray(state.WorldUpdateAllocator);
-                state.EntityManager.DestroyEntity(destructQuery);
-            }
-            if (state.World.Flags==WorldFlags.GameClient || state.World.Flags==WorldFlags.GameThinClient)
-            {
-                //hide ghost if this is client world
-                foreach (var (trans,enHide) in SystemAPI
-                             .Query<RefRW<LocalTransform>,EnabledRefRW<HideInClient>>()
-                             .WithAll<Simulate,DestructTag,GhostInstance>().WithDisabled<HideInClient>())
-                {
-                    trans.ValueRW.Position = hideOutPos;
-                    enHide.ValueRW = true;
-                }
-            }
-            
         }
     }
+    
+    [RequireMatchingQueriesForUpdate]
+    [UpdateInGroup(typeof(PredictedSimulationSystemGroup),OrderFirst = true)]
+    [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
+    public partial struct DestructGhostClientSystem : ISystem
+    {
+        private float3 hideOutPos;
+        public void OnCreate(ref SystemState state)
+        {
+            hideOutPos = new float3(10000, 10000, 10000);
+        }
+
+        public void OnUpdate(ref SystemState state)
+        {
+            //hide ghost if this is client world
+            foreach (var (trans,enHide) in SystemAPI
+                         .Query<RefRW<LocalTransform>,EnabledRefRW<HideInClient>>()
+                         .WithAll<Simulate,DestructTag,GhostInstance>().WithDisabled<HideInClient>())
+            {
+                trans.ValueRW.Position = hideOutPos;
+                enHide.ValueRW = true;
+            }
+        }
+    }
+    
+    [RequireMatchingQueriesForUpdate]
+    [UpdateInGroup(typeof(SimulationSystemGroup))]
+    [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+    public partial struct DestructGhostServerSystem : ISystem
+    {
+        public void OnUpdate(ref SystemState state)
+        {
+            //destruct immediately if this is server world
+            var destructQuery = SystemAPI.QueryBuilder().WithAll<DestructTag,GhostInstance>().Build().ToEntityArray(state.WorldUpdateAllocator);
+            state.EntityManager.DestroyEntity(destructQuery);
+        }
+    }
+    
     
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
