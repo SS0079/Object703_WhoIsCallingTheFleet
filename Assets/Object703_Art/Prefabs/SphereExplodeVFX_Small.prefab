@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 3914845087410136311}
   - component: {fileID: 121480823748754646}
   - component: {fileID: 7338653387272556795}
+  - component: {fileID: 8405581270311790310}
+  - component: {fileID: 6158748727639541772}
   m_Layer: 0
   m_Name: SphereExplodeVFX_Small
   m_TagString: Untagged
@@ -99,5 +101,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 809ae8568bfc4c979be75ab1993bea44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selfDestructCountDown: 0.2
-  immediatelyDestruct: 0
+  netConfig: {fileID: 0}
+  lifeSpan: 0
+  startCountDownImmediately: 1
+--- !u!114 &8405581270311790310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5947900406849159328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93fba12987b04b77ae86734b1b8ae518, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  destructImmediately: 0
+--- !u!114 &6158748727639541772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5947900406849159328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81ddc9267d8b481a8e571cbc7c5c69e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  setPosition: 1
+  setRotation: 0
+  setScale: 0

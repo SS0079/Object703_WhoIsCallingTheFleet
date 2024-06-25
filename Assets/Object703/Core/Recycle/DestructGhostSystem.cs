@@ -59,7 +59,6 @@ namespace Object703.Core.Recycle
         public void OnUpdate(ref SystemState state)
         {
             var currentTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
-            var ecb = new EntityCommandBuffer(Allocator.Temp);
 
             //check if current tick reach the destruct tick
             foreach (var (destructTick,destructEn) in SystemAPI.Query<DynamicBuffer<SelfDestructAtTick>,EnabledRefRW<DestructTag>>().WithAll<Simulate>().WithDisabled<DestructTag>())
@@ -123,7 +122,7 @@ namespace Object703.Core.Recycle
                     timer.ValueRW.value -= Δt;
                 }
             }
-            //destruct local entity but leave network entity alone
+            //destruct local entity but leave ghost entity alone
             var clientDestructQuery = SystemAPI.QueryBuilder().WithAll<DestructTag>().WithNone<GhostInstance,SelfDestructAtTick>().Build().ToEntityArray(state.WorldUpdateAllocator);
             state.EntityManager.DestroyEntity(clientDestructQuery);
         }
