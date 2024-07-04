@@ -29,9 +29,9 @@ namespace Object703.Core.VisualEffect
     
     [Serializable]
     [GhostComponent(PrefabType = GhostPrefabType.Client)]
-    public class GameObjectActor : ICleanupComponentData
+    public struct GameObjectActor : ICleanupComponentData
     {
-        public GameObject actor;
+        public UnityObjectRef<GameObject> actor;
     }
     
     [Serializable]
@@ -57,30 +57,30 @@ namespace Object703.Core.VisualEffect
                 var unspawnedGoQuery = SystemAPI.QueryBuilder().WithAll<AttachGameObject>().WithNone<GameObjectActor>().Build().ToEntityArray(this.WorldUpdateAllocator);
                 for (int i = 0, count = unspawnedGoQuery.Length; i < count; i++)
                 {
-                    EntityManager.AddComponentObject(unspawnedGoQuery[i], new GameObjectActor());
+                    EntityManager.AddComponentData(unspawnedGoQuery[i], new GameObjectActor());
                 }
 
                 //spawn game object actor for entities who have game object actor prefab
                 //this foreach spawn for local player
                 foreach (var (prefabName, actor) in SystemAPI
-                             .Query<RefRO<AttachGameObject>, GameObjectActor>().WithAll<GhostOwnerIsLocal>().WithNone<HideInClient>())
+                             .Query<RefRO<AttachGameObject>, RefRW<GameObjectActor>>().WithAll<GhostOwnerIsLocal>().WithNone<HideInClient>())
                 {
                     var localKey = prefabName.ValueRO.prefabName.ToString()+"_Local";
                     var exist = prefabDic.TryGetValue(localKey,out GameObject prefab);
                     if(!exist) break;
                     var go = prefab.GetPoolObject();
-                    actor.actor = go;
+                    actor.ValueRW.actor.Value = go;
                 }
                 
                 //this foreach spawn for remote player
                 foreach (var (prefabName, actor) in SystemAPI
-                             .Query<RefRO<AttachGameObject>, GameObjectActor>().WithNone<GhostOwnerIsLocal>().WithNone<HideInClient>())
+                             .Query<RefRO<AttachGameObject>, RefRW<GameObjectActor>>().WithNone<GhostOwnerIsLocal>().WithNone<HideInClient>())
                 {
                     var localKey = prefabName.ValueRO.prefabName.ToString()+"_Remote";
                     var exist = prefabDic.TryGetValue(localKey,out GameObject prefab);
                     if(!exist) break;
                     var go = prefab.GetPoolObject();
-                    actor.actor = go;
+                    actor.ValueRW.actor.Value = go;
                 }
 
                 //turn off prefab component after spawn
@@ -88,10 +88,10 @@ namespace Object703.Core.VisualEffect
                 EntityManager.RemoveComponent<AttachGameObject>(spawnedQuery);
                 
                 //recycle unused actor
-                foreach (var gameObjectActor in SystemAPI.Query<GameObjectActor>().WithNone<LocalTransform>())
+                foreach (var gameObjectActor in SystemAPI.Query<RefRW<GameObjectActor>>().WithNone<LocalTransform>())
                 {
                     Debug.Log($"Cleaning");
-                    gameObjectActor.actor.gameObject.RecyclePoolObject();
+                    gameObjectActor.ValueRO.actor.Value.RecyclePoolObject();
                 }
                 var cleanUpQuery = SystemAPI.QueryBuilder().WithAll<GameObjectActor>().WithNone<LocalTransform>().Build();
                 EntityManager.RemoveComponent<GameObjectActor>(cleanUpQuery);
