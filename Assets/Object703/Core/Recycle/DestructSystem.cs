@@ -61,7 +61,7 @@ namespace Object703.Core.Recycle
             {
                 destructTick.GetDataAtTick(currentTick, out var localTick);
                 if(localTick.Tick==NetworkTick.Invalid) continue;
-                if (localTick.value==NetworkTick.Invalid || currentTick.Equals(localTick.value) || currentTick.IsNewerThan(localTick.value))
+                if (currentTick.Equals(localTick.value) || currentTick.IsNewerThan(localTick.value))
                 {
                     destructEn.ValueRW = true;
                 }

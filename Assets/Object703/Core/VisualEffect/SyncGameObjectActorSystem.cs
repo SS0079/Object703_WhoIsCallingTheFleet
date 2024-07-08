@@ -27,9 +27,9 @@ namespace Object703.Core.VisualEffect
         public void OnUpdate(ref SystemState state)
         {
             // sync position and rotation of entities and their game object
-            foreach (var (gameObjectActor,ltw) in SystemAPI.Query<RefRO<GameObjectActor>,RefRO<LocalToWorld>>().WithNone<HideInClient>())
+            foreach (var (gameObjectActor,ltw) in SystemAPI.Query<RefRW<GameObjectActor>,RefRO<LocalToWorld>>().WithNone<HideInClient>())
             {
-                var actorTransform = gameObjectActor.ValueRO.actor.Value.transform;
+                var actorTransform = gameObjectActor.ValueRW.Get().transform;
                 actorTransform.position = ltw.ValueRO.Position;
                 actorTransform.rotation = ltw.ValueRO.Rotation;
             }

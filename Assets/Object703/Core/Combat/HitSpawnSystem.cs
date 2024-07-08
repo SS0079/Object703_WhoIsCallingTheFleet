@@ -38,7 +38,7 @@ namespace Object703.Core.Combat
                 {
                     var e = state.EntityManager.Instantiate(hitSpawns[i].value);
                     SystemAPI.SetComponent(e,ltw.ValueRO);
-                    Debug.Log($"{e} | {i} | {entity} | {state.WorldUnmanaged.IsServer()}");
+                    // Debug.Log($"{e} | {i} | {entity} | {state.WorldUnmanaged.IsServer()}");
                 }
             }
         }

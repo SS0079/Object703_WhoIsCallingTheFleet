@@ -31,7 +31,25 @@ namespace Object703.Core.VisualEffect
     [GhostComponent(PrefabType = GhostPrefabType.Client)]
     public struct GameObjectActor : ICleanupComponentData
     {
-        public UnityObjectRef<GameObject> actor;
+        [SerializeField]
+        private UnityObjectRef<GameObject> actor;
+        public GameObject Get()
+        {
+            if (actor.Value==null)
+            {
+                Debug.Log($"Null happend");
+            }
+            return actor.Value;
+        }
+
+        public void Set(GameObject value)
+        {
+            if (value==null)
+            {
+                Debug.Log($"Null happend");
+            }
+            actor.Value = value;
+        }
     }
     
     [Serializable]
@@ -69,7 +87,7 @@ namespace Object703.Core.VisualEffect
                     var exist = prefabDic.TryGetValue(localKey,out GameObject prefab);
                     if(!exist) break;
                     var go = prefab.GetPoolObject();
-                    actor.ValueRW.actor.Value = go;
+                    actor.ValueRW.Set(go);
                 }
                 
                 //this foreach spawn for remote player
@@ -80,7 +98,7 @@ namespace Object703.Core.VisualEffect
                     var exist = prefabDic.TryGetValue(localKey,out GameObject prefab);
                     if(!exist) break;
                     var go = prefab.GetPoolObject();
-                    actor.ValueRW.actor.Value = go;
+                    actor.ValueRW.Set(go);
                 }
 
                 //turn off prefab component after spawn
@@ -88,10 +106,11 @@ namespace Object703.Core.VisualEffect
                 EntityManager.RemoveComponent<AttachGameObject>(spawnedQuery);
                 
                 //recycle unused actor
-                foreach (var gameObjectActor in SystemAPI.Query<RefRW<GameObjectActor>>().WithNone<LocalTransform>())
+                foreach (var (gameObjectActor,entity) in SystemAPI.Query<RefRW<GameObjectActor>>().WithNone<LocalTransform>().WithEntityAccess())
                 {
                     Debug.Log($"Cleaning");
-                    gameObjectActor.ValueRO.actor.Value.RecyclePoolObject();
+                    if (gameObjectActor.ValueRW.Get()==null) continue;
+                    gameObjectActor.ValueRW.Get().RecyclePoolObject();
                 }
                 var cleanUpQuery = SystemAPI.QueryBuilder().WithAll<GameObjectActor>().WithNone<LocalTransform>().Build();
                 EntityManager.RemoveComponent<GameObjectActor>(cleanUpQuery);
