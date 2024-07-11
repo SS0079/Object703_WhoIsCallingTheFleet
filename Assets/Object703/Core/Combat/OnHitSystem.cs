@@ -125,13 +125,16 @@ namespace Object703.Core.Combat
             }
         }
     }
-            #endregion
+    #endregion
     
+    /// <summary>
+    /// Contain logic about what happen on the frame when a weapon or skill hit a target
+    /// </summary>
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
     [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation | WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
-    public partial struct HitCheckSystem : ISystem
+    public partial struct OnHitSystem : ISystem
     {
         private ComponentLookup<LocalTransform> localTransLp;
         [BurstCompile]
