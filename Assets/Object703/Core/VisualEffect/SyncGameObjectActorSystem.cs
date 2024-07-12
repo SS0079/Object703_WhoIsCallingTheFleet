@@ -27,7 +27,7 @@ namespace Object703.Core.VisualEffect
         public void OnUpdate(ref SystemState state)
         {
             // sync position and rotation of entities and their game object
-            foreach (var (gameObjectActor,ltw) in SystemAPI.Query<RefRW<GameObjectActor>,RefRO<LocalToWorld>>().WithNone<HideInClient>())
+            foreach (var (gameObjectActor,ltw) in SystemAPI.Query<RefRW<GameObjectActor>,RefRO<LocalToWorld>>().WithNone<DestructTag>())
             {
                 var actorTransform = gameObjectActor.ValueRW.Get().transform;
                 actorTransform.position = ltw.ValueRO.Position;
@@ -35,7 +35,7 @@ namespace Object703.Core.VisualEffect
             }
             
             //sync the lineRenderer positions of entities
-            foreach (var (line,weapon,ltw) in SystemAPI.Query<LineRendererActor,RefRO<Weapon.Weapon>,RefRO<LocalToWorld>>().WithNone<HideInClient>())
+            foreach (var (line,weapon,ltw) in SystemAPI.Query<LineRendererActor,RefRO<Weapon.Weapon>,RefRO<LocalToWorld>>().WithNone<DestructTag>())
             {
                 Vector3 fwd = ltw.ValueRO.Forward;
                 Vector3 start = ltw.ValueRO.Position;

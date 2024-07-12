@@ -42,7 +42,7 @@ namespace Object703.Core.Skill
                      SystemAPI.Query<RefRO<ShotSkill>,
                              SkillAspect,
                              RefRW<GhostOwner>>()
-                         .WithAll<Simulate>().WithNone<HideInClient>())
+                         .WithAll<Simulate>().WithNone<DestructTag>())
             {
                 if (!skill.IsReady(networkTime)) continue;
                 if (!skill.IsPressed()) continue;

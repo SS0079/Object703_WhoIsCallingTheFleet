@@ -213,7 +213,7 @@ namespace Object703.Core.Moving
                          RefRO<MoveAxis>,
                          RefRO<RotateAxis>,
                          RefRW<MoveSpeed>,
-                         RefRW<RotateSpeed>>().WithAll<Simulate>().WithNone<HideInClient>())
+                         RefRW<RotateSpeed>>().WithAll<Simulate>().WithNone<DestructTag>())
             {
                 var targetEuler = rotateAxis.ValueRO.rotateEuler*moveConfig.ValueRO.RotateRadiusPerTick;
                 var rotateDamp =rotateAxis.ValueRO.rotateEuler.y==0 ? moveConfig.ValueRO.rotateDampStop : moveConfig.ValueRO.rotateDampMotion;
@@ -230,7 +230,7 @@ namespace Object703.Core.Moving
 
             //arrow move
             foreach (var (localTrans,moveConfig) in SystemAPI    
-                         .Query<RefRW<LocalTransform>,RefRO<ArrowMoveConfig>>().WithAll<Simulate>().WithNone<HideInClient>())
+                         .Query<RefRW<LocalTransform>,RefRO<ArrowMoveConfig>>().WithAll<Simulate>().WithNone<DestructTag>())
             {
                 localTrans.ValueRW.Position += localTrans.ValueRW.Forward() * moveConfig.ValueRO.speedPerTick;
             }

@@ -9,9 +9,36 @@ using Unity.Transforms;
 namespace Object703.Core.VisualEffect
 {
     [GhostComponent(PrefabType = GhostPrefabType.Client)]
-    public struct HitEffectBuffer : IBufferElementData
+    public struct HitEffectPrefabs : IComponentData , IEnableableComponent
     {
-        public Entity value;
+        public Entity value0;
+        public Entity value1;
+        public Entity value2;
+        public Entity value3;
+        
+        public void Spawn(EntityManager manager,LocalTransform trans)
+        {
+            if (value0!=Entity.Null)
+            {
+                var e = manager.Instantiate(value0);
+                manager.SetComponentData(e, new LocalPositionInitializer() { position = trans.Position });
+            }
+            if (value1!=Entity.Null)
+            {
+                var e = manager.Instantiate(value1);
+                manager.SetComponentData(e, new LocalPositionInitializer() { position = trans.Position });
+            }
+            if (value2!=Entity.Null)
+            {
+                var e = manager.Instantiate(value2);
+                manager.SetComponentData(e, new LocalPositionInitializer() { position = trans.Position });
+            }
+            if (value3!=Entity.Null)
+            {
+                var e = manager.Instantiate(value3);
+                manager.SetComponentData(e, new LocalPositionInitializer() { position = trans.Position });
+            }
+        }
     }
 
     [GhostComponent(PrefabType = GhostPrefabType.Client)]
@@ -48,15 +75,12 @@ namespace Object703.Core.VisualEffect
         public void OnUpdate(ref SystemState state)
         {
             // spawn all entity prefab stored in hit spawn buffer where destruct tag is on
-            foreach (var (hitSpawns,trans) in SystemAPI
-                         .Query<DynamicBuffer<HitEffectBuffer>,RefRO<LocalTransform>>().WithAll<DestructTag,Simulate>().WithNone<HideInClient>())
+            foreach (var (hitSpawns,enHitSpawn,trans) in SystemAPI
+                         .Query<RefRW<HitEffectPrefabs>,EnabledRefRW<HitEffectPrefabs>,RefRO<LocalTransform>>().WithAll<DestructTag,Simulate>())
             {
                 //TODO: change this to spawn a game object
-                for (int i = 0; i < hitSpawns.Length; i++)
-                {
-                    var e = state.EntityManager.Instantiate(hitSpawns[i].value);
-                    SystemAPI.SetComponent(e, new LocalPositionInitializer() { position = trans.ValueRO.Position });
-                }
+                hitSpawns.ValueRW.Spawn(state.EntityManager,trans.ValueRO);
+                enHitSpawn.ValueRW = false;
             }
 
             //sync position for new spawn effect

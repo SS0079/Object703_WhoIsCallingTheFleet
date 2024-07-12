@@ -26,7 +26,7 @@ namespace Object703.Core.Recycle
             foreach (var (lifeSpan,destructAtTick,prepared) in SystemAPI
                          .Query<RefRO<LifeSpanTick>
                              ,DynamicBuffer<SelfDestructAtTick>
-                             ,EnabledRefRW<SelfDestructPrepared>>().WithAll<Simulate>().WithNone<HideInClient>().WithDisabled<SelfDestructPrepared>())
+                             ,EnabledRefRW<SelfDestructPrepared>>().WithAll<Simulate>().WithNone<DestructTag>().WithDisabled<SelfDestructPrepared>())
             {
                 var localTick = currentTick.AddSpan(lifeSpan.ValueRO.value);
                 destructAtTick.AddCommandData(new SelfDestructAtTick

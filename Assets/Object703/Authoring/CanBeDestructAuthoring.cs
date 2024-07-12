@@ -15,7 +15,6 @@ namespace Object703.Authoring.Installer
             {
                 var self = GetEntity(TransformUsageFlags.None);
                 this.AddEnableComponent(self, new DestructTag(), authoring.destructImmediately);
-                this.AddEnableComponent(self, new HideInClient(), false);
             }
         }
     }

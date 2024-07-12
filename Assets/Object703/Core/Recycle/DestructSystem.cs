@@ -15,13 +15,6 @@ namespace Object703.Core.Recycle
         [FormerlySerializedAs("tick")]
         [GhostField]public uint value;
     }
-
-    [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
-    [GhostEnabledBit]
-    public struct HideInClient : IComponentData , IEnableableComponent
-    {
-        
-    }
     public struct LifeSpanSecond : IComponentData ,IEnableableComponent
     {
         public float value;
@@ -83,12 +76,11 @@ namespace Object703.Core.Recycle
         public void OnUpdate(ref SystemState state)
         {
             //hide ghost if this is client world
-            foreach (var (trans,enHide) in SystemAPI
-                         .Query<RefRW<LocalTransform>,EnabledRefRW<HideInClient>>()
-                         .WithAll<Simulate,DestructTag,GhostInstance>().WithDisabled<HideInClient>())
+            foreach (var trans in SystemAPI
+                         .Query<RefRW<LocalTransform>>()
+                         .WithAll<Simulate,DestructTag,GhostInstance>())
             {
                 trans.ValueRW.Position = hideOutPos;
-                enHide.ValueRW = true;
             }
         }
     }
