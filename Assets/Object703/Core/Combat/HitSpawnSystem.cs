@@ -8,9 +8,37 @@ using UnityEngine;
 
 namespace Object703.Core.Combat
 {
-    public struct HitSpawnBuffer : IBufferElementData
+    public struct HitSpawnPrefabs : IComponentData , IEnableableComponent
     {
-        public Entity value;
+        public Entity value0;
+        public Entity value1;
+        public Entity value2;
+        public Entity value3;
+
+        public void Spawn(EntityManager manager,LocalTransform trans)
+        {
+            var newTrans = LocalTransform.FromPositionRotation(trans.Position,trans.Rotation);
+            if (value0!=Entity.Null)
+            {
+                var e = manager.Instantiate(value0);
+                manager.SetComponentData(e,newTrans);
+            }
+            if (value1!=Entity.Null)
+            {
+                var e = manager.Instantiate(value1);
+                manager.SetComponentData(e,newTrans);
+            }
+            if (value2!=Entity.Null)
+            {
+                var e = manager.Instantiate(value2);
+                manager.SetComponentData(e,newTrans);
+            }
+            if (value3!=Entity.Null)
+            {
+                var e = manager.Instantiate(value3);
+                manager.SetComponentData(e,newTrans);
+            }
+        }
     }
 
     [BurstCompile]
@@ -28,18 +56,14 @@ namespace Object703.Core.Combat
         public void OnUpdate(ref SystemState state)
         {
             var networkTime = SystemAPI.GetSingleton<NetworkTime>();
-
             if(!networkTime.IsFirstTimeFullyPredictingTick) return;
+            
             // spawn all entity prefab stored in hit spawn buffer where destruct tag is on
-            foreach (var (hitSpawns,ltw,entity) in SystemAPI
-                         .Query<DynamicBuffer<HitSpawnBuffer>,RefRO<LocalTransform>>().WithAll<DestructTag>().WithNone<HideInClient>().WithEntityAccess())
+            foreach (var (hitSpawns,enHitSpawns,trans,entity) in SystemAPI
+                         .Query<RefRW<HitSpawnPrefabs>, EnabledRefRW<HitSpawnPrefabs>,RefRO<LocalTransform>>().WithAll<DestructTag>().WithEntityAccess())
             {
-                for (int i = 0; i < hitSpawns.Length; i++)
-                {
-                    var e = state.EntityManager.Instantiate(hitSpawns[i].value);
-                    SystemAPI.SetComponent(e,ltw.ValueRO);
-                    // Debug.Log($"{e} | {i} | {entity} | {state.WorldUnmanaged.IsServer()}");
-                }
+                hitSpawns.ValueRW.Spawn(state.EntityManager,trans.ValueRO);
+                enHitSpawns.ValueRW = false;
             }
         }
     }

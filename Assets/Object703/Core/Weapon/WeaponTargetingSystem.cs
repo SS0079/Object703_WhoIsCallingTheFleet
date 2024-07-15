@@ -48,7 +48,7 @@ namespace Object703.Core.Weapon
         /// all target buffer element must be clean up before any targeting job been perform
         /// </summary>
         [BurstCompile]
-        [WithNone(typeof(HideInClient))]
+        [WithNone(typeof(DestructTag))]
         public partial struct CleanUpTarget : IJobEntity
         {
             public void Execute(
@@ -64,7 +64,7 @@ namespace Object703.Core.Weapon
         /// scan airborne target and cache them in weapon target buffer
         /// </summary>
         [BurstCompile]
-        [WithNone(typeof(HideInClient))]
+        [WithNone(typeof(DestructTag))]
         public partial struct TargetingJob : IJobEntity
         {
             [ReadOnly]

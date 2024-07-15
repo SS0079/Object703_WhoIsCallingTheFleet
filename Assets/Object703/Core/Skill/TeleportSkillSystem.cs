@@ -40,7 +40,7 @@ namespace Object703.Core.Skill
             //perform teleport skill,also check if mouse aim is in skill range. perform skill at maximum range if mouse aim is out of range
             foreach (var skill in 
                      SystemAPI.Query<SkillAspect>()
-                         .WithAll<Simulate,TeleportSkill>().WithNone<HideInClient>())
+                         .WithAll<Simulate,TeleportSkill>().WithNone<DestructTag>())
             {
                 if(!skill.IsReady(networkTime)) continue;
                 if(!skill.IsPressed()) continue;

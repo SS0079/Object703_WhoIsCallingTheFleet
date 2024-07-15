@@ -32,7 +32,7 @@ namespace Object703.Core.Control
             state.Dependency.Complete();
             playerInputLp.Update(ref state);
             foreach (var (moveAxis,playerInput,rotateAxis) in SystemAPI
-                         .Query<RefRW<MoveAxis>,PlayerMoveInput,RefRW<RotateAxis>>().WithAll<Simulate>().WithNone<HideInClient>())
+                         .Query<RefRW<MoveAxis>,PlayerMoveInput,RefRW<RotateAxis>>().WithAll<Simulate>().WithNone<DestructTag>())
             {   
                 moveAxis.ValueRW.moveDirection = new float3(playerInput.leftRight, 0, playerInput.forwardBackward);
                 rotateAxis.ValueRW.rotateEuler = new float3(0, playerInput.turn, 0);

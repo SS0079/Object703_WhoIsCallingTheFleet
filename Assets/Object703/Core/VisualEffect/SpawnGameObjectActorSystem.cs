@@ -81,7 +81,7 @@ namespace Object703.Core.VisualEffect
                 //spawn game object actor for entities who have game object actor prefab
                 //this foreach spawn for local player
                 foreach (var (prefabName, actor) in SystemAPI
-                             .Query<RefRO<AttachGameObject>, RefRW<GameObjectActor>>().WithAll<GhostOwnerIsLocal>().WithNone<HideInClient>())
+                             .Query<RefRO<AttachGameObject>, RefRW<GameObjectActor>>().WithAll<GhostOwnerIsLocal>().WithNone<DestructTag>())
                 {
                     var localKey = prefabName.ValueRO.prefabName.ToString()+"_Local";
                     var exist = prefabDic.TryGetValue(localKey,out GameObject prefab);
@@ -92,7 +92,7 @@ namespace Object703.Core.VisualEffect
                 
                 //this foreach spawn for remote player
                 foreach (var (prefabName, actor) in SystemAPI
-                             .Query<RefRO<AttachGameObject>, RefRW<GameObjectActor>>().WithNone<GhostOwnerIsLocal>().WithNone<HideInClient>())
+                             .Query<RefRO<AttachGameObject>, RefRW<GameObjectActor>>().WithNone<GhostOwnerIsLocal>().WithNone<DestructTag>())
                 {
                     var localKey = prefabName.ValueRO.prefabName.ToString()+"_Remote";
                     var exist = prefabDic.TryGetValue(localKey,out GameObject prefab);
@@ -126,7 +126,7 @@ namespace Object703.Core.VisualEffect
                 }
 
                 //spawn lineRenderer actor for entities who have lineRenderer prefab
-                foreach (var (prefab, actor) in SystemAPI.Query<AttachLineRenderer, LineRendererActor>().WithNone<HideInClient>())
+                foreach (var (prefab, actor) in SystemAPI.Query<AttachLineRenderer, LineRendererActor>().WithNone<DestructTag>())
                 {
                     var line = prefab.prefab.gameObject.GetPoolObject();
                     line.transform.forward = Vector3.up;

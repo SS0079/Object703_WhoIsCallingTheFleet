@@ -5,6 +5,7 @@ using Object703.Core.Recycle;
 using Object703.Core.VisualEffect;
 using Object703.Core.Weapon;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Authoring;
 using UnityEngine;
@@ -83,20 +84,51 @@ namespace Object703.Authoring
             AddBuffer<HitCheckResult>(self);
             if (authoring.hitSpawns.Length > 0)
             {
-                AddBuffer<HitSpawnBuffer>(self);
-                for (int i = 0; i < authoring.hitSpawns.Length; i++)
+                var spawnPrefabs = new HitSpawnPrefabs();
+                var count = math.min(authoring.hitSpawns.Length, 4);
+                for (int i = 0; i < count; i++)
                 {
-                    AppendToBuffer(self,new HitSpawnBuffer(){value = GetEntity(authoring.hitSpawns[i],TransformUsageFlags.Dynamic)});
+                    switch (i)
+                    {
+                        case 0:
+                            spawnPrefabs.value0 = GetEntity(authoring.hitSpawns[i], TransformUsageFlags.Dynamic);
+                            break;
+                        case 1:
+                            spawnPrefabs.value1 = GetEntity(authoring.hitSpawns[i], TransformUsageFlags.Dynamic);
+                            break;
+                        case 2:
+                            spawnPrefabs.value2 = GetEntity(authoring.hitSpawns[i], TransformUsageFlags.Dynamic);
+                            break;
+                        case 3:
+                            spawnPrefabs.value3 = GetEntity(authoring.hitSpawns[i], TransformUsageFlags.Dynamic);
+                            break;
+                    }
                 }
+                AddComponent(self,spawnPrefabs);
             }
             if (authoring.hitEffects.Length>0)
             {
-                AddBuffer<HitEffectBuffer>(self);
-                for (int i = 0; i < authoring.hitEffects.Length; i++)
+                var spawnPrefabs = new HitEffectPrefabs();
+                var count = math.min(authoring.hitEffects.Length, 4);
+                for (int i = 0; i < count; i++)
                 {
-                    var effect = new HitEffectBuffer(){value = GetEntity(authoring.hitEffects[i],TransformUsageFlags.Dynamic)};
-                    AppendToBuffer(self,effect);
+                    switch (i)
+                    {
+                        case 0:
+                            spawnPrefabs.value0 = GetEntity(authoring.hitEffects[i], TransformUsageFlags.Dynamic);
+                            break;
+                        case 1:
+                            spawnPrefabs.value1 = GetEntity(authoring.hitEffects[i], TransformUsageFlags.Dynamic);
+                            break;
+                        case 2:
+                            spawnPrefabs.value2 = GetEntity(authoring.hitEffects[i], TransformUsageFlags.Dynamic);
+                            break;
+                        case 3:
+                            spawnPrefabs.value3 = GetEntity(authoring.hitEffects[i], TransformUsageFlags.Dynamic);
+                            break;
+                    }
                 }
+                AddComponent(self,spawnPrefabs);
             }
         }
     }
