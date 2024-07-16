@@ -1,4 +1,4 @@
-﻿using Object703.Core.Control;
+﻿using Object703.Core.OnPlayerInput;
 using Unity.Entities;
 using UnityEngine;
 
@@ -20,7 +20,6 @@ namespace Object703.Authoring
             var self = GetEntity(TransformUsageFlags.None);
             AddComponent(self,new PlayerTag());
             AddComponent(self,new PlayerMoveInput());
-            // AddComponent(self,new PlayerSkillInput());
         }
     }
 }

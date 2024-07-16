@@ -11,7 +11,7 @@ using Unity.Transforms;
 using UnityEngine;
 using RaycastHit = Unity.Physics.RaycastHit;
 
-namespace Object703.Core.Control
+namespace Object703.Core.OnPlayerInput
 {
     [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
     public struct PlayerMoveInput : IInputComponentData
@@ -57,42 +57,13 @@ namespace Object703.Core.Control
     }
     
     [UpdateInGroup(typeof(GhostInputSystemGroup))]
-    public partial struct PlayerMoveInputSystem : ISystem
-    {
-        // private CollisionFilter mouseClickFilter;
-        
-        public void OnCreate(ref SystemState state)
-        {
-            state.RequireForUpdate<PlayerMoveInput>();
-        }
-
-        public void OnUpdate(ref SystemState state)
-        {
-     
-            var input = new PlayerMoveInput();
-
-            //gather keyboard WSAD control input
-            input.forwardBackward = PlayerInputManager.Instance.forwardBackward;
-            input.leftRight = PlayerInputManager.Instance.leftRight;
-            input.turn = PlayerInputManager.Instance.turn;
-            //gather mouse input and screen point hit result
-            input.mouseDelta = PlayerInputManager.Instance.mouseDelta;
-            input.mouseScroll = PlayerInputManager.Instance.mouseScroll;
-            foreach (var (moveInput,localTrans) in SystemAPI.Query<RefRW<PlayerMoveInput>,RefRO<LocalTransform>>().WithAll<GhostOwnerIsLocal>())
-            {
-                //write player current position by the way
-                moveInput.ValueRW = input;
-            }
-        }
-    }
-    
-    [UpdateInGroup(typeof(GhostInputSystemGroup))]
-    public partial struct PlayerSkillInputSystem : ISystem
+    public partial struct PlayerInputSystem : ISystem
     {
         private CollisionFilter mouseClickFilter;
         private ComponentLookup<LocalToWorld> ltwLp;
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<PlayerMoveInput>();
             state.RequireForUpdate<PhysicsWorldSingleton>();
             state.RequireForUpdate<EnableGameTag>();
             mouseClickFilter = new CollisionFilter
@@ -106,6 +77,23 @@ namespace Object703.Core.Control
 
         public void OnUpdate(ref SystemState state)
         {
+            // handle player move input
+            var input = new PlayerMoveInput();
+            //gather keyboard WSAD control input
+            input.forwardBackward = PlayerInputManager.Instance.forwardBackward;
+            input.leftRight = PlayerInputManager.Instance.leftRight;
+            input.turn = PlayerInputManager.Instance.turn;
+            //gather mouse input and screen point hit result
+            input.mouseDelta = PlayerInputManager.Instance.mouseDelta;
+            input.mouseScroll = PlayerInputManager.Instance.mouseScroll;
+            foreach (var (moveInput,localTrans) in SystemAPI.Query<RefRW<PlayerMoveInput>,RefRO<LocalTransform>>().WithAll<GhostOwnerIsLocal>())
+            {
+                //write player current position by the way
+                moveInput.ValueRW = input;
+            }
+
+            //================================================================================
+            // handle player skill input
             var cam = UnityEngine.Camera.main;
             if (cam == null) return;
             ltwLp.Update(ref state);
@@ -143,11 +131,11 @@ namespace Object703.Core.Control
             {
                 skill.skill3.Set();
             }
-            foreach (var (skillInput,parent) in SystemAPI.Query<RefRW<PlayerSkillInput>,Parent>().WithAll<GhostOwnerIsLocal>())
+            foreach (var (skillInput,parent) in SystemAPI.Query<RefRW<PlayerSkillInput>, RefRO<Parent>>().WithAll<GhostOwnerIsLocal>())
             {
                 //write player current position by the way
                 skillInput.ValueRW = skill;
-                skillInput.ValueRW.playerPosition = ltwLp[parent.Value].Position;
+                skillInput.ValueRW.playerPosition = ltwLp[parent.ValueRO.Value].Position;
             }
         }
     }

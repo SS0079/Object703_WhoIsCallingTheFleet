@@ -1,5 +1,5 @@
 ﻿using System;
-using Object703.Core.Control;
+using Object703.Core.OnPlayerInput;
 using Object703.Core.Skill;
 using Unity.Entities;
 using Unity.NetCode;

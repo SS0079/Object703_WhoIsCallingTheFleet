@@ -1,5 +1,6 @@
 ﻿using Object703.Authoring;
 using Object703.Core.Moving;
+using Object703.Core.OnPlayerInput;
 using Object703.Core.Recycle;
 using Object703.Core.Skill;
 using Unity.Burst;
@@ -9,12 +10,12 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 
-namespace Object703.Core.Control
+namespace Object703.Core.OnPlayerInput
 {
     [BurstCompile]
+    [UpdateInGroup(typeof(OnPlayerInputSystemGroup))]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
-    [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
+    // [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
     public partial struct PlayerControlSystem : ISystem
     {
         private ComponentLookup<PlayerMoveInput> playerInputLp;
@@ -32,10 +33,10 @@ namespace Object703.Core.Control
             state.Dependency.Complete();
             playerInputLp.Update(ref state);
             foreach (var (moveAxis,playerInput,rotateAxis) in SystemAPI
-                         .Query<RefRW<MoveAxis>,PlayerMoveInput,RefRW<RotateAxis>>().WithAll<Simulate>().WithNone<DestructTag>())
+                         .Query<RefRW<MoveAxis>, RefRO<PlayerMoveInput>, RefRW<RotateAxis>>().WithAll<Simulate>().WithNone<DestructTag>())
             {   
-                moveAxis.ValueRW.moveDirection = new float3(playerInput.leftRight, 0, playerInput.forwardBackward);
-                rotateAxis.ValueRW.rotateEuler = new float3(0, playerInput.turn, 0);
+                moveAxis.ValueRW.moveDirection = new float3(playerInput.ValueRO.leftRight, 0, playerInput.ValueRO.forwardBackward);
+                rotateAxis.ValueRW.rotateEuler = new float3(0, playerInput.ValueRO.turn, 0);
             }
         }
 

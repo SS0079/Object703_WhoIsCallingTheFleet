@@ -1,10 +1,6 @@
 ﻿using Object703.Authoring;
-using Object703.Core.Control;
 using Unity.Burst;
-using Unity.Collections;
 using Unity.Entities;
-using Random = Unity.Mathematics.Random;
-using Unity.Mathematics;
 using Unity.NetCode;
 
 namespace Object703.Core.NetCode

@@ -3,7 +3,7 @@ using KittyHelpYouOut;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Object703.Core.Control
+namespace Object703.Core.OnPlayerInput
 {
     public class PlayerInputManager : KittyMonoSingletonManual<PlayerInputManager>
     {
