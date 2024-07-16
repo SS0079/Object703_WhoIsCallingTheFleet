@@ -1,10 +1,7 @@
 ﻿using KittyHelpYouOut;
-using Object703.Authoring;
 using Object703.Core.Recycle;
-using Object703.Core.Weapon;
 using Unity.Burst;
 using Unity.Entities;
-using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 

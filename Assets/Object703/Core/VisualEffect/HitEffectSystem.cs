@@ -1,4 +1,4 @@
-﻿using Object703.Core.Combat;
+﻿using Object703.Core.OnHit;
 using Object703.Core.Recycle;
 using Unity.Burst;
 using Unity.Entities;
@@ -61,8 +61,7 @@ namespace Object703.Core.VisualEffect
     
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(SimulationSystemGroup))]
-    [UpdateBefore(typeof(TransformSystemGroup))]
+    [UpdateInGroup(typeof(AfterHitSystemGroup))]
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
     public partial struct HitEffectSystem : ISystem
     {

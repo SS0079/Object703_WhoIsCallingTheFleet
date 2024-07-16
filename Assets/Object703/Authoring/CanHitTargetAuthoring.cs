@@ -1,13 +1,10 @@
 ﻿using System;
 using KittyHelpYouOut.Utilities;
-using Object703.Core.Combat;
-using Object703.Core.Recycle;
+using Object703.Core.OnHit;
 using Object703.Core.VisualEffect;
 using Object703.Core.Weapon;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Physics;
-using Unity.Physics.Authoring;
 using UnityEngine;
 using UnityEngine.Serialization;
 

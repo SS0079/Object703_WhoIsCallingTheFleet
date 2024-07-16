@@ -1,15 +1,11 @@
 ﻿using System;
-using Object703.Core.Combat;
 using Object703.Core.Recycle;
 using Unity.Burst;
-using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
-using UnityEngine.Serialization;
-using Random = Unity.Mathematics.Random;
 
 namespace Object703.Core.Moving
 {

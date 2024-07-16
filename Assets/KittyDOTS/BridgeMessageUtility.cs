@@ -1,10 +1,7 @@
 ﻿using System;
-using KittyHelpYouOut;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
-using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace KittyDOTS
 {

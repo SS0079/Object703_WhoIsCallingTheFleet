@@ -1,6 +1,5 @@
 ﻿using Unity.Cinemachine;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace CinemachineAccessories
 {

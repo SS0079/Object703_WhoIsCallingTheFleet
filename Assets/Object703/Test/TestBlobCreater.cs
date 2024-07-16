@@ -1,9 +1,7 @@
 ﻿using System;
 using KittyDOTS;
 using Unity.Entities;
-using Unity.Transforms;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Object703.Test
 {

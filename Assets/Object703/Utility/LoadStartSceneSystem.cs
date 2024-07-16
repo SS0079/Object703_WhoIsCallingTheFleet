@@ -1,7 +1,5 @@
 ﻿using Unity.Burst;
 using Unity.Entities;
-using Random = Unity.Mathematics.Random;
-using Unity.Mathematics;
 using UnityEngine.SceneManagement;
 
 #if UNITY_EDITOR

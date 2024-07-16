@@ -1,10 +1,9 @@
 ﻿using System;
-using Object703.Core.Combat;
 using Object703.Core.Moving;
+using Object703.Core.OnHit;
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Object703.Authoring
 {

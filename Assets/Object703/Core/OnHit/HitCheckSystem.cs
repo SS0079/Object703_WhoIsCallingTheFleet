@@ -11,7 +11,7 @@ using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Object703.Core.Combat
+namespace Object703.Core.OnHit
 {
     #region ComponentData
     [Serializable]
@@ -132,9 +132,8 @@ namespace Object703.Core.Combat
     /// </summary>
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
-    [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation | WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
-    public partial struct OnHitSystem : ISystem
+    [UpdateInGroup(typeof(OnHitSystemGroup))]
+    public partial struct HitCheckSystem : ISystem
     {
         private ComponentLookup<LocalTransform> localTransLp;
         [BurstCompile]

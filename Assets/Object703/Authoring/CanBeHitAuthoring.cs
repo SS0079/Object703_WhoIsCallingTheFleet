@@ -1,9 +1,7 @@
 ﻿using System;
-using Object703.Core.Combat;
+using Object703.Core.OnHit;
 using Object703.Core.Weapon;
 using Unity.Entities;
-using Unity.NetCode;
-using Unity.Physics;
 using Unity.Physics.Authoring;
 using UnityEngine;
 using UnityEngine.Serialization;

@@ -1,7 +1,5 @@
 ﻿using KittyDOTS;
-using Object703.Core.Combat;
-using Object703.Core.Weapon;
-using UnityEngine;
+using Object703.Core.OnHit;
 
 namespace Object703.Test
 {

@@ -1,6 +1,4 @@
-﻿using System;
-using Unity.NetCode;
-using UnityEngine.SceneManagement;
+﻿using Unity.NetCode;
 using UnityEngine.Scripting;
 
 namespace Object703.Core.NetCode

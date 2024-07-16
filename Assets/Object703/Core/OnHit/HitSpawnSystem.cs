@@ -1,12 +1,10 @@
 ﻿using Object703.Core.Recycle;
 using Unity.Burst;
 using Unity.Entities;
-using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
-using UnityEngine;
 
-namespace Object703.Core.Combat
+namespace Object703.Core.OnHit
 {
     public struct HitSpawnPrefabs : IComponentData , IEnableableComponent
     {
@@ -43,7 +41,7 @@ namespace Object703.Core.Combat
 
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
+    [UpdateInGroup(typeof(OnHitSystemGroup))]
     public partial struct HitSpawnSystem : ISystem
     {
         [BurstCompile]

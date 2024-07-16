@@ -1,5 +1,4 @@
 ﻿using KittyDOTS;
-using Object703.Core.Combat;
 using Object703.Core.VisualEffect;
 using Unity.Entities;
 using UnityEngine;

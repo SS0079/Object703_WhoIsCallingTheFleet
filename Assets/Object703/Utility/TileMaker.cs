@@ -1,6 +1,4 @@
-﻿using Unity.Entities;
-using UnityEngine;
-using UnityEngine.Serialization;
+﻿using UnityEngine;
 
 namespace Object703.Utility
 {

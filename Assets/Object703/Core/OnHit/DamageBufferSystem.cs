@@ -4,7 +4,7 @@ using Unity.Burst;
 using Unity.Entities;
 using UnityEngine.Serialization;
 
-namespace Object703.Core.Combat
+namespace Object703.Core.OnHit
 {
     [Serializable]
     public struct DamageBuffer : IBufferElementData
@@ -21,8 +21,7 @@ namespace Object703.Core.Combat
     
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(SimulationSystemGroup))]
-    [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation | WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
+    [UpdateInGroup(typeof(AfterHitSystemGroup))]
     public partial struct DamageBufferSystem : ISystem
     {
         private BufferLookup<DamageBuffer> damageBufferLp;

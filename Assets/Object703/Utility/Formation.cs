@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using KittyHelpYouOut;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Object703.Utility
 {

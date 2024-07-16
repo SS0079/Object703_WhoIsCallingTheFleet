@@ -1,8 +1,6 @@
 ﻿using System;
 using Object703.Authoring;
-using Object703.Core.NetCode;
 using Object703.Core.Weapon;
-using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;

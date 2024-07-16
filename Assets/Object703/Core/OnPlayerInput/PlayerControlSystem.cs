@@ -1,14 +1,9 @@
-﻿using Object703.Authoring;
-using Object703.Core.Moving;
-using Object703.Core.OnPlayerInput;
+﻿using Object703.Core.Moving;
 using Object703.Core.Recycle;
-using Object703.Core.Skill;
 using Unity.Burst;
-using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
-using Unity.Transforms;
 
 namespace Object703.Core.OnPlayerInput
 {

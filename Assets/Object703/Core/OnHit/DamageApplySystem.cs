@@ -2,12 +2,10 @@
 using Object703.Core.Recycle;
 using Unity.Burst;
 using Unity.Entities;
-using Random = Unity.Mathematics.Random;
-using Unity.Mathematics;
 using Unity.NetCode;
 using UnityEngine.Serialization;
 
-namespace Object703.Core.Combat
+namespace Object703.Core.OnHit
 {
     [Serializable]
     public struct Hp : IComponentData
@@ -27,7 +25,7 @@ namespace Object703.Core.Combat
     
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
+    [UpdateInGroup(typeof(OnHitSystemGroup))]
     public partial struct DamageApplySystem : ISystem
     {
         [BurstCompile]

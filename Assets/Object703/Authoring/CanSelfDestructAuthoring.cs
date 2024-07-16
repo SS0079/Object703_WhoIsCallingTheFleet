@@ -1,11 +1,9 @@
-﻿using System;
-using KittyDOTS;
+﻿using KittyDOTS;
 using Object703.Authoring.Installer;
 using Object703.Core.Recycle;
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Object703.Authoring
 {

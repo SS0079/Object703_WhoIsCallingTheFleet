@@ -1,8 +1,5 @@
-﻿using System;
-using Object703.Core.VisualEffect;
-using Unity.Collections;
+﻿using Object703.Core.VisualEffect;
 using Unity.Entities;
-using Unity.NetCode;
 using UnityEngine;
 
 namespace Object703.Authoring

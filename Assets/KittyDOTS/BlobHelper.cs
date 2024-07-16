@@ -1,11 +1,6 @@
-﻿using System;
-using System.Reflection;
-using System.Text;
-using Object703.Test;
-using Unity.Collections;
+﻿using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace KittyDOTS
 {

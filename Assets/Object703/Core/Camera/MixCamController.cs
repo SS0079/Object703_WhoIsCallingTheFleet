@@ -1,7 +1,6 @@
 ﻿using Unity.Cinemachine;
 using CinemachineAccessories;
 using KittyHelpYouOut;
-using UnityEngine;
 
 namespace Object703.Core.Camera
 {
