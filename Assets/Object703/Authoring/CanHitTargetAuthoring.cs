@@ -27,6 +27,8 @@ namespace Object703.Authoring
         public HitFilterGenerator hitFilter;
         [FormerlySerializedAs("Damage")]
         public float damage;
+        [FormerlySerializedAs("penetration")]
+        public int MaxHitCount=1;
         [FormerlySerializedAs("HitSpawns")]
         public GameObject[] hitSpawns;
         public GameObject[] hitEffects;
@@ -45,7 +47,7 @@ namespace Object703.Authoring
         }
         
     }
-    public class CanTargetAuthoringBaker : Baker<CanHitTargetAuthoring>
+    public class CanHitTargetAuthoringBaker : Baker<CanHitTargetAuthoring>
     {
         public override void Bake(CanHitTargetAuthoring authoring)
         {
@@ -79,6 +81,7 @@ namespace Object703.Authoring
                 AddComponent(self,new DealDamage(){value = authoring.damage});
             }
             AddBuffer<HitCheckResult>(self);
+            AddBuffer<AlreadyDamaged>(self);
             if (authoring.hitSpawns.Length > 0)
             {
                 var spawnPrefabs = new HitSpawnPrefabs();
@@ -126,6 +129,7 @@ namespace Object703.Authoring
                     }
                 }
                 AddComponent(self,spawnPrefabs);
+                AddComponent(self,new MaxHitCount(){value = authoring.MaxHitCount});
             }
         }
     }

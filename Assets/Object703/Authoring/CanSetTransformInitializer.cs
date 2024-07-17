@@ -1,5 +1,5 @@
 ﻿using KittyDOTS;
-using Object703.Core.VisualEffect;
+using Object703.Core.OnHit;
 using Unity.Entities;
 using UnityEngine;
 

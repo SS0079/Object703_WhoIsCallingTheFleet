@@ -1,4 +1,5 @@
 ﻿using System;
+using KittyHelpYouOut.Utilities;
 using Object703.Core.OnHit;
 using Object703.Core.Weapon;
 using Unity.Entities;
@@ -23,6 +24,21 @@ namespace Object703.Authoring
         
         [FormerlySerializedAs("MaxHp")]
         public float maxHp;
+        
+        // [ReadOnlyInspector]
+        // public ColliderLayers belongTo;
+        // [ReadOnlyInspector]
+        // public ColliderLayers collideWith;
+        // [ContextMenu("DebugFilter")]
+        // public void DebugFilter()
+        // {
+        //     var filter = hitFilter.GetFilter();
+        //     
+        //     this.collideWith = (ColliderLayers)filter.CollidesWith;
+        //     this.belongTo = (ColliderLayers)filter.BelongsTo;
+        // }
+        //
+        // public 
     }
     public class CanBeHitAuthoringBaker : Baker<CanBeHitAuthoring>
     {
@@ -68,7 +84,9 @@ namespace Object703.Authoring
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+            var collideWith = ColliderLayers.Caster.ToUInt();
             authoring.GetComponent<PhysicsShapeAuthoring>().BelongsTo = new PhysicsCategoryTags() { Value = belongTo };
+            authoring.GetComponent<PhysicsShapeAuthoring>().CollidesWith = new PhysicsCategoryTags() { Value = collideWith };
             AddComponent(self,new Hp(){max = authoring.maxHp,current = authoring.maxHp});
             AddBuffer<DamageBuffer>(self);
             AddBuffer<DamageThisTick>(self);

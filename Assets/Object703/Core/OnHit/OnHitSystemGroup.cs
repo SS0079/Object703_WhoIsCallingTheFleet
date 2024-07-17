@@ -14,4 +14,10 @@ namespace Object703.Core.OnHit
     public partial class AfterHitSystemGroup : ComponentSystemGroup
     {
     }
+    
+    [UpdateInGroup(typeof(InitializationSystemGroup))]
+    public partial class BeforeHitSystemGroup : ComponentSystemGroup
+    {
+        
+    }
 }

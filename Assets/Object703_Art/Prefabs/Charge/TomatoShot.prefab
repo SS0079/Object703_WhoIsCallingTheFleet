@@ -58,7 +58,8 @@ MonoBehaviour:
     antiSurface: 1
     hitTerran: 1
     targetRole: 2
-  damage: 1
+  damage: 50
+  MaxHitCount: 3
   hitSpawns:
   - {fileID: 1432654292428496314, guid: 18ab3e6c3e34d8d46b39555b1b4d6ef3, type: 3}
   hitEffects:

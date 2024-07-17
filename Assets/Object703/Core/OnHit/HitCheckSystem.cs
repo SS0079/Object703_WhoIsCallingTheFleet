@@ -54,10 +54,9 @@ namespace Object703.Core.OnHit
     [Serializable]
     public struct HitCheckResult : IBufferElementData
     {
-        [FormerlySerializedAs("Value")]
         public Entity target;
-        [FormerlySerializedAs("Point")]
         public float3 point;
+        public float3 normal;
     }
     
     [Serializable]
@@ -125,6 +124,12 @@ namespace Object703.Core.OnHit
             }
         }
     }
+
+    [Serializable]
+    public struct MaxHitCount : IComponentData
+    {
+        public int value;
+    }
     #endregion
     
     /// <summary>
@@ -132,7 +137,7 @@ namespace Object703.Core.OnHit
     /// </summary>
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(OnHitSystemGroup))]
+    [UpdateInGroup(typeof(BeforeHitSystemGroup))]
     public partial struct HitCheckSystem : ISystem
     {
         private ComponentLookup<LocalTransform> localTransLp;
@@ -149,12 +154,9 @@ namespace Object703.Core.OnHit
             var cWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().CollisionWorld;
             localTransLp.Update(ref state);
             state.Dependency.Complete();
-            new SphereCastHitCheckJob() { cWorld = cWorld}.ScheduleParallel();
-            new SphereOverlapHitCheckJob() { cWorld = cWorld}.ScheduleParallel();
-            new HomingShotHitCheckJob
-            {
-                localTransformLp = localTransLp,
-            }.ScheduleParallel();
+            new SphereCastHitCheckJob { cWorld = cWorld}.ScheduleParallel();
+            new SphereOverlapHitCheckJob { cWorld = cWorld}.ScheduleParallel();
+            new HomingShotHitCheckJob { localTransformLp = localTransLp }.ScheduleParallel();
         }
 
         [BurstCompile]
@@ -168,7 +170,7 @@ namespace Object703.Core.OnHit
         /// cache the hit result in HitCheckResult buffer element
         /// </summary>
         [BurstCompile]
-        [WithDisabled(typeof(DestructTag))]
+        [WithNone(typeof(DestructTag))]
         public partial struct SphereCastHitCheckJob : IJobEntity
         {
             [ReadOnly]
@@ -179,21 +181,29 @@ namespace Object703.Core.OnHit
                 ref SphereCastHitCheck castHitCheck,
                 in LocalTransform localTransform,
                 DynamicBuffer<HitCheckResult> hitResults,
-                EnabledRefRW<DestructTag> destructTag)
+                ref MaxHitCount count)
             {
+                if(count.value<=0) return; 
                 castHitCheck.lastPos = castHitCheck.lastPos.Equals(float3.zero) ? localTransform.Position : castHitCheck.lastPos;
                 var dir = math.normalizesafe(localTransform.Position-castHitCheck.lastPos);
                 var length = math.distance(localTransform.Position, castHitCheck.lastPos);
-                if (cWorld.SphereCast(castHitCheck.lastPos,castHitCheck.radius,dir,length,out ColliderCastHit hit,castHitCheck.filter))
+                var hitList = new NativeList<ColliderCastHit>(5, Allocator.TempJob);
+                var curHitHash = new NativeHashSet<Entity>(hitResults.Length,Allocator.TempJob);
+                for (int i = 0; i < hitResults.Length; i++)
                 {
-                   // destructTagLp.SetComponentEnabled(self, true);
-                   destructTag.ValueRW = true;
-                   hitResults.Add(new HitCheckResult(){target = hit.Entity,point = hit.Position});
+                    curHitHash.Add(hitResults[i].target);
                 }
-                else
+                if (cWorld.SphereCastAll(castHitCheck.lastPos,castHitCheck.radius,dir,length,ref hitList,castHitCheck.filter))
                 {
-                    castHitCheck.lastPos = localTransform.Position;
+                    for (int i = 0; i < hitList.Length; i++)
+                    {
+                        var item = hitList[i];
+                        if(curHitHash.Contains(item.Entity)) continue;
+                        hitResults.Add(new HitCheckResult { target = item.Entity, point = item.Position, normal = item.SurfaceNormal });
+                        count.value--;
+                    }
                 }
+                castHitCheck.lastPos = localTransform.Position;
             }
         }
 
@@ -202,7 +212,7 @@ namespace Object703.Core.OnHit
         /// cache the hit result in HitCheckResult buffer element
         /// </summary>
         [BurstCompile]
-        [WithDisabled(typeof(DestructTag))]
+        [WithNone(typeof(DestructTag))]
         public partial struct SphereOverlapHitCheckJob : IJobEntity
         {
             [ReadOnly]
@@ -213,17 +223,25 @@ namespace Object703.Core.OnHit
                 in SphereOverlapCheck check,
                 in LocalTransform localTransform,
                 DynamicBuffer<HitCheckResult> hitResults,
-                EnabledRefRW<DestructTag> destructTag)
+                ref MaxHitCount count
+                )
             {
-                NativeList<DistanceHit> hits = new NativeList<DistanceHit>(Allocator.TempJob);
+                if(count.value<=0) return;
+                var hits = new NativeList<DistanceHit>(Allocator.TempJob);
+                var curHitHash = new NativeHashSet<Entity>(hitResults.Length,Allocator.TempJob);
+                for (int i = 0; i < hitResults.Length; i++)
+                {
+                    curHitHash.Add(hitResults[i].target);
+                }
                 if (cWorld.OverlapSphere(localTransform.Position,check.radius,ref hits,check.filter))
                 {
-                    destructTag.ValueRW = true;
                     for (int i = 0; i < hits.Length; i++)
                     {
-                        var localHit = hits[i];
-                        hitResults.Add(new HitCheckResult() { target = localHit.Entity, point = localHit.Position });
+                        var item = hits[i];
+                        if(curHitHash.Contains(item.Entity)) continue;
+                        hitResults.Add(new HitCheckResult() { target = item.Entity, point = item.Position });
                     }
+                    count.value--;
                 }
             }
         }
@@ -232,7 +250,7 @@ namespace Object703.Core.OnHit
         /// perform homing shot hit check by simply check the distance between entity and target
         /// </summary>
         [BurstCompile]
-        [WithDisabled(typeof(DestructTag))]
+        [WithNone(typeof(DestructTag))]
         public partial struct HomingShotHitCheckJob : IJobEntity
         {
             [ReadOnly]
@@ -245,14 +263,32 @@ namespace Object703.Core.OnHit
                 in LocalTransform localTransform,
                 DynamicBuffer<HitCheckResult> hitResults,
                 in HomingCheckDistance fuze,
-                EnabledRefRW<DestructTag> destructTag)
+                ref MaxHitCount count)
 
             {
-                if (!localTransformLp.HasComponent(target.value)) return;
+                if (count.value<=0 || !localTransformLp.HasComponent(target.value)) return;
                 if (math.distancesq(localTransform.Position, localTransformLp[target.value].Position) <= fuze.Sqr)
                 {
-                    destructTag.ValueRW = true;
                     hitResults.Add(new HitCheckResult() { target = target.value, point = localTransformLp[target.value].Position });
+                    count.value--;
+                }
+            }
+        }
+    }
+
+    [BurstCompile]
+    [RequireMatchingQueriesForUpdate]
+    [UpdateInGroup(typeof(OnHitSystemGroup))]
+    public partial struct OrderHitDestructSystem : ISystem
+    {
+        public void OnUpdate(ref SystemState state)
+        {
+            foreach (var (count,enDestruct) in SystemAPI
+                         .Query<RefRO<MaxHitCount>,EnabledRefRW<DestructTag>>().WithAll<Simulate>().WithDisabled<DestructTag>())
+            {
+                if (count.ValueRO.value<=0)
+                {
+                    enDestruct.ValueRW = true;
                 }
             }
         }

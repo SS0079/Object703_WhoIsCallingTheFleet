@@ -10,7 +10,6 @@ namespace Object703.Core.OnPlayerInput
     [BurstCompile]
     [UpdateInGroup(typeof(OnPlayerInputSystemGroup))]
     [RequireMatchingQueriesForUpdate]
-    // [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
     public partial struct PlayerControlSystem : ISystem
     {
         private ComponentLookup<PlayerMoveInput> playerInputLp;

@@ -6,7 +6,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 
-namespace Object703.Core.VisualEffect
+namespace Object703.Core.OnHit
 {
     [GhostComponent(PrefabType = GhostPrefabType.Client)]
     public struct HitEffectPrefabs : IComponentData , IEnableableComponent

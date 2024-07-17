@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3104350494985126027}
   - component: {fileID: 8554381478434034673}
   - component: {fileID: -6953815273148464983}
+  - component: {fileID: -3694013996679363734}
   m_Layer: 0
   m_Name: SphereAoe
   m_TagString: Untagged
@@ -54,7 +55,8 @@ MonoBehaviour:
     antiSurface: 1
     hitTerran: 0
     targetRole: 2
-  damage: 100
+  damage: 200
+  MaxHitCount: 999
   hitSpawns: []
   hitEffects: []
   belongTo: 1
@@ -72,7 +74,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   netConfig: {fileID: 11400000, guid: 5fafff5fa10047c46a2040db1c8fb7ea, type: 2}
-  lifeSpan: 0.01
+  lifeSpan: 1
   startCountDownImmediately: 1
 --- !u!114 &8554381478434034673
 MonoBehaviour:
@@ -81,12 +83,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1432654292428496314}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 93fba12987b04b77ae86734b1b8ae518, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  destructImmediately: 1
+  destructImmediately: 0
 --- !u!114 &-6953815273148464983
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -99,3 +101,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c16549610bfe4458aa9389201d072bb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-3694013996679363734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1432654292428496314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c79d771cedb4794bf100ce60df5f764, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DefaultGhostMode: 2
+  SupportedGhostModes: 3
+  OptimizationMode: 0
+  Importance: 500
+  prefabId: 18ab3e6c3e34d8d46b39555b1b4d6ef3
+  HasOwner: 1
+  SupportAutoCommandTarget: 1
+  TrackInterpolationDelay: 0
+  GhostGroup: 0
+  UsePreSerialization: 0
