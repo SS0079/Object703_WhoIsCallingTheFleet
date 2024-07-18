@@ -7,7 +7,7 @@ using Unity.Transforms;
 namespace Object703.Core
 {
     [GhostComponent(PrefabType = GhostPrefabType.Client)]
-    public struct HitEffectPrefabs : IComponentData , IEnableableComponent
+    public struct EndEffectPrefabs : IComponentData , IEnableableComponent
     {
         public Entity value0;
         public Entity value1;
@@ -61,7 +61,7 @@ namespace Object703.Core
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(AfterHitSystemGroup))]
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
-    public partial struct HitEffectSystem : ISystem
+    public partial struct EndEffectSystem : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)
@@ -73,7 +73,7 @@ namespace Object703.Core
         {
             // spawn all entity prefab stored in hit spawn buffer where destruct tag is on
             foreach (var (hitSpawns,enHitSpawn,trans) in SystemAPI
-                         .Query<RefRW<HitEffectPrefabs>,EnabledRefRW<HitEffectPrefabs>,RefRO<LocalTransform>>().WithAll<DestructTag,Simulate>())
+                         .Query<RefRW<EndEffectPrefabs>,EnabledRefRW<EndEffectPrefabs>,RefRO<LocalTransform>>().WithAll<DestructTag,Simulate>())
             {
                 //TODO: change this to spawn a game object
                 hitSpawns.ValueRW.Spawn(state.EntityManager,trans.ValueRO);

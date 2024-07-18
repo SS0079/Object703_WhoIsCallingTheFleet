@@ -19,8 +19,7 @@ namespace Object703.Core
     
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
-    [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation | WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
+    [UpdateInGroup(typeof(OnShootSystemGroup),OrderFirst = true)]
     public partial struct WeaponTargetingSystem : ISystem
     {
         [BurstCompile]

@@ -108,7 +108,7 @@ namespace Object703.Authoring
             }
             if (authoring.hitEffects.Length>0)
             {
-                var spawnPrefabs = new HitEffectPrefabs();
+                var spawnPrefabs = new EndEffectPrefabs();
                 var count = math.min(authoring.hitEffects.Length, 4);
                 for (int i = 0; i < count; i++)
                 {

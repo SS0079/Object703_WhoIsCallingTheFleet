@@ -20,7 +20,8 @@ namespace Object703.Authoring
         // [FormerlySerializedAs("IsAntiSurface")]
         // public bool antiSurface;
         // public bool hitEnemy, hitPlayer, hitAlly, hitNeutral;
-        public HitFilterGenerator hitFilter;
+        [FormerlySerializedAs("hitFilter")]
+        public HitFilterGenerator targetFilter;
         
         [FormerlySerializedAs("Weapon")]
         public Weapon.AuthoringBox weapon;
@@ -47,7 +48,7 @@ namespace Object703.Authoring
         [ContextMenu("DebugFilter")]
         public void DebugFilter()
         {
-            var filter = hitFilter.GetFilter();
+            var filter = targetFilter.GetFilter();
             
             this.collideWith = (ColliderLayers)filter.CollidesWith;
             this.belongTo = (ColliderLayers)filter.BelongsTo;
@@ -101,7 +102,7 @@ namespace Object703.Authoring
         {
             var self = GetEntity(TransformUsageFlags.Dynamic);
             var weapon = authoring.weapon.ToComponentData(this);
-            var filter = authoring.hitFilter.GetFilter();
+            var filter = authoring.targetFilter.GetFilter();
             weapon.targetFilter = filter;
             AddComponent(self,weapon);
             var randomData = new IndividualRandom() { value = Random.CreateFromIndex((uint)self.Index) };
@@ -109,7 +110,7 @@ namespace Object703.Authoring
             AddBuffer<TargetBufferElement>(self);
             if (authoring.TryGetComponent(out GhostAuthoringComponent _))
             {
-                AddComponent(self,new ShootAtTick(){value = NetworkTick.Invalid});
+                AddBuffer<ShootAtTick>(self);
             }
         }
     }

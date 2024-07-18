@@ -13,8 +13,7 @@ namespace Object703.Core
     
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
-    [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation | WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
+    [UpdateInGroup(typeof(OnSkillSystemGroup))]
     public partial struct ShotSkillSystem : ISystem
     {
         private ComponentLookup<LocalTransform> localTransLp;

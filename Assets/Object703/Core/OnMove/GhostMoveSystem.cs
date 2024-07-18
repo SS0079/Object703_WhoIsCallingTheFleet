@@ -193,9 +193,8 @@ namespace Object703.Core
     
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
-    // [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
-    public partial struct MoveSystem : ISystem
+    [UpdateInGroup(typeof(OnPredicatedMoveSystemGroup))]
+    public partial struct GhostMoveSystem : ISystem
     {
 
         [BurstCompile]
@@ -208,7 +207,7 @@ namespace Object703.Core
                          RefRO<MoveAxis>,
                          RefRO<RotateAxis>,
                          RefRW<MoveSpeed>,
-                         RefRW<RotateSpeed>>().WithAll<Simulate>().WithNone<DestructTag>())
+                         RefRW<RotateSpeed>>().WithAll<Simulate,GhostOwner>().WithNone<DestructTag>())
             {
                 var targetEuler = rotateAxis.ValueRO.rotateEuler*moveConfig.ValueRO.RotateRadiusPerTick;
                 var rotateDamp =rotateAxis.ValueRO.rotateEuler.y==0 ? moveConfig.ValueRO.rotateDampStop : moveConfig.ValueRO.rotateDampMotion;
