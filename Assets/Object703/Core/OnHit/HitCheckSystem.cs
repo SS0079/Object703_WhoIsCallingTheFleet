@@ -58,6 +58,12 @@ namespace Object703.Core.OnHit
         public float3 point;
         public float3 normal;
     }
+
+    [Serializable]
+    public struct ObstacleTag : IComponentData
+    {
+        
+    }
     
     [Serializable]
     public struct SphereOverlapCheck : IComponentData
@@ -92,12 +98,10 @@ namespace Object703.Core.OnHit
     [Serializable]
     public struct SphereCastHitCheck : IComponentData
     {
-        [FormerlySerializedAs("Radius")]
         public float radius;
-        [FormerlySerializedAs("LastPos")]
         public float3 lastPos;
         public CollisionFilter filter;
-
+        
         [Serializable]
         public struct AuthoringBox
         {
@@ -141,11 +145,13 @@ namespace Object703.Core.OnHit
     public partial struct HitCheckSystem : ISystem
     {
         private ComponentLookup<LocalTransform> localTransLp;
+        private ComponentLookup<ObstacleTag> obstacleLp;
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<PhysicsWorldSingleton>();
             localTransLp = SystemAPI.GetComponentLookup<LocalTransform>(true);
+            obstacleLp = SystemAPI.GetComponentLookup<ObstacleTag>(true);
         }
 
         [BurstCompile]
@@ -153,8 +159,9 @@ namespace Object703.Core.OnHit
         {
             var cWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().CollisionWorld;
             localTransLp.Update(ref state);
+            obstacleLp.Update(ref state);
             state.Dependency.Complete();
-            new SphereCastHitCheckJob { cWorld = cWorld}.ScheduleParallel();
+            new SphereCastHitCheckJob { cWorld = cWorld,obstacleLp = obstacleLp}.ScheduleParallel();
             new SphereOverlapHitCheckJob { cWorld = cWorld}.ScheduleParallel();
             new HomingShotHitCheckJob { localTransformLp = localTransLp }.ScheduleParallel();
         }
@@ -175,6 +182,8 @@ namespace Object703.Core.OnHit
         {
             [ReadOnly]
             public CollisionWorld cWorld;
+            [ReadOnly]
+            public ComponentLookup<ObstacleTag> obstacleLp;
             public void Execute(
                 [EntityIndexInQuery] int index,
                 Entity self,
@@ -200,7 +209,14 @@ namespace Object703.Core.OnHit
                         var item = hitList[i];
                         if(curHitHash.Contains(item.Entity)) continue;
                         hitResults.Add(new HitCheckResult { target = item.Entity, point = item.Position, normal = item.SurfaceNormal });
-                        count.value--;
+                        if (obstacleLp.HasComponent(item.Entity))
+                        {
+                            count.value = 0;
+                        }
+                        else
+                        {
+                            count.value--;
+                        }
                     }
                 }
                 castHitCheck.lastPos = localTransform.Position;
