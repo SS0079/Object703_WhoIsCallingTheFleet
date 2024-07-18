@@ -2,7 +2,7 @@
 using QFramework;
 using UnityEngine;
 
-namespace Object703.Core.Camera
+namespace Object703.Core
 {
     public class CameraTargetManager : KittyMonoSingletonManual<CameraTargetManager>
     {

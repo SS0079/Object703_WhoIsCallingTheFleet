@@ -1,11 +1,9 @@
-﻿using Object703.Core.Recycle;
-using Unity.Burst;
+﻿using Unity.Burst;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Transforms;
-using UnityEngine;
 
-namespace Object703.Core.OnHit
+namespace Object703.Core
 {
     // [GhostEnabledBit]
     public struct EndSpawnPrefabs : IComponentData

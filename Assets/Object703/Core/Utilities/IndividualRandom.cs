@@ -2,7 +2,7 @@
 using Unity.Entities;
 using Random = Unity.Mathematics.Random;
 
-namespace Object703.Core.Utilities
+namespace Object703.Core
 {
     [Serializable]
     public struct IndividualRandom : IComponentData

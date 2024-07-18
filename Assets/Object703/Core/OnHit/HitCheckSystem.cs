@@ -1,5 +1,4 @@
 ﻿using System;
-using Object703.Core.Recycle;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -11,7 +10,7 @@ using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Object703.Core.OnHit
+namespace Object703.Core
 {
     #region ComponentData
     [Serializable]
@@ -130,7 +129,7 @@ namespace Object703.Core.OnHit
     }
 
     [Serializable]
-    public struct MaxHitCount : IComponentData
+    public struct PenetrateLimit : IComponentData
     {
         public int value;
     }
@@ -190,7 +189,7 @@ namespace Object703.Core.OnHit
                 ref SphereCastHitCheck castHitCheck,
                 in LocalTransform localTransform,
                 DynamicBuffer<HitCheckResult> hitResults,
-                ref MaxHitCount count)
+                ref PenetrateLimit count)
             {
                 if(count.value<=0) return; 
                 castHitCheck.lastPos = castHitCheck.lastPos.Equals(float3.zero) ? localTransform.Position : castHitCheck.lastPos;
@@ -239,7 +238,7 @@ namespace Object703.Core.OnHit
                 in SphereOverlapCheck check,
                 in LocalTransform localTransform,
                 DynamicBuffer<HitCheckResult> hitResults,
-                ref MaxHitCount count
+                ref PenetrateLimit count
                 )
             {
                 if(count.value<=0) return;
@@ -279,7 +278,7 @@ namespace Object703.Core.OnHit
                 in LocalTransform localTransform,
                 DynamicBuffer<HitCheckResult> hitResults,
                 in HomingCheckDistance fuze,
-                ref MaxHitCount count)
+                ref PenetrateLimit count)
 
             {
                 if (count.value<=0 || !localTransformLp.HasComponent(target.value)) return;
@@ -306,19 +305,18 @@ namespace Object703.Core.OnHit
         {
             var networkTime = SystemAPI.GetSingleton<NetworkTime>();
             foreach (var (count,canEndSpawn,enDestruct) in SystemAPI
-                         .Query<RefRO<MaxHitCount>,DynamicBuffer<CanEndSpawn>,EnabledRefRO<DestructTag>>().WithAll<Simulate>().WithOptions(EntityQueryOptions.IgnoreComponentEnabledState))
+                         .Query<RefRO<PenetrateLimit>,DynamicBuffer<CanEndSpawn>,EnabledRefRO<DestructTag>>().WithAll<Simulate>().WithOptions(EntityQueryOptions.IgnoreComponentEnabledState))
             {
                 var e = new InputEvent();
                 if (count.ValueRO.value<=0 && !enDestruct.ValueRO)
                 {
                     e.Set();
-                    Debug.Log("set");
                 }
                 canEndSpawn.AddCommandData(new CanEndSpawn(){Tick = networkTime.ServerTick,canSpawn = e});
             }
             
             foreach (var (count,enDestruct) in SystemAPI
-                         .Query<RefRO<MaxHitCount>,EnabledRefRW<DestructTag>>().WithAll<Simulate>().WithDisabled<DestructTag>())
+                         .Query<RefRO<PenetrateLimit>,EnabledRefRW<DestructTag>>().WithAll<Simulate>().WithDisabled<DestructTag>())
             {
                 if (count.ValueRO.value<=0)
                 {

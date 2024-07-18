@@ -1,11 +1,10 @@
 ﻿using System;
-using Object703.Core.Recycle;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine.Serialization;
 
-namespace Object703.Core.OnHit
+namespace Object703.Core
 {
     [Serializable]
     public struct Hp : IComponentData

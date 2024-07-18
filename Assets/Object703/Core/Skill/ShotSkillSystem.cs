@@ -1,11 +1,10 @@
-﻿using Object703.Core.Recycle;
-using Unity.Burst;
+﻿using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 
-namespace Object703.Core.Skill
+namespace Object703.Core
 {
     public struct ShotSkill : IComponentData
     {

@@ -1,11 +1,10 @@
 ﻿using System;
-using Object703.Core.Recycle;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine.Serialization;
 
-namespace Object703.Core.OnHit
+namespace Object703.Core
 {
     [Serializable]
     public struct DamageBuffer : IBufferElementData

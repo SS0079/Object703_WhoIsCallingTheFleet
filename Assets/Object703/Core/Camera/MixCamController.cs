@@ -2,7 +2,7 @@
 using CinemachineAccessories;
 using KittyHelpYouOut;
 
-namespace Object703.Core.Camera
+namespace Object703.Core
 {
     public class MixCamController : KittyMonoSingletonManual<MixCamController>
     {

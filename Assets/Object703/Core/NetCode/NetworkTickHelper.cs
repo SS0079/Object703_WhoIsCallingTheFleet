@@ -1,6 +1,6 @@
 ﻿using Unity.NetCode;
 
-namespace Object703.Core.NetCode
+namespace Object703.Core
 {
     public static class NetworkTickHelper
     {

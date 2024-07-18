@@ -6,7 +6,7 @@ using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine.Serialization;
 
-namespace Object703.Core.Recycle
+namespace Object703.Core
 {
     [Serializable]
     public struct LifeSpanTick : IComponentData
@@ -17,6 +17,10 @@ namespace Object703.Core.Recycle
     public struct LifeSpanSecond : IComponentData ,IEnableableComponent
     {
         public float value;
+    }
+    public struct DestructNextFrameTag : IComponentData
+    {
+        
     }
 
     public struct SelfDestructPrepared : IComponentData , IEnableableComponent
@@ -35,7 +39,7 @@ namespace Object703.Core.Recycle
     }
     
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
+    [UpdateInGroup(typeof(OnDestrcutSystemGroup))]
     public partial struct SelfDestructTickSystem : ISystem
     {
         private float3 hideOutPos;
@@ -60,9 +64,24 @@ namespace Object703.Core.Recycle
             }
         }
     }
+
+    [BurstCompile]
+    [RequireMatchingQueriesForUpdate]
+    [UpdateInGroup(typeof(OnDestrcutSystemGroup),OrderLast = true)]
+    public partial struct DestructNextFrameSystem : ISystem
+    {
+        public void OnUpdate(ref SystemState state)
+        {
+            foreach (var enDestructTag in SystemAPI
+                         .Query<EnabledRefRW<DestructTag>>().WithAll<Simulate,DestructNextFrameTag>())
+            {
+                enDestructTag.ValueRW = true;
+            }
+        }
+    }
     
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(PredictedSimulationSystemGroup),OrderFirst = true)]
+    [UpdateInGroup(typeof(OnDestrcutSystemGroup))]
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
     public partial struct DestructGhostClientSystem : ISystem
     {
@@ -85,7 +104,7 @@ namespace Object703.Core.Recycle
     }
     
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(SimulationSystemGroup))]
+    [UpdateInGroup(typeof(OnDestrcutSystemGroup))]
     [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
     public partial struct DestructGhostServerSystem : ISystem
     {
@@ -100,7 +119,7 @@ namespace Object703.Core.Recycle
     
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(SimulationSystemGroup),OrderFirst = true)]
+    [UpdateInGroup(typeof(AfterDestructSystemGroup))]
     public partial struct DestructNonGhostSystem : ISystem
     {
         [BurstCompile]

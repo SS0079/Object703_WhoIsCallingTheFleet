@@ -1,13 +1,11 @@
 ﻿using System;
-using Object703.Core.NetCode;
-using Object703.Core.OnPlayerInput;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine.Serialization;
 
-namespace Object703.Core.Skill
+namespace Object703.Core
 {
     [Serializable]
     public struct SkillFlags : IComponentData

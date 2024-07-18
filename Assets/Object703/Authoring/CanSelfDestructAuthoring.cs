@@ -1,6 +1,5 @@
 ﻿using KittyDOTS;
-using Object703.Authoring.Installer;
-using Object703.Core.Recycle;
+using Object703.Core;
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;

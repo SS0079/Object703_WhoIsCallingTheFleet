@@ -5,7 +5,7 @@ using Unity.Entities;
 using Unity.NetCode;
 using Unity.Transforms;
 
-namespace Object703.Core.NetCode
+namespace Object703.Core
 {
     public struct GhostParent : IComponentData
     {

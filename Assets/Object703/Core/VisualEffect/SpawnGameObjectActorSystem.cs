@@ -1,6 +1,5 @@
 ﻿using System;
 using KittyHelpYouOut;
-using Object703.Core.Recycle;
 using Object703.Utility;
 using Unity.Burst;
 using Unity.Collections;
@@ -12,7 +11,7 @@ using UnityEngine.Serialization;
 
 // ReSharper disable Unity.Entities.MustBeSurroundedWithRefRwRo
 
-namespace Object703.Core.VisualEffect
+namespace Object703.Core
 {
     [Serializable]
     public class AttachLineRenderer : IComponentData, IEnableableComponent

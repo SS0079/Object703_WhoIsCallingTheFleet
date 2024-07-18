@@ -1,5 +1,4 @@
 ﻿using System;
-using Object703.Core.Recycle;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -7,7 +6,7 @@ using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
 
-namespace Object703.Core.Moving
+namespace Object703.Core
 {
     #region ComponentData
     public struct ShipMoveConfig : IComponentData

@@ -1,11 +1,9 @@
-﻿using Object703.Core.Moving;
-using Object703.Core.Recycle;
-using Unity.Burst;
+﻿using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 
-namespace Object703.Core.OnPlayerInput
+namespace Object703.Core
 {
     [BurstCompile]
     [UpdateInGroup(typeof(OnPlayerInputSystemGroup))]

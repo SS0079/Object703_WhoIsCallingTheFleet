@@ -1,8 +1,7 @@
 ﻿using System;
 using KittyHelpYouOut;
 using KittyHelpYouOut.Utilities;
-using Object703.Core.Utilities;
-using Object703.Core.Weapon;
+using Object703.Core;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Physics;
@@ -12,8 +11,6 @@ using Random = Unity.Mathematics.Random;
 
 namespace Object703.Authoring
 {
-   
-    
     [DisallowMultipleComponent]
     [ExecuteAlways]
     public class WeaponAuthoring : MonoBehaviour

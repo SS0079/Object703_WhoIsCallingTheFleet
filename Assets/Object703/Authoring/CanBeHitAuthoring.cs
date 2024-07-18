@@ -1,7 +1,5 @@
 ﻿using System;
-using KittyHelpYouOut.Utilities;
-using Object703.Core.OnHit;
-using Object703.Core.Weapon;
+using Object703.Core;
 using Unity.Entities;
 using Unity.Physics.Authoring;
 using UnityEngine;

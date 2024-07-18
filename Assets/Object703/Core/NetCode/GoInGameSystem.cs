@@ -3,7 +3,7 @@ using Unity.Burst;
 using Unity.Entities;
 using Unity.NetCode;
 
-namespace Object703.Core.NetCode
+namespace Object703.Core
 {
     public struct GoInGameRequest : IRpcCommand
     {

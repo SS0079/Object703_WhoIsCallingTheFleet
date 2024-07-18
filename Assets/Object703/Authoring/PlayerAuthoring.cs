@@ -1,4 +1,4 @@
-﻿using Object703.Core.OnPlayerInput;
+﻿using Object703.Core;
 using Unity.Entities;
 using UnityEngine;
 

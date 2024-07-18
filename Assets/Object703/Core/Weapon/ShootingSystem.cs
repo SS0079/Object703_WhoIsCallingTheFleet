@@ -7,7 +7,7 @@ using Unity.Physics.Authoring;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Object703.Core.Weapon
+namespace Object703.Core
 {
      [Flags]
     public enum ColliderLayers

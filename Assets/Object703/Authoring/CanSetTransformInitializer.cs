@@ -1,5 +1,5 @@
 ﻿using KittyDOTS;
-using Object703.Core.OnHit;
+using Object703.Core;
 using Unity.Entities;
 using UnityEngine;
 

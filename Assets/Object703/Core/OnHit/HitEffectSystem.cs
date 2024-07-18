@@ -1,12 +1,10 @@
-﻿using Object703.Core.OnHit;
-using Object703.Core.Recycle;
-using Unity.Burst;
+﻿using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 
-namespace Object703.Core.OnHit
+namespace Object703.Core
 {
     [GhostComponent(PrefabType = GhostPrefabType.Client)]
     public struct HitEffectPrefabs : IComponentData , IEnableableComponent

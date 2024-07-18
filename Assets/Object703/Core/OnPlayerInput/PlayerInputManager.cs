@@ -2,7 +2,7 @@
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Object703.Core.OnPlayerInput
+namespace Object703.Core
 {
     public class PlayerInputManager : KittyMonoSingletonManual<PlayerInputManager>
     {

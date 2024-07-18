@@ -1,6 +1,5 @@
 ﻿using System;
 using Object703.Authoring;
-using Object703.Core.Weapon;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
@@ -9,7 +8,7 @@ using Unity.Transforms;
 using UnityEngine;
 using RaycastHit = Unity.Physics.RaycastHit;
 
-namespace Object703.Core.OnPlayerInput
+namespace Object703.Core
 {
     [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
     public struct PlayerMoveInput : IInputComponentData
@@ -92,7 +91,7 @@ namespace Object703.Core.OnPlayerInput
 
             //================================================================================
             // handle player skill input
-            var cam = UnityEngine.Camera.main;
+            var cam = Camera.main;
             if (cam == null) return;
             ltwLp.Update(ref state);
             var skill = new PlayerSkillInput();

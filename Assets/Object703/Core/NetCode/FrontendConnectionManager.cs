@@ -8,7 +8,7 @@ using Unity.Networking.Transport;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Object703.Core.NetCode
+namespace Object703.Core
 {
     public class FrontendConnectionManager : KittyMonoSingletonManual<FrontendConnectionManager>
     {

@@ -1,11 +1,10 @@
 ﻿using KittyHelpYouOut;
-using Object703.Core.Recycle;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
 
-namespace Object703.Core.VisualEffect
+namespace Object703.Core
 {
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
@@ -32,7 +31,7 @@ namespace Object703.Core.VisualEffect
             }
             
             //sync the lineRenderer positions of entities
-            foreach (var (line,weapon,ltw) in SystemAPI.Query<LineRendererActor,RefRO<Weapon.Weapon>,RefRO<LocalToWorld>>().WithNone<DestructTag>())
+            foreach (var (line,weapon,ltw) in SystemAPI.Query<LineRendererActor,RefRO<Weapon>,RefRO<LocalToWorld>>().WithNone<DestructTag>())
             {
                 Vector3 fwd = ltw.ValueRO.Forward;
                 Vector3 start = ltw.ValueRO.Position;

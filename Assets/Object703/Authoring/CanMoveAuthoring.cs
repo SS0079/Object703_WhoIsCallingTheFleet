@@ -1,14 +1,11 @@
 ﻿using System;
-using Object703.Core.Moving;
-using Object703.Core.OnHit;
+using Object703.Core;
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
 
 namespace Object703.Authoring
 {
-  
-    
     [DisallowMultipleComponent]
     public class CanMoveAuthoring : MonoBehaviour
     {

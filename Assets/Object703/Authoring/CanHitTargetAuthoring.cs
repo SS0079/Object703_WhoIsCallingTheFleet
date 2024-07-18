@@ -1,8 +1,6 @@
 ﻿using System;
 using KittyHelpYouOut.Utilities;
-using Object703.Core.OnHit;
-using Object703.Core.VisualEffect;
-using Object703.Core.Weapon;
+using Object703.Core;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
@@ -27,8 +25,9 @@ namespace Object703.Authoring
         public HitFilterGenerator hitFilter;
         [FormerlySerializedAs("Damage")]
         public float damage;
+        [FormerlySerializedAs("MaxHitCount")]
         [FormerlySerializedAs("penetration")]
-        public int MaxHitCount=1;
+        public int MaxPenetrateCount=1;
         [FormerlySerializedAs("HitSpawns")]
         public GameObject[] hitSpawns;
         public GameObject[] hitEffects;
@@ -130,8 +129,8 @@ namespace Object703.Authoring
                     }
                 }
                 AddComponent(self,spawnPrefabs);
-                AddComponent(self,new MaxHitCount(){value = authoring.MaxHitCount});
             }
+            AddComponent(self,new PenetrateLimit(){value = authoring.MaxPenetrateCount});
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Unity.NetCode;
 using UnityEngine.Scripting;
 
-namespace Object703.Core.NetCode
+namespace Object703.Core
 {
     [Preserve]
     public class NetCodeBootstrap : ClientServerBootstrap

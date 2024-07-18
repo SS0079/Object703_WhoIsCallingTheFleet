@@ -1,4 +1,4 @@
-﻿using Object703.Core.NetCode;
+﻿using Object703.Core;
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;

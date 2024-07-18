@@ -6,7 +6,7 @@ using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
 
-namespace Object703.Core.Camera
+namespace Object703.Core
 {
      [Serializable]
      [GhostComponent(PrefabType = GhostPrefabType.Client)]

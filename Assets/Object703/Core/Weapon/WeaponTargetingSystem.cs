@@ -1,5 +1,4 @@
 ﻿using System;
-using Object703.Core.Recycle;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -8,7 +7,7 @@ using Unity.NetCode;
 using Unity.Physics;
 using Unity.Transforms;
 
-namespace Object703.Core.Weapon
+namespace Object703.Core
 {
     [Serializable]
     [InternalBufferCapacity(64)]

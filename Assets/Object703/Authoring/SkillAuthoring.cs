@@ -1,14 +1,11 @@
 ﻿using System;
-using Object703.Core.OnPlayerInput;
-using Object703.Core.Skill;
+using Object703.Core;
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
 
 namespace Object703.Authoring
 {
-   
-
     [DisallowMultipleComponent]
     public class SkillAuthoring : MonoBehaviour
     {

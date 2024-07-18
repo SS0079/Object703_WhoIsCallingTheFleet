@@ -1,13 +1,12 @@
-﻿using Object703.Core.NetCode;
-using Unity.Burst;
+﻿using Unity.Burst;
 using Unity.Entities;
 using Unity.NetCode;
 
-namespace Object703.Core.Recycle
+namespace Object703.Core
 {
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(InitializationSystemGroup))]
+    [UpdateInGroup(typeof(BeforeDestructSystemGroup))]
     public partial struct InitializeSelfDestructSystem : ISystem
     {
         [BurstCompile]
