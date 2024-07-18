@@ -10,7 +10,6 @@ namespace Object703.Utility
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     public partial struct LoadStartSceneSystem : ISystem
     {
-        [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
             state.Enabled = false;
