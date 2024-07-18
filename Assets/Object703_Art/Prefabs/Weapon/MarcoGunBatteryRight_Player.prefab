@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -2212858158200781231}
   - component: {fileID: 6971091259507265965}
   m_Layer: 0
-  m_Name: MarcoGunBattery_Player
+  m_Name: MarcoGunBatteryRight_Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29,13 +29,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6960936325470516931}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &4994692398176313819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -48,9 +48,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd6f208d7d90484ba7b40342a3cd7c72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitFilter:
+  targetFilter:
     antiAir: 1
     antiSurface: 1
+    hitTerran: 0
     targetRole: 2
   weapon:
     maxRange: 30
