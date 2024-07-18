@@ -84,7 +84,7 @@ namespace Object703.Authoring
             AddBuffer<AlreadyDamaged>(self);
             if (authoring.hitSpawns.Length > 0)
             {
-                var spawnPrefabs = new HitSpawnPrefabs();
+                var spawnPrefabs = new EndSpawnPrefabs();
                 var count = math.min(authoring.hitSpawns.Length, 4);
                 for (int i = 0; i < count; i++)
                 {
@@ -105,6 +105,7 @@ namespace Object703.Authoring
                     }
                 }
                 AddComponent(self,spawnPrefabs);
+                AddBuffer<CanEndSpawn>(self);
             }
             if (authoring.hitEffects.Length>0)
             {

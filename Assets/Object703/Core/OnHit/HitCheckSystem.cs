@@ -297,8 +297,26 @@ namespace Object703.Core.OnHit
     [UpdateInGroup(typeof(OnHitSystemGroup))]
     public partial struct OrderHitDestructSystem : ISystem
     {
+        public void OnCreate(ref SystemState state)
+        {
+            state.RequireForUpdate<NetworkTime>();
+        }
+
         public void OnUpdate(ref SystemState state)
         {
+            var networkTime = SystemAPI.GetSingleton<NetworkTime>();
+            foreach (var (count,canEndSpawn,enDestruct) in SystemAPI
+                         .Query<RefRO<MaxHitCount>,DynamicBuffer<CanEndSpawn>,EnabledRefRO<DestructTag>>().WithAll<Simulate>().WithOptions(EntityQueryOptions.IgnoreComponentEnabledState))
+            {
+                var e = new InputEvent();
+                if (count.ValueRO.value<=0 && !enDestruct.ValueRO)
+                {
+                    e.Set();
+                    Debug.Log("set");
+                }
+                canEndSpawn.AddCommandData(new CanEndSpawn(){Tick = networkTime.ServerTick,canSpawn = e});
+            }
+            
             foreach (var (count,enDestruct) in SystemAPI
                          .Query<RefRO<MaxHitCount>,EnabledRefRW<DestructTag>>().WithAll<Simulate>().WithDisabled<DestructTag>())
             {

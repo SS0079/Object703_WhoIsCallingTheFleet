@@ -52,7 +52,7 @@ namespace Object703.Core.Recycle
             foreach (var (destructTick,destructEn) in SystemAPI.Query<DynamicBuffer<SelfDestructAtTick>,EnabledRefRW<DestructTag>>().WithAll<Simulate>().WithDisabled<DestructTag>())
             {
                 destructTick.GetDataAtTick(currentTick, out var localTick);
-                if(localTick.Tick==NetworkTick.Invalid) continue;
+                if(localTick.Tick==NetworkTick.Invalid || localTick.value==NetworkTick.Invalid) continue;
                 if (currentTick.Equals(localTick.value) || currentTick.IsNewerThan(localTick.value))
                 {
                     destructEn.ValueRW = true;
