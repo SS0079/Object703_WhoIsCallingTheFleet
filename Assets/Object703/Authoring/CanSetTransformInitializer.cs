@@ -18,15 +18,15 @@ namespace Object703.Authoring
                 var self = GetEntity(TransformUsageFlags.None);
                 if (authoring.setPosition)
                 {
-                    this.AddEnableComponent(self, new LocalPositionInitializer());
+                    AddComponent(self, new LocalPositionInitializer());
                 }
                 if (authoring.setRotation)
                 {
-                    this.AddEnableComponent(self, new LocalRotationInitializer());
+                    AddComponent(self, new LocalRotationInitializer());
                 }
                 if (authoring.setScale)
                 {
-                    this.AddEnableComponent(self, new LocalScaleInitializer());
+                    AddComponent(self, new LocalScaleInitializer());
                 }
             }
         }

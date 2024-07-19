@@ -107,7 +107,6 @@ namespace Object703.Core
                 //recycle unused actor
                 foreach (var (gameObjectActor,entity) in SystemAPI.Query<RefRW<GameObjectActor>>().WithNone<LocalTransform>().WithEntityAccess())
                 {
-                    Debug.Log($"Cleaning");
                     if (gameObjectActor.ValueRW.Get()==null) continue;
                     gameObjectActor.ValueRW.Get().RecyclePoolObject();
                 }

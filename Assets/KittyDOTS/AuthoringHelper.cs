@@ -4,10 +4,10 @@ namespace KittyDOTS
 {
     public static class AuthoringHelper
     {
-        public static IBaker AddEnableComponent<T>(this IBaker baker,Entity target ,T component, bool enabled = true) where T : unmanaged, IComponentData , IEnableableComponent
+        public static IBaker AddDisabledComponent<T>(this IBaker baker,Entity target ,T component) where T : unmanaged, IComponentData , IEnableableComponent
         {
             baker.AddComponent(target, component);
-            baker.SetComponentEnabled<T>(target,enabled);
+            baker.SetComponentEnabled<T>(target,false);
             return baker;
         }
 

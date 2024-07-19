@@ -18,10 +18,6 @@ namespace Object703.Core
     {
         public float value;
     }
-    public struct DestructNextFrameTag : IComponentData
-    {
-        
-    }
 
     public struct SelfDestructPrepared : IComponentData , IEnableableComponent
     {
@@ -61,21 +57,6 @@ namespace Object703.Core
                 {
                     destructEn.ValueRW = true;
                 }
-            }
-        }
-    }
-
-    [BurstCompile]
-    [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(OnDestrcutSystemGroup),OrderLast = true)]
-    public partial struct DestructNextFrameSystem : ISystem
-    {
-        public void OnUpdate(ref SystemState state)
-        {
-            foreach (var enDestructTag in SystemAPI
-                         .Query<EnabledRefRW<DestructTag>>().WithAll<Simulate,DestructNextFrameTag>())
-            {
-                enDestructTag.ValueRW = true;
             }
         }
     }

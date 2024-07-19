@@ -49,14 +49,14 @@ namespace Object703.Authoring
                     if (authoring.startCountDownImmediately)
                     {
                         AddBuffer<SelfDestructAtTick>(self);
-                        this.AddEnableComponent(self, new SelfDestructPrepared(), false);
+                        this.AddDisabledComponent(self, new SelfDestructPrepared());
                     }
                 }
                 else
                 {
                     if (authoring.startCountDownImmediately)
                     {
-                        this.AddEnableComponent(self, new SelfDestructPrepared());
+                        AddComponent(self, new SelfDestructPrepared());
                         AddBuffer<SelfDestructAtTick>(self);
                         AppendToBuffer(self,new SelfDestructAtTick
                         {
@@ -72,7 +72,15 @@ namespace Object703.Authoring
             }
             else
             {
-                this.AddEnableComponent(self, new LifeSpanSecond() { value = authoring.lifeSpan }, authoring.startCountDownImmediately);
+                var lifeSpan = new LifeSpanSecond() { value = authoring.lifeSpan };
+                if (authoring.startCountDownImmediately)
+                {
+                    AddComponent(self,lifeSpan);
+                }
+                else
+                {
+                    this.AddDisabledComponent(self, lifeSpan);
+                }
             }
             
             

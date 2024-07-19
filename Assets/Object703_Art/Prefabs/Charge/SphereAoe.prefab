@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8554381478434034673}
   - component: {fileID: -6953815273148464983}
   - component: {fileID: -3694013996679363734}
+  - component: {fileID: 8916403910293820260}
   m_Layer: 0
   m_Name: SphereAoe
   m_TagString: Untagged
@@ -72,7 +73,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93fba12987b04b77ae86734b1b8ae518, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  destrcutNextFrame: 1
 --- !u!114 &-6953815273148464983
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -107,3 +107,18 @@ MonoBehaviour:
   TrackInterpolationDelay: 0
   GhostGroup: 0
   UsePreSerialization: 0
+--- !u!114 &8916403910293820260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1432654292428496314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 809ae8568bfc4c979be75ab1993bea44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  netConfig: {fileID: 11400000, guid: 5fafff5fa10047c46a2040db1c8fb7ea, type: 2}
+  lifeSpan: 0.001
+  startCountDownImmediately: 1
