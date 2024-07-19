@@ -14,27 +14,27 @@ namespace Object703.Core
         public Entity value2;
         public Entity value3;
         
-        public void Spawn(EntityManager manager,LocalTransform trans)
+        public void Spawn(EntityManager manager,HideInClient hide)
         {
             if (value0!=Entity.Null)
             {
                 var e = manager.Instantiate(value0);
-                manager.SetComponentData(e, new LocalPositionInitializer() { position = trans.Position });
+                manager.SetComponentData(e, new LocalPositionInitializer() { position = hide.lastPosition });
             }
             if (value1!=Entity.Null)
             {
                 var e = manager.Instantiate(value1);
-                manager.SetComponentData(e, new LocalPositionInitializer() { position = trans.Position });
+                manager.SetComponentData(e, new LocalPositionInitializer() { position = hide.lastPosition });
             }
             if (value2!=Entity.Null)
             {
                 var e = manager.Instantiate(value2);
-                manager.SetComponentData(e, new LocalPositionInitializer() { position = trans.Position });
+                manager.SetComponentData(e, new LocalPositionInitializer() { position = hide.lastPosition });
             }
             if (value3!=Entity.Null)
             {
                 var e = manager.Instantiate(value3);
-                manager.SetComponentData(e, new LocalPositionInitializer() { position = trans.Position });
+                manager.SetComponentData(e, new LocalPositionInitializer() { position = hide.lastPosition });
             }
         }
     }
@@ -72,11 +72,11 @@ namespace Object703.Core
         public void OnUpdate(ref SystemState state)
         {
             // spawn all entity prefab stored in hit spawn buffer where destruct tag is on
-            foreach (var (hitSpawns,enHitSpawn,trans) in SystemAPI
-                         .Query<RefRW<EndEffectPrefabs>,EnabledRefRW<EndEffectPrefabs>,RefRO<LocalTransform>>().WithAll<DestructTag,Simulate>())
+            foreach (var (hitSpawns,enHitSpawn,hide) in SystemAPI
+                         .Query<RefRW<EndEffectPrefabs>,EnabledRefRW<EndEffectPrefabs>,RefRO<HideInClient>>().WithAll<DestructTag,Simulate>())
             {
                 //TODO: change this to spawn a game object
-                hitSpawns.ValueRW.Spawn(state.EntityManager,trans.ValueRO);
+                hitSpawns.ValueRW.Spawn(state.EntityManager,hide.ValueRO);
                 enHitSpawn.ValueRW = false;
             }
 

@@ -33,6 +33,13 @@ namespace Object703.Core
     public struct DestructTag : IComponentData , IEnableableComponent
     {
     }
+    [GhostComponent(PrefabType = GhostPrefabType.Client)]
+    public struct HideInClient : IComponentData , IEnableableComponent
+    {
+        public float3 lastPosition;
+        public quaternion lastRotation;
+        public float lastScale;
+    }
     
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(OnDestrcutSystemGroup))]
@@ -74,6 +81,17 @@ namespace Object703.Core
 
         public void OnUpdate(ref SystemState state)
         {
+            foreach (var (hide,enHide,trans) in SystemAPI
+                         .Query<RefRW<HideInClient>,EnabledRefRW<HideInClient>,RefRO<LocalTransform>>()
+                         .WithAll<Simulate,DestructTag>()
+                         .WithDisabled<HideInClient>())
+            {
+                hide.ValueRW.lastPosition = trans.ValueRO.Position;
+                hide.ValueRW.lastRotation = trans.ValueRO.Rotation;
+                hide.ValueRW.lastScale = trans.ValueRO.Scale;
+                enHide.ValueRW = true;
+            }
+            
             //hide ghost if this is client world
             foreach (var trans in SystemAPI
                          .Query<RefRW<LocalTransform>>()
