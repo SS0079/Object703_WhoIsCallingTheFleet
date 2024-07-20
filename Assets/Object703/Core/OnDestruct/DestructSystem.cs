@@ -4,10 +4,12 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
+using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace Object703.Core
 {
+    #region componentData
     [Serializable]
     public struct LifeSpanTick : IComponentData
     {
@@ -34,12 +36,108 @@ namespace Object703.Core
     {
     }
     [GhostComponent(PrefabType = GhostPrefabType.Client)]
-    public struct HideInClient : IComponentData , IEnableableComponent
+    public struct HideInClientTag : IComponentData , IEnableableComponent
     {
-        public float3 lastPosition;
-        public quaternion lastRotation;
-        public float lastScale;
+        // public float3 lastPosition;
+        // public quaternion lastRotation;
+        // public float lastScale;
     }
+    
+    [GhostComponent(PrefabType = GhostPrefabType.Client)]
+    public struct DestructEffectPrefabs : IComponentData
+    {
+        public Entity value0;
+        public Entity value1;
+        public Entity value2;
+        public Entity value3;
+        
+        public void Spawn(EntityManager manager,LocalTransform trans)
+        {
+            if (value0!=Entity.Null)
+            {
+                var e = manager.Instantiate(value0);
+                manager.SetComponentData(e, new LocalPositionInitializer() { position = trans.Position });
+            }
+            if (value1!=Entity.Null)
+            {
+                var e = manager.Instantiate(value1);
+                manager.SetComponentData(e, new LocalPositionInitializer() { position = trans.Position });
+            }
+            if (value2!=Entity.Null)
+            {
+                var e = manager.Instantiate(value2);
+                manager.SetComponentData(e, new LocalPositionInitializer() { position = trans.Position });
+            }
+            if (value3!=Entity.Null)
+            {
+                var e = manager.Instantiate(value3);
+                manager.SetComponentData(e, new LocalPositionInitializer() { position = trans.Position });
+            }
+        }
+    }
+
+    [GhostComponent(PrefabType = GhostPrefabType.Client)]
+    public struct LocalPositionInitializer : IComponentData , IEnableableComponent
+    {
+        public float3 position;
+    }
+    
+    [GhostComponent(PrefabType = GhostPrefabType.Client)]
+    public struct LocalRotationInitializer : IComponentData , IEnableableComponent
+    {
+        public quaternion rotation;
+    }
+    
+    [GhostComponent(PrefabType = GhostPrefabType.Client)]
+    public struct LocalScaleInitializer : IComponentData , IEnableableComponent
+    {
+        public float3 scale;
+    }
+    
+    public struct DestructSpawnPrefabs : IComponentData
+    {
+        public Entity value0;
+        public Entity value1;
+        public Entity value2;
+        public Entity value3;
+
+        public void Spawn(EntityManager manager,LocalTransform trans,GhostOwner owner)
+        {
+            var newTrans = LocalTransform.FromPositionRotation(trans.Position,trans.Rotation);
+            if (value0!=Entity.Null)
+            {
+                var e = manager.Instantiate(value0);
+                manager.SetComponentData(e,newTrans);
+                manager.SetComponentData(e,owner);
+            }
+            if (value1!=Entity.Null)
+            {
+                var e = manager.Instantiate(value1);
+                manager.SetComponentData(e,newTrans);
+                manager.SetComponentData(e,owner);
+            }
+            if (value2!=Entity.Null)
+            {
+                var e = manager.Instantiate(value2);
+                manager.SetComponentData(e,newTrans);
+                manager.SetComponentData(e,owner);
+            }
+            if (value3!=Entity.Null)
+            {
+                var e = manager.Instantiate(value3);
+                manager.SetComponentData(e,newTrans);
+                manager.SetComponentData(e,owner);
+            }
+        }
+    }
+    public struct CanDestructSpawn : ICommandData
+    {
+        [GhostField]
+        public NetworkTick Tick { get; set; }
+        [GhostField]
+        public InputEvent canSpawn;
+    }
+    #endregion
     
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(OnDestrcutSystemGroup))]
@@ -76,21 +174,52 @@ namespace Object703.Core
         private float3 hideOutPos;
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<NetworkTime>();
             hideOutPos = new float3(10000, 10000, 10000);
         }
 
         public void OnUpdate(ref SystemState state)
         {
-            foreach (var (hide,enHide,trans) in SystemAPI
-                         .Query<RefRW<HideInClient>,EnabledRefRW<HideInClient>,RefRO<LocalTransform>>()
-                         .WithAll<Simulate,DestructTag>()
-                         .WithDisabled<HideInClient>())
+            var networkTime = SystemAPI.GetSingleton<NetworkTime>();
+            if (networkTime.IsFirstTimeFullyPredictingTick) return;
+            
+            // spawn entity if have entity to spawn on destruct
+            foreach (var (prefabs,trans,owner) in SystemAPI
+                         .Query<RefRW<DestructSpawnPrefabs>,RefRO<LocalTransform>,RefRO<GhostOwner>>().WithAll<Simulate,DestructTag>().WithNone<HideInClientTag>())
             {
-                hide.ValueRW.lastPosition = trans.ValueRO.Position;
-                hide.ValueRW.lastRotation = trans.ValueRO.Rotation;
-                hide.ValueRW.lastScale = trans.ValueRO.Scale;
+                prefabs.ValueRW.Spawn(state.EntityManager,trans.ValueRO,owner.ValueRO);
+                Debug.DrawLine(trans.ValueRO.Position,new Vector3(trans.ValueRO.Position.x,0,trans.ValueRO.Position.z),Color.yellow,10);
+            }
+
+            // spawn effect if have effect to spawn on destruct
+            foreach (var (prefabs,trans) in SystemAPI
+                         .Query<RefRW<DestructEffectPrefabs>,RefRO<LocalTransform>>().WithAll<Simulate,DestructTag>().WithNone<HideInClientTag>())
+            {
+                prefabs.ValueRW.Spawn(state.EntityManager,trans.ValueRO);
+            }
+            
+            //sync position for new spawn effect
+            foreach (var (positionProxy,trans) in SystemAPI
+                         .Query<RefRO<LocalPositionInitializer>,RefRW<LocalTransform>>().WithAll<Simulate>().WithNone<DestructTag>())
+            {
+                trans.ValueRW.Position = positionProxy.ValueRO.position;
+            }
+
+            //disable all local position proxy, those should have been handled
+            foreach (var enPosProxy in SystemAPI
+                         .Query<EnabledRefRW<LocalPositionInitializer>>().WithAll<Simulate>().WithNone<DestructTag>())
+            {
+                enPosProxy.ValueRW = false;
+            }
+            
+            // set hitInClientTag to active if entity have destruct tag
+            foreach (var enHide in SystemAPI
+                         .Query<EnabledRefRW<HideInClientTag>>().WithAll<Simulate,DestructTag>().WithDisabled<HideInClientTag>())
+            {
                 enHide.ValueRW = true;
             }
+            
+            
             
             //hide ghost if this is client world
             foreach (var trans in SystemAPI
@@ -109,6 +238,13 @@ namespace Object703.Core
     {
         public void OnUpdate(ref SystemState state)
         {
+            // spawn entity if have entity to spawn on destruct
+            foreach (var (prefabs,trans,owner) in SystemAPI
+                         .Query<RefRW<DestructSpawnPrefabs>,RefRO<LocalTransform>,RefRO<GhostOwner>>().WithAll<Simulate,DestructTag>())
+            {
+                prefabs.ValueRW.Spawn(state.EntityManager,trans.ValueRO,owner.ValueRO);
+            }
+            
             //destruct immediately if this is server world
             var destructQuery = SystemAPI.QueryBuilder().WithAll<DestructTag,GhostInstance>().Build().ToEntityArray(state.WorldUpdateAllocator);
             state.EntityManager.DestroyEntity(destructQuery);

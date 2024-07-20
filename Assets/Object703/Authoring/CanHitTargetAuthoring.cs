@@ -28,9 +28,8 @@ namespace Object703.Authoring
         [FormerlySerializedAs("MaxHitCount")]
         [FormerlySerializedAs("penetration")]
         public int MaxPenetrateCount=1;
-        [FormerlySerializedAs("HitSpawns")]
-        public GameObject[] hitSpawns;
-        public GameObject[] hitEffects;
+        // public GameObject[] hitSpawns;
+        // public GameObject[] hitEffects;
         
         [ReadOnlyInspector]
         public ColliderLayers belongTo;
@@ -81,6 +80,7 @@ namespace Object703.Authoring
             }
             AddBuffer<HitCheckResult>(self);
             AddBuffer<AlreadyDamaged>(self);
+            /*
             if (authoring.hitSpawns.Length > 0)
             {
                 var spawnPrefabs = new EndSpawnPrefabs();
@@ -104,7 +104,6 @@ namespace Object703.Authoring
                     }
                 }
                 AddComponent(self,spawnPrefabs);
-                AddBuffer<CanEndSpawn>(self);
             }
             if (authoring.hitEffects.Length>0)
             {
@@ -130,6 +129,7 @@ namespace Object703.Authoring
                 }
                 AddComponent(self,spawnPrefabs);
             }
+            */
             AddComponent(self,new PenetrateLimit(){value = authoring.MaxPenetrateCount});
         }
     }

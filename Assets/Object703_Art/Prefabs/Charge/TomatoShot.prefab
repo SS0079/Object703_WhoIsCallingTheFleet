@@ -60,11 +60,7 @@ MonoBehaviour:
     hitTerran: 1
     targetRole: 2
   damage: 50
-  MaxHitCount: 1
-  hitSpawns:
-  - {fileID: 1432654292428496314, guid: 18ab3e6c3e34d8d46b39555b1b4d6ef3, type: 3}
-  hitEffects:
-  - {fileID: 5947900406849159328, guid: c3ba8f8a793dff04d9072e3a6495d13b, type: 3}
+  MaxPenetrateCount: 1
   belongTo: 1
   collideWith: 3145730
 --- !u!114 &1232679719457930531
@@ -165,7 +161,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93fba12987b04b77ae86734b1b8ae518, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  destructImmediately: 0
+  destructSpawns:
+  - {fileID: 1432654292428496314, guid: 18ab3e6c3e34d8d46b39555b1b4d6ef3, type: 3}
+  destructEffects:
+  - {fileID: 5947900406849159328, guid: c3ba8f8a793dff04d9072e3a6495d13b, type: 3}
 --- !u!114 &3221320162867834125
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -304,16 +304,16 @@ namespace Object703.Core
         public void OnUpdate(ref SystemState state)
         {
             var networkTime = SystemAPI.GetSingleton<NetworkTime>();
-            foreach (var (count,canEndSpawn,enDestruct) in SystemAPI
-                         .Query<RefRO<PenetrateLimit>,DynamicBuffer<CanEndSpawn>,EnabledRefRO<DestructTag>>().WithAll<Simulate>().WithOptions(EntityQueryOptions.IgnoreComponentEnabledState))
-            {
-                var e = new InputEvent();
-                if (count.ValueRO.value<=0 && !enDestruct.ValueRO)
-                {
-                    e.Set();
-                }
-                canEndSpawn.AddCommandData(new CanEndSpawn(){Tick = networkTime.ServerTick,canSpawn = e});
-            }
+            // foreach (var (count,canEndSpawn,enDestruct) in SystemAPI
+            //              .Query<RefRO<PenetrateLimit>,DynamicBuffer<CanDestructSpawn>,EnabledRefRO<DestructTag>>().WithAll<Simulate>().WithOptions(EntityQueryOptions.IgnoreComponentEnabledState))
+            // {
+            //     var e = new InputEvent();
+            //     if (count.ValueRO.value<=0 && !enDestruct.ValueRO)
+            //     {
+            //         e.Set();
+            //     }
+            //     canEndSpawn.AddCommandData(new CanDestructSpawn(){Tick = networkTime.ServerTick,canSpawn = e});
+            // }
             
             foreach (var (count,enDestruct) in SystemAPI
                          .Query<RefRO<PenetrateLimit>,EnabledRefRW<DestructTag>>().WithAll<Simulate>().WithDisabled<DestructTag>())
