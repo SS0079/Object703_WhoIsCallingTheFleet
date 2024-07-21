@@ -180,6 +180,10 @@ namespace Object703.Core
                         weapon.ValueRW.burstCounter = 0;
                         tick.AddCommandData(new ShootAtTick(){Tick = currentTick,value = currentTick.AddSpan(waitTimeInTick)});
                     }
+                    if (state.WorldUnmanaged.IsServer())
+                    {
+                        Debug.Log($"Shoot in server");
+                    }
                 }
                 
             }

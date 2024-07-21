@@ -1,5 +1,6 @@
 ﻿using Unity.Entities;
 using Unity.NetCode;
+using Unity.Transforms;
 
 namespace Object703.Core
 {
@@ -9,7 +10,9 @@ namespace Object703.Core
         
     }
     
-    [UpdateInGroup(typeof(SimulationSystemGroup),OrderLast = true)]
+    [UpdateInGroup(typeof(SimulationSystemGroup))]
+    [UpdateBefore(typeof(TransformSystemGroup))]
+    [UpdateAfter(typeof(PredictedSimulationSystemGroup))]
     public partial class AfterDestructSystemGroup : ComponentSystemGroup
     {
         

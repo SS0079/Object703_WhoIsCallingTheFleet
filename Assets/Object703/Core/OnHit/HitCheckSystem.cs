@@ -165,11 +165,6 @@ namespace Object703.Core
             new HomingShotHitCheckJob { localTransformLp = localTransLp }.ScheduleParallel();
         }
 
-        [BurstCompile]
-        public void OnDestroy(ref SystemState state)
-        {
-
-        }
 
         /// <summary>
         /// perform hit check by a backward sphere cast. SphereCastHitCheck component hold the radius of sphere,collision filter and last position.
@@ -293,7 +288,7 @@ namespace Object703.Core
 
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(OnHitSystemGroup))]
+    [UpdateInGroup(typeof(AfterHitSystemGroup))]
     public partial struct OrderHitDestructSystem : ISystem
     {
         public void OnCreate(ref SystemState state)
@@ -315,8 +310,8 @@ namespace Object703.Core
             //     canEndSpawn.AddCommandData(new CanDestructSpawn(){Tick = networkTime.ServerTick,canSpawn = e});
             // }
             
-            foreach (var (count,enDestruct) in SystemAPI
-                         .Query<RefRO<PenetrateLimit>,EnabledRefRW<DestructTag>>().WithAll<Simulate>().WithDisabled<DestructTag>())
+            foreach (var (count,enDestruct,trans) in SystemAPI
+                         .Query<RefRO<PenetrateLimit>,EnabledRefRW<DestructTag>,RefRO<LocalTransform>>().WithAll<Simulate>().WithDisabled<DestructTag>())
             {
                 if (count.ValueRO.value<=0)
                 {

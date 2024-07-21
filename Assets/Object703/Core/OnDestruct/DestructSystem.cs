@@ -32,7 +32,6 @@ namespace Object703.Core
     }
     
     [Serializable]
-    [GhostEnabledBit]
     public struct DestructTag : IComponentData , IEnableableComponent
     {
     }
@@ -168,7 +167,7 @@ namespace Object703.Core
     }
     
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(OnDestrcutSystemGroup))]
+    [UpdateInGroup(typeof(AfterDestructSystemGroup))]
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
     public partial struct DestructGhostClientSystem : ISystem
     {
