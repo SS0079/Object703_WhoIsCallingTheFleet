@@ -32,6 +32,7 @@ namespace Object703.Core
     }
     
     [Serializable]
+    [GhostEnabledBit]
     public struct DestructTag : IComponentData , IEnableableComponent
     {
     }
@@ -130,12 +131,12 @@ namespace Object703.Core
             }
         }
     }
-    public struct CanDestructSpawn : ICommandData
+    public struct CanDestructGhost : ICommandData
     {
         [GhostField]
         public NetworkTick Tick { get; set; }
         [GhostField]
-        public InputEvent canSpawn;
+        public InputEvent destruct;
     }
     #endregion
     
@@ -188,7 +189,6 @@ namespace Object703.Core
                          .Query<RefRW<DestructSpawnPrefabs>,RefRO<LocalTransform>,RefRO<GhostOwner>>().WithAll<Simulate,DestructTag>().WithNone<HideInClientTag>())
             {
                 prefabs.ValueRW.Spawn(state.EntityManager,trans.ValueRO,owner.ValueRO);
-                Debug.DrawLine(trans.ValueRO.Position,new Vector3(trans.ValueRO.Position.x,0,trans.ValueRO.Position.z),Color.yellow,10);
             }
 
             // spawn effect if have effect to spawn on destruct
@@ -224,7 +224,7 @@ namespace Object703.Core
             //hide ghost if this is client world
             foreach (var trans in SystemAPI
                          .Query<RefRW<LocalTransform>>()
-                         .WithAll<Simulate,DestructTag,GhostInstance>())
+                         .WithAll<DestructTag,GhostInstance>())
             {
                 trans.ValueRW.Position = hideOutPos;
             }

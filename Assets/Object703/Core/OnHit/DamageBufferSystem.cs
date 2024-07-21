@@ -25,7 +25,7 @@ namespace Object703.Core
     
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(BeforeHitSystemGroup))]
+    [UpdateInGroup(typeof(OnHitSystemGroup))]
     [UpdateAfter(typeof(HitCheckSystem))]
     public partial struct DamageBufferSystem : ISystem
     {

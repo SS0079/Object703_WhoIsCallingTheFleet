@@ -72,10 +72,10 @@ namespace Object703.Authoring
                     }
                     AddComponent(self,spawnPrefabs);
                 }
-                if (havedestructSpawns || haveDestructEffects)
-                {
-                    AddBuffer<CanDestructSpawn>(self);
-                }
+                // if (havedestructSpawns || haveDestructEffects)
+                // {
+                //     AddBuffer<CanDestructGhost>(self);
+                // }
                 
             }
         }
