@@ -105,7 +105,7 @@ namespace Object703.Core
     public struct ShootAtTick : ICommandData
     {
         [GhostField]public NetworkTick Tick { get; set; }
-        [GhostField]public NetworkTick value;
+        [GhostField]public NetworkTick coolDownAtTick;
     }
     // [RequireMatchingQueriesForUpdate]
     // [UpdateInGroup(typeof(SimulationSystemGroup))]
@@ -145,8 +145,10 @@ namespace Object703.Core
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            // var Δt = SystemAPI.Time.DeltaTime;
-            var currentTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
+            var networkTime = SystemAPI.GetSingleton<NetworkTime>();
+            var currentTick = networkTime.ServerTick;
+            if (!networkTime.IsFirstTimeFullyPredictingTick) return;
+            
             foreach (var (targetBuffer,weapon,tick,ltw,random,owner) in SystemAPI.
                          Query<DynamicBuffer<TargetBufferElement>,
                              RefRW<Weapon>,
@@ -155,11 +157,23 @@ namespace Object703.Core
                              RefRW<IndividualRandom>,
                              RefRO<GhostOwner>>())
             {
-                //skip if no target
+                //skip if no target 
                 if(targetBuffer.Length==0) continue;
-                tick.GetDataAtTick(currentTick, out var curShootAtTick);
+                var onTime = false;
+                for (uint i = 0u; i < networkTime.SimulationStepBatchSize; i++)
+                {
+                    var localNow = currentTick.SubSpan(i);
+                    if (!tick.GetDataAtTick(localNow,out var localTick))
+                    {
+                        localTick.coolDownAtTick = NetworkTick.Invalid;
+                    }
+                    if (localTick.coolDownAtTick == NetworkTick.Invalid || localNow.IsNewerThan(localTick.coolDownAtTick))
+                    {
+                        onTime = true;
+                    }
+                }
                 //skip if time not reach
-                if (!curShootAtTick.value.IsValid || currentTick.Equals(curShootAtTick.value) || currentTick.IsNewerThan(curShootAtTick.value))
+                if (onTime)
                 {
                     var targetPos = SystemAPI.GetComponentRO<LocalTransform>(targetBuffer[0].value);
                     for (int i = 0; i < weapon.ValueRO.salvo; i++)
@@ -167,23 +181,21 @@ namespace Object703.Core
                         SpawnCharge(state.EntityManager,weapon,ltw,targetPos.ValueRO.Position,random,owner);
                     }
                     weapon.ValueRW.burstCounter++;
+                    var waitInTick = 0u;
+          
                     if (weapon.ValueRO.burstCounter<weapon.ValueRO.burst)
                     {
                         //if burstCounter is smaller than burst, set next tick according to delayBetweenBurst
-                        var timeInTick =(uint)(weapon.ValueRO.delayBetweenBurst * simulationTickRate);
-                        tick.AddCommandData(new ShootAtTick(){Tick = currentTick,value = currentTick.AddSpan(timeInTick)});
+                        waitInTick =(uint)(weapon.ValueRO.delayBetweenBurst * simulationTickRate);
                     }
                     else
                     {
                         //if not, set timer to delayBetweenShot, and set burstCounter to 0
-                        var waitTimeInTick = (uint)(weapon.ValueRO.delayBetweenShot * simulationTickRate);
+                        waitInTick = (uint)(weapon.ValueRO.delayBetweenShot * simulationTickRate);
                         weapon.ValueRW.burstCounter = 0;
-                        tick.AddCommandData(new ShootAtTick(){Tick = currentTick,value = currentTick.AddSpan(waitTimeInTick)});
                     }
-                    if (state.WorldUnmanaged.IsServer())
-                    {
-                        Debug.Log($"Shoot in server");
-                    }
+                    if (state.WorldUnmanaged.IsServer()) continue;
+                    tick.AddCommandData(new ShootAtTick(){Tick = currentTick.AddSpan(1u),coolDownAtTick = currentTick.AddSpan(waitInTick)});
                 }
                 
             }

@@ -51,7 +51,7 @@ MonoBehaviour:
   targetFilter:
     antiAir: 1
     antiSurface: 1
-    hitTerran: 0
+    hitTerran: 1
     targetRole: 2
   weapon:
     maxRange: 30
@@ -60,7 +60,7 @@ MonoBehaviour:
       x: 0
       y: 15
     salvo: 2
-    burst: 2
+    burst: 1
     targetFilter: {fileID: 11400000, guid: 04591fbd34b5e01439ca06ecbe552bc6, type: 2}
     charge: {fileID: 83283020866352155, guid: fa6729e836c7add45acda7e648a0deb9, type: 3}
     delayBetweenShot: 1
@@ -123,7 +123,7 @@ MonoBehaviour:
   SupportedGhostModes: 3
   OptimizationMode: 0
   Importance: 1
-  prefabId: 7a77f646d8411384580eb8e857675938
+  prefabId: 55722f9964e3d1541b4e02585d57c60e
   HasOwner: 1
   SupportAutoCommandTarget: 1
   TrackInterpolationDelay: 0

@@ -10,5 +10,12 @@ namespace Object703.Core
             result.Add(span);
             return result;
         }
+
+        public static NetworkTick SubSpan(this NetworkTick now, uint span)
+        {
+            var result = now;
+            result.Subtract(span);
+            return result;
+        }
     }
 }

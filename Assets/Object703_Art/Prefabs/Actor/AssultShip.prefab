@@ -310,9 +310,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   names:
   - MarcoGunBatteryLeft_Player
+  - MarcoGunBatteryRight_Player
   - WarpSkill
   - TomatoCannonSkill
-  - MarcoGunBatteryRight_Player
 --- !u!114 &-3501293915873222717
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -325,7 +325,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93fba12987b04b77ae86734b1b8ae518, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  destrcutNextFrame: 0
+  destructSpawns: []
+  destructEffects: []
 --- !u!114 &-6987910881549804457
 MonoBehaviour:
   m_ObjectHideFlags: 0

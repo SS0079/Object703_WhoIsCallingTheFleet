@@ -14,12 +14,14 @@ using UnityEngine.Serialization;
 namespace Object703.Core
 {
     [Serializable]
+    [GhostComponent(PrefabType = GhostPrefabType.Client)]
     public class AttachLineRenderer : IComponentData, IEnableableComponent
     {
         public GameObject prefab;
     }
     
     [Serializable]
+    [GhostComponent(PrefabType = GhostPrefabType.Client)]
     public class LineRendererActor : ICleanupComponentData
     {
         [FormerlySerializedAs("go")]

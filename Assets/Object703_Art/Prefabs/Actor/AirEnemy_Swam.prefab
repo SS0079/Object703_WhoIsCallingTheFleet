@@ -294,7 +294,7 @@ MonoBehaviour:
   isAirBorne: 1
   isSurface: 0
   role: 2
-  maxHp: 5
+  maxHp: 1
 --- !u!114 &489435223402386316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -329,7 +329,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93fba12987b04b77ae86734b1b8ae518, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  destructImmediately: 0
+  destructSpawns: []
+  destructEffects: []
 --- !u!1 &9076594229523543102
 GameObject:
   m_ObjectHideFlags: 0
@@ -374,7 +375,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd6f208d7d90484ba7b40342a3cd7c72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitFilter:
+  targetFilter:
     antiAir: 0
     antiSurface: 0
     hitTerran: 0

@@ -111,7 +111,7 @@ namespace Object703.Authoring
             if (authoring.TryGetComponent(out GhostAuthoringComponent _))
             {
                 AddBuffer<ShootAtTick>(self);
-                AppendToBuffer(self,new ShootAtTick(){Tick = new NetworkTick(1),value = new NetworkTick(100)});
+                // AppendToBuffer(self,new ShootAtTick(){Tick = new NetworkTick(1),coolDownAtTick = new NetworkTick(100)});
             }
         }
     }

@@ -31,7 +31,6 @@ namespace Object703.Core
             state.Dependency.Complete();
             localTransLp.Update(ref state);
             var networkTime = SystemAPI.GetSingleton<NetworkTime>();
-            var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
 
             if (!networkTime.IsFirstTimeFullyPredictingTick) return;
 
