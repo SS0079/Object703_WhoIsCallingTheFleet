@@ -1,7 +1,12 @@
 fileFormatVersion: 2
-guid: 3f5fb0341877e744aa110fe3be6ecce3
-PrefabImporter:
+guid: 7ac49c1e9239d2f4b9195ccd58fac3c8
+labels:
+- Effect
+timeCreated: 1485786815
+licenseType: Store
+NativeFormatImporter:
   externalObjects: {}
+  mainObjectFileID: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 
