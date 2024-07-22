@@ -157,6 +157,8 @@ MonoBehaviour:
   - AssultShipMesh_Remote
   - FanLine
   - TomatoShotTrail_Local
+  - TomatoShotExplode_Local
+  - TomatoShotExplode_Remote
 --- !u!114 &808124496
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -223,11 +225,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fixFramerate: 120
-  testSerializeDic:
-    Drawer_AddingKey: 1
-    Drawer_AddingValue: {fileID: 0}
-    data: []
-    unusedIndices: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

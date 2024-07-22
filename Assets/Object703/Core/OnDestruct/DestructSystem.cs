@@ -56,22 +56,22 @@ namespace Object703.Core
             if (value0!=Entity.Null)
             {
                 var e = manager.Instantiate(value0);
-                manager.SetComponentData(e, new LocalPositionInitializer() { position = trans.Position });
+                manager.SetComponentData(e, trans);
             }
             if (value1!=Entity.Null)
             {
                 var e = manager.Instantiate(value1);
-                manager.SetComponentData(e, new LocalPositionInitializer() { position = trans.Position });
+                manager.SetComponentData(e, trans);
             }
             if (value2!=Entity.Null)
             {
                 var e = manager.Instantiate(value2);
-                manager.SetComponentData(e, new LocalPositionInitializer() { position = trans.Position });
+                manager.SetComponentData(e, trans);
             }
             if (value3!=Entity.Null)
             {
                 var e = manager.Instantiate(value3);
-                manager.SetComponentData(e, new LocalPositionInitializer() { position = trans.Position });
+                manager.SetComponentData(e, trans);
             }
         }
     }

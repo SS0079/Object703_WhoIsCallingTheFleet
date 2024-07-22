@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using KittyHelpYouOut;
 using QFramework;
@@ -20,7 +21,15 @@ namespace Object703.Utility
             for (int i = 0; i < prefabNames.Length; i++)
             {
                 var name = prefabNames[i];
-                var result = prefabLoader.LoadSync<GameObject>(name);
+                GameObject result=null;
+                try
+                {
+                    result = prefabLoader.LoadSync<GameObject>(name);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"res load error: {name}");
+                }
                 if (result==null) continue;
                 var success = prefabDic.TryAdd(name, result);
                 if (success)

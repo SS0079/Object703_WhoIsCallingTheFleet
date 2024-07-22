@@ -38,7 +38,7 @@ namespace Object703.Core
         {
             if (actor.Value==null)
             {
-                Debug.Log($"Null happend");
+                Debug.LogError($"Null happend");
             }
             return actor.Value;
         }

@@ -19,7 +19,6 @@ GameObject:
   - component: {fileID: -8611890597019736684}
   - component: {fileID: -7192766500637367178}
   - component: {fileID: -3501293915873222717}
-  - component: {fileID: -6987910881549804457}
   m_Layer: 0
   m_Name: AssultShip
   m_TagString: Untagged
@@ -327,25 +326,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   destructSpawns: []
   destructEffects: []
---- !u!114 &-6987910881549804457
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 296525712884165657}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef645b74334f4c70ac1170435bed1a6b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  netConfig: {fileID: 11400000, guid: 5fafff5fa10047c46a2040db1c8fb7ea, type: 2}
-  slot: 1
-  type: 0
-  data:
-    radius: 0
-    range: 300
-    coolDown: 2
-    lifeSpan: 0
-  spawnPrefab: {fileID: 4033528821912424, guid: 57782b7233ec83840a75b4790fe14492,
-    type: 3}
