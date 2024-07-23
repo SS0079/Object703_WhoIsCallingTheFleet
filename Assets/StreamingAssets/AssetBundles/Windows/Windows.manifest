@@ -1,0 +1,12 @@
+ManifestFileVersion: 0
+UnityVersion: 6000.0.0b16
+CRC: 1427106357
+HashAppended: 0
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: frontendnetworkpanel_prefab
+      Dependencies: {}
+    Info_1:
+      Name: gameobjectactor
+      Dependencies: {}

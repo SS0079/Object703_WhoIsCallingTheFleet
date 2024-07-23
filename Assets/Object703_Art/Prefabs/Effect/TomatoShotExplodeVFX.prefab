@@ -74,5 +74,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   netConfig: {fileID: 11400000, guid: 5fafff5fa10047c46a2040db1c8fb7ea, type: 2}
-  lifeSpan: 0.5
+  lifeSpan: 4
   startCountDownImmediately: 1

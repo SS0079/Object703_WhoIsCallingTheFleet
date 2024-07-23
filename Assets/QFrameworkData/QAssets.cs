@@ -16,4 +16,16 @@ namespace QAssetBundle
         public const string BundleName = "frontendnetworkpanel_prefab";
         public const string FRONTENDNETWORKPANEL = "FrontendNetworkPanel";
     }
+    public class Gameobjectactor
+    {
+        public const string BundleName = "gameobjectactor";
+        public const string ASSULTSHIPMESH_LOCAL = "AssultShipMesh_Local";
+        public const string ASSULTSHIPMESH_REMOTE = "AssultShipMesh_Remote";
+        public const string FANLINE = "FanLine";
+        public const string MARCOSHELL_LOCAL = "MarcoShell_Local";
+        public const string MARCOSHELL_REMOTE = "MarcoShell_Remote";
+        public const string TOMATOSHOTEXPLODE_LOCAL = "TomatoShotExplode_Local";
+        public const string TOMATOSHOTEXPLODE_REMOTE = "TomatoShotExplode_Remote";
+        public const string TOMATOSHOTTRAIL_LOCAL = "TomatoShotTrail_Local";
+    }
 }

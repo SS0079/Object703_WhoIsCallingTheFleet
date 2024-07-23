@@ -1,0 +1,48 @@
+ManifestFileVersion: 0
+UnityVersion: 6000.0.0b16
+CRC: 3872296672
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 47b6b0c4f4bec7232ca94404e4a420d6
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 68fd6220a6cea6738278fef95c2e1526
+  IncrementalBuildHash:
+    serializedVersion: 2
+    Hash: 7ebb5ff6bd1e4aca0e55dde6d4908d23
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 120
+  Script: {instanceID: 0}
+- Class: 198
+  Script: {instanceID: 0}
+- Class: 199
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Object703_Art/Prefabs/GameObjectActor/TomatoShotExplode_Local.prefab
+- Assets/Object703_Art/Prefabs/GameObjectActor/TomatoShotExplode_Remote.prefab
+- Assets/Object703_Art/Prefabs/GameObjectActor/MarcoShell_Remote.prefab
+- Assets/Object703_Art/Prefabs/GameObjectActor/AssultShipMesh_Local.prefab
+- Assets/Object703_Art/Prefabs/GameObjectActor/AssultShipMesh_Remote.prefab
+- Assets/Object703_Art/Prefabs/GameObjectActor/TomatoShotTrail_Local.prefab
+- Assets/Object703_Art/Prefabs/GameObjectActor/FanLine.prefab
+- Assets/Object703_Art/Prefabs/GameObjectActor/MarcoShell_Local.prefab
+Dependencies: []

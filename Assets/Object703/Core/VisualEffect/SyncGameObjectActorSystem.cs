@@ -23,7 +23,7 @@ namespace Object703.Core
         public void OnUpdate(ref SystemState state)
         {
             // sync position and rotation of entities and their game object
-            foreach (var (gameObjectActor,ltw) in SystemAPI.Query<RefRW<GameObjectActor>,RefRO<LocalToWorld>>().WithNone<DestructTag>())
+            foreach (var (gameObjectActor,ltw) in SystemAPI.Query<RefRW<GameObjectActor>,RefRO<LocalToWorld>>())
             {
                 var actorTransform = gameObjectActor.ValueRW.Get().transform;
                 actorTransform.position = ltw.ValueRO.Position;
@@ -31,7 +31,7 @@ namespace Object703.Core
             }
             
             //sync the lineRenderer positions of entities
-            foreach (var (line,weapon,ltw) in SystemAPI.Query<LineRendererActor,RefRO<Weapon>,RefRO<LocalToWorld>>().WithNone<DestructTag>())
+            foreach (var (line,weapon,ltw) in SystemAPI.Query<LineRendererActor,RefRO<Weapon>,RefRO<LocalToWorld>>())
             {
                 Vector3 fwd = ltw.ValueRO.Forward;
                 Vector3 start = ltw.ValueRO.Position;
