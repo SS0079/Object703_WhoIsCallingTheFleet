@@ -12,6 +12,7 @@ namespace Object703.Authoring
     [DisallowMultipleComponent]
     public class PlayerAuthoring : MonoBehaviour
     {
+        public PredicateRange predicateRange;
     }
     public class PlayerAuthoringBaker : Baker<PlayerAuthoring>
     {
@@ -20,6 +21,7 @@ namespace Object703.Authoring
             var self = GetEntity(TransformUsageFlags.None);
             AddComponent(self,new PlayerTag());
             AddComponent(self,new PlayerMoveInput());
+            AddComponent(self,authoring.predicateRange);
         }
     }
 }

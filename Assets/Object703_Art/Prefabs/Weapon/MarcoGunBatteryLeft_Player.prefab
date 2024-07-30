@@ -54,7 +54,7 @@ MonoBehaviour:
     hitTerran: 1
     targetRole: 2
   weapon:
-    maxRange: 30
+    maxRange: 20
     minRange: 3
     spread:
       x: 0

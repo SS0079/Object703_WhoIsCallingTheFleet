@@ -248,6 +248,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80021be7071e4a6ab41e15b649ea01ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  predicateRange:
+    range: 25
+    margin: 5
 --- !u!114 &4661819818005196826
 MonoBehaviour:
   m_ObjectHideFlags: 0
