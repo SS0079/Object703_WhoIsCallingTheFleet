@@ -95,7 +95,7 @@ namespace Object703.Core
                 foreach (var (prefabName, actor) in SystemAPI
                              .Query<RefRO<AttachGameObject>, RefRW<GameObjectActor>>().WithNone<GhostOwnerIsLocal>().WithNone<DestructTag>())
                 {
-                    var localKey = prefabName.ValueRO.prefabName.ToString()+"_Remote";
+                    var localKey = prefabName.ValueRO.prefabName.ToString()+"_Other";
                     var exist = prefabDic.TryGetValue(localKey,out GameObject prefab);
                     if(!exist) break;
                     var go = prefab.GetPoolObject();

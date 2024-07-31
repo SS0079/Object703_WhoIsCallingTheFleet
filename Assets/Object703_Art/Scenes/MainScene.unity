@@ -153,14 +153,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DDOL: 0
   prefabNames:
-  - AssultShipMesh_Local
-  - AssultShipMesh_Remote
-  - FanLine
-  - TomatoShotTrail_Local
-  - TomatoShotExplode_Local
-  - TomatoShotExplode_Remote
-  - MarcoShell_Local
-  - MarcoShell_Remote
+  - {fileID: 5768194707330863576, guid: d3172fc30248fab4fbe1c168bf4c1fad, type: 3}
+  - {fileID: 4086826301970422958, guid: 180340bf4884fea43928d460ee9cdb43, type: 3}
+  - {fileID: 7524546448886876309, guid: b5345a258724fe74da15ef2607c67881, type: 3}
+  - {fileID: 6773690265783724550, guid: 5948b2e41f86dc343b788c797e82b34d, type: 3}
+  - {fileID: 5815073732218617799, guid: 5541a8a99484ec74aab58d1a2d75aaea, type: 3}
 --- !u!114 &808124496
 MonoBehaviour:
   m_ObjectHideFlags: 0
