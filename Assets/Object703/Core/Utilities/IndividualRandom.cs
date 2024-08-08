@@ -8,6 +8,6 @@ namespace Object703.Core
     [Serializable]
     public struct IndividualRandom : IComponentData
     {
-        [GhostField]public Random value;
+        public Random value;
     }
 }
