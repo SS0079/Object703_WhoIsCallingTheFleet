@@ -17,7 +17,7 @@ namespace Object703.Core
     [GhostComponent(PrefabType = GhostPrefabType.Client)]
     public class AttachLineRenderer : IComponentData, IEnableableComponent
     {
-        public GameObject prefab;
+        public FixedString32Bytes prefabName;
     }
     
     [Serializable]
@@ -66,7 +66,6 @@ namespace Object703.Core
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
     public partial class SpawnGameObjectActorSystem : SystemBase
     {
-        // private Dictionary<string, GameObject> prefabDic;
         protected override void OnUpdate()
         {
             if (AssetLoaderManager.Instance==null) return;
@@ -128,7 +127,9 @@ namespace Object703.Core
                 //spawn lineRenderer actor for entities who have lineRenderer prefab
                 foreach (var (prefab, actor) in SystemAPI.Query<AttachLineRenderer, LineRendererActor>().WithNone<DestructTag>())
                 {
-                    var line = prefab.prefab.gameObject.GetPoolObject();
+                    var localKey = prefab.prefabName+"_Local";
+                    var exist = prefabDic.TryGetValue(localKey,out var line);
+                    if(!exist) break;
                     line.transform.forward = Vector3.up;
                     actor.value = line.GetComponent<LineRenderer>();
                 }

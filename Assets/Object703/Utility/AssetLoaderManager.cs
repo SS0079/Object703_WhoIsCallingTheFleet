@@ -77,11 +77,6 @@ namespace Object703.Utility
                     }
                 }
                 
-                // var success = prefabDic.TryAdd(name, result);
-                // if (success)
-                // {
-                //     sb.Append($"{++prefabCount}:{name}\n");
-                // }
             }
             KittyDebug.Log(sb.ToString());
         }

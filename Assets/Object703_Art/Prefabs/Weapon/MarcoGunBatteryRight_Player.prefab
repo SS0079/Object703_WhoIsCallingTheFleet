@@ -82,7 +82,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 843b371a825f47bd91a189cd3d05eba0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab: {fileID: 4331402589619670958, guid: a2443c0714e94a14da06a4578a4214f5, type: 3}
+  prefabName: FanLine
 --- !u!114 &-4307979140093607164
 MonoBehaviour:
   m_ObjectHideFlags: 0
