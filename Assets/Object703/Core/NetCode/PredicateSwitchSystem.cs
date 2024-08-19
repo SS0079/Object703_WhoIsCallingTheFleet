@@ -27,44 +27,46 @@ namespace Object703.Core
         {
             state.RequireForUpdate<PredicateRange>();
             state.RequireForUpdate<GhostPredictionSwitchingQueues>();
+            // TODO: alert
+            state.Enabled = false;
         }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var predicateRange = SystemAPI.GetSingleton<PredicateRange>();
-            var inRangeSq = predicateRange.inRangeSq;
-            var outRangeSq = predicateRange.outRangeSq;
-            var predicaterEnt = SystemAPI.GetSingletonEntity<PredicateRange>();
-            var predicaterPos = state.EntityManager.GetComponentData<LocalTransform>(predicaterEnt).Position;
-            var switchQueue = SystemAPI.GetSingletonRW<GhostPredictionSwitchingQueues>().ValueRW;
-
-            foreach (var (trans,e) in SystemAPI
-                         .Query<RefRO<LocalTransform>>().WithAll<Simulate,GhostInstance>().WithNone<PredictedGhost,DestructTag,GhostOwnerIsLocal>().WithEntityAccess())
-            {
-                var distancesq = math.distancesq(trans.ValueRO.Position,predicaterPos);
-                if (distancesq<=inRangeSq)
-                {
-                    switchQueue.ConvertToPredictedQueue.Enqueue(new ConvertPredictionEntry
-                    {
-                        TargetEntity = e,
-                        TransitionDurationSeconds = 1
-                    });
-                }
-            }
-            foreach (var (trans,e) in SystemAPI
-                         .Query<RefRO<LocalTransform>>().WithAll<Simulate,PredictedGhost,GhostInstance>().WithNone<DestructTag,GhostOwnerIsLocal>().WithEntityAccess())
-            {
-                var distancesq = math.distancesq(trans.ValueRO.Position,predicaterPos);
-                if (distancesq>outRangeSq)
-                {
-                    switchQueue.ConvertToInterpolatedQueue.Enqueue(new ConvertPredictionEntry
-                    {
-                        TargetEntity = e,
-                        TransitionDurationSeconds = 1
-                    });
-                }
-            }
+            // var predicateRange = SystemAPI.GetSingleton<PredicateRange>();
+            // var inRangeSq = predicateRange.inRangeSq;
+            // var outRangeSq = predicateRange.outRangeSq;
+            // var predicaterEnt = SystemAPI.GetSingletonEntity<PredicateRange>();
+            // var predicaterPos = state.EntityManager.GetComponentData<LocalTransform>(predicaterEnt).Position;
+            // var switchQueue = SystemAPI.GetSingletonRW<GhostPredictionSwitchingQueues>().ValueRW;
+            //
+            // foreach (var (trans,e) in SystemAPI
+            //              .Query<RefRO<LocalTransform>>().WithAll<Simulate,GhostInstance>().WithNone<PredictedGhost,DestructTag,GhostOwnerIsLocal>().WithEntityAccess())
+            // {
+            //     var distancesq = math.distancesq(trans.ValueRO.Position,predicaterPos);
+            //     if (distancesq<=inRangeSq)
+            //     {
+            //         switchQueue.ConvertToPredictedQueue.Enqueue(new ConvertPredictionEntry
+            //         {
+            //             TargetEntity = e,
+            //             TransitionDurationSeconds = 1
+            //         });
+            //     }
+            // }
+            // foreach (var (trans,e) in SystemAPI
+            //              .Query<RefRO<LocalTransform>>().WithAll<Simulate,PredictedGhost,GhostInstance>().WithNone<DestructTag,GhostOwnerIsLocal>().WithEntityAccess())
+            // {
+            //     var distancesq = math.distancesq(trans.ValueRO.Position,predicaterPos);
+            //     if (distancesq>outRangeSq)
+            //     {
+            //         switchQueue.ConvertToInterpolatedQueue.Enqueue(new ConvertPredictionEntry
+            //         {
+            //             TargetEntity = e,
+            //             TransitionDurationSeconds = 1
+            //         });
+            //     }
+            // }
         }
 
     }

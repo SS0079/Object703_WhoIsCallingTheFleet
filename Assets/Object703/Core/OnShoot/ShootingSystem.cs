@@ -131,6 +131,7 @@ namespace Object703.Core
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(OnShootSystemGroup))]
+    [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
     public partial struct ShootingSystem : ISystem
     {
         private int simulationTickRate;

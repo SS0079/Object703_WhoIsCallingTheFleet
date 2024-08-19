@@ -191,9 +191,38 @@ namespace Object703.Core
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            state.CompleteDependency();
-            state.Dependency = new MoveSystemJobs.ShipMoveJob().ScheduleParallel(state.Dependency);
-            state.Dependency = new MoveSystemJobs.ArrowMoveJob().ScheduleParallel(state.Dependency);
+            //ship move
+            foreach (var (localTrans,moveConfig,moveAxis,rotateAxis,moveSpeed,rotateSpeed) in SystemAPI
+                         .Query<RefRW<LocalTransform>,
+                             RefRO<ShipMoveConfig>,
+                             RefRO<MoveAxis>,
+                             RefRO<RotateAxis>,
+                             RefRW<MoveSpeed>,
+                             RefRW<RotateSpeed>>().WithAll<Simulate,GhostOwner>().WithNone<DestructTag>())
+            {
+                var targetEuler = rotateAxis.ValueRO.rotateEuler*moveConfig.ValueRO.RotateRadiusPerTick;
+                var rotateDamp =rotateAxis.ValueRO.rotateEuler.y==0 ? moveConfig.ValueRO.rotateDampStop : moveConfig.ValueRO.rotateDampMotion;
+                rotateSpeed.ValueRW.value = math.lerp(rotateSpeed.ValueRO.value, targetEuler, 1f/ (rotateDamp+1));
+                var quaternion = Unity.Mathematics.quaternion.Euler(rotateSpeed.ValueRO.value);
+                localTrans.ValueRW=localTrans.ValueRW.Rotate(quaternion);
+                
+                var speedDir = localTrans.ValueRW.TransformDirection(moveAxis.ValueRO.moveDirection);
+                var speed=moveConfig.ValueRO.moveSpeedPerTick * speedDir;
+                var speedDamp = math.lengthsq(moveAxis.ValueRO.moveDirection)==0 ? moveConfig.ValueRO.moveDampStop : moveConfig.ValueRO.moveDampMotion;
+                moveSpeed.ValueRW.value = math.lerp(moveSpeed.ValueRO.value, speed, 1f / (speedDamp + 1));
+                localTrans.ValueRW.Position += new float3(moveSpeed.ValueRO.value);
+            }
+            
+            //arrow move
+            foreach (var (localTrans,moveConfig) in SystemAPI    
+                         .Query<RefRW<LocalTransform>,RefRO<ArrowMoveConfig>>().WithAll<Simulate>().WithNone<DestructTag>())
+            {
+                localTrans.ValueRW.Position += localTrans.ValueRW.Forward() * moveConfig.ValueRO.speedPerTick;
+            }
+            
+            // state.CompleteDependency();
+            // state.Dependency = new MoveSystemJobs.ShipMoveJob().ScheduleParallel(state.Dependency);
+            // state.Dependency = new MoveSystemJobs.ArrowMoveJob().ScheduleParallel(state.Dependency);
         }
 
     }
