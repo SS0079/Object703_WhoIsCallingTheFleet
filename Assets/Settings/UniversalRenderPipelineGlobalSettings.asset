@@ -33,7 +33,7 @@ MonoBehaviour:
   m_Settings:
     m_SettingsList:
       m_List:
-      - rid: 3901428405583740928
+      - rid: 1891699214154203204
       - rid: 3901428405583740929
       - rid: 3901428405583740930
       - rid: 2743119010748170308
@@ -52,19 +52,9 @@ MonoBehaviour:
       - rid: 2743119010748170316
       - rid: 2743119010748170317
       - rid: 3901428405583740946
-      - rid: 3901428405583740947
+      - rid: 1891699214154203205
     m_RuntimeSettings:
-      m_List:
-      - rid: 3901428405583740928
-      - rid: 3901428405583740929
-      - rid: 3901428405583740930
-      - rid: 3901428405583740932
-      - rid: 3901428405583740933
-      - rid: 3901428405583740936
-      - rid: 3901428405583740938
-      - rid: 3901428405583740940
-      - rid: 3901428405583740946
-      - rid: 3901428405583740947
+      m_List: []
   m_AssetVersion: 8
   m_ObsoleteDefaultVolumeProfile: {fileID: 0}
   m_RenderingLayerNames:
@@ -95,6 +85,17 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 1891699214154203204
+      type: {class: RenderGraphSettings, ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.Runtime}
+      data:
+        m_Version: 0
+        m_EnableRenderCompatibilityMode: 1
+    - rid: 1891699214154203205
+      type: {class: RenderGraphGlobalSettings, ns: UnityEngine.Rendering, asm: Unity.RenderPipelines.Core.Runtime}
+      data:
+        m_version: 0
+        m_EnableCompilationCaching: 1
+        m_EnableValidityChecks: 1
     - rid: 2743119010748170308
       type: {class: Renderer2DResources, ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.Runtime}
       data:
@@ -242,11 +243,6 @@ MonoBehaviour:
           type: 3}
         probeVolumeUploadDataL2CS: {fileID: 7200000, guid: 6196f34ed825db14b81fb3eb0ea8d931,
           type: 3}
-    - rid: 3901428405583740928
-      type: {class: RenderGraphSettings, ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.Runtime}
-      data:
-        m_Version: 0
-        m_EnableRenderCompatibilityMode: 0
     - rid: 3901428405583740929
       type: {class: UniversalRenderPipelineRuntimeXRResources, ns: UnityEngine.Rendering.Universal,
         asm: Unity.RenderPipelines.Universal.Runtime}
@@ -321,9 +317,3 @@ MonoBehaviour:
         m_ExportShaderVariants: 1
         m_ShaderVariantLogLevel: 0
         m_StripRuntimeDebugShaders: 1
-    - rid: 3901428405583740947
-      type: {class: RenderGraphGlobalSettings, ns: UnityEngine.Rendering, asm: Unity.RenderPipelines.Core.Runtime}
-      data:
-        m_version: 0
-        m_EnableCompilationCaching: 1
-        m_EnableValidityChecks: 1

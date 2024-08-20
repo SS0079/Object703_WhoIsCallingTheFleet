@@ -820,7 +820,7 @@ PlayerSettings:
   webGLCloseOnQuit: 0
   webWasm2023: 0
   scriptingDefineSymbols:
-    Standalone: UNITY_PHYSICS_CUSTOM;FLOCKBOX_DOTS;ENABLE_DEBUG
+    Standalone: UNITY_PHYSICS_CUSTOM;FLOCKBOX_DOTS;ENABLE_DEBUG;-AUTO_LOAD_START_SCENE
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}

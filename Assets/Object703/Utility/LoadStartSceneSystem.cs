@@ -2,7 +2,7 @@
 using Unity.Entities;
 using UnityEngine.SceneManagement;
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR && AUTO_LOAD_START_SCENE
 namespace Object703.Utility
 {
     [BurstCompile]
