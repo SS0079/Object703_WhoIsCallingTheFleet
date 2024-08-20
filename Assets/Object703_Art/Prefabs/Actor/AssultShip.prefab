@@ -228,11 +228,11 @@ MonoBehaviour:
   style: 1
   shipMoveConfig:
     moveSpeedPerSecond: 5
-    moveDampMotion: 200
-    moveDampStop: 50
+    moveDampMotion: 0
+    moveDampStop: 0
     rotateDegreePerSecond: 35
-    rotateDampMotion: 150
-    rotateDampStop: 80
+    rotateDampMotion: 0
+    rotateDampStop: 0
   arrowMoveConfig:
     speedPerSecond: 0
   isHoming: 0
@@ -249,7 +249,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   predicateRange:
-    range: 25
+    range: 35
     margin: 5
 --- !u!114 &4661819818005196826
 MonoBehaviour:

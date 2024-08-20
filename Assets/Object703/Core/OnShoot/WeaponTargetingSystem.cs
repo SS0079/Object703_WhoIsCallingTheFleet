@@ -33,7 +33,7 @@ namespace Object703.Core
         {
             var cworld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().CollisionWorld;
             new CleanUpTarget().Run();
-            new TargetingJob() { cWorld = cworld }.ScheduleParallel();
+            new TargetingJob() { cWorld = cworld }.Run();
         }
 
         [BurstCompile]

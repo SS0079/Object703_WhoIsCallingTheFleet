@@ -221,8 +221,10 @@ namespace Object703.Core
             // }
             
             state.CompleteDependency();
-            state.Dependency = new MoveSystemJobs.ShipMoveJob().ScheduleParallel(state.Dependency);
-            state.Dependency = new MoveSystemJobs.ArrowMoveJob().ScheduleParallel(state.Dependency);
+            // state.Dependency = new MoveSystemJobs.ShipMoveJob().ScheduleParallel(state.Dependency);
+            // state.Dependency = new MoveSystemJobs.ArrowMoveJob().ScheduleParallel(state.Dependency);
+            new MoveSystemJobs.ShipMoveJob().Run();
+            new MoveSystemJobs.ArrowMoveJob().Run();
         }
 
     }
