@@ -28,7 +28,7 @@ namespace Object703.Utility
                 }
                 catch (Exception _)
                 {
-                    KittyDebug.LogError($"res load error: {assetName}");
+                    KittyDebug.Instance.LogError($"res load error: {assetName}");
                 }
                 if (result==null) continue;
                 
@@ -36,7 +36,7 @@ namespace Object703.Utility
                 var childCount = result.transform.childCount;
                 if (childCount<=0)
                 {
-                    KittyDebug.LogError($"game object asset for actor must have at lest 1 child as actual asset for Local and Remote effect display\n" +
+                    KittyDebug.Instance.LogError($"game object asset for actor must have at lest 1 child as actual asset for Local and Remote effect display\n" +
                                         $"error game object: {assetName}");
                     continue;
                 }
@@ -78,7 +78,7 @@ namespace Object703.Utility
                 }
                 
             }
-            KittyDebug.Log(sb.ToString());
+            KittyDebug.Instance.Log(sb.ToString());
         }
     }
 }
