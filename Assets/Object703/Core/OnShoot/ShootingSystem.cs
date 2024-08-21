@@ -130,7 +130,7 @@ namespace Object703.Core
     
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(OnShootSystemGroup))]
+    [UpdateInGroup(typeof(OnPredicatedShootSystemGroup))]
     public partial struct ShootingSystem : ISystem
     {
         private int simulationTickRate;
@@ -150,7 +150,7 @@ namespace Object703.Core
             if (!networkTime.IsFirstTimeFullyPredictingTick) return;
             
             foreach (var (targetBuffer,weapon,tick,ltw,random,owner) in SystemAPI.
-                         Query<DynamicBuffer<TargetBufferElement>,
+                         Query<DynamicBuffer<TargetBuffer>,
                              RefRW<Weapon>,
                              DynamicBuffer<ShootAtTick>,
                              RefRO<LocalToWorld>,
@@ -173,9 +173,10 @@ namespace Object703.Core
                     }
                 }
                 //skip if time not reach
-                if (onTime)
+                if (onTime && targetBuffer.GetDataAtTick(currentTick,out var curTarget))
                 {
-                    var targetPos = SystemAPI.GetComponentRO<LocalTransform>(targetBuffer[0].value);
+                    
+                    var targetPos = SystemAPI.GetComponentRO<LocalTransform>(curTarget[0].Item1);
                     for (int i = 0; i < weapon.ValueRO.salvo; i++)
                     {
                         SpawnCharge(state.EntityManager,weapon,ltw,targetPos.ValueRO.Position,random,owner);

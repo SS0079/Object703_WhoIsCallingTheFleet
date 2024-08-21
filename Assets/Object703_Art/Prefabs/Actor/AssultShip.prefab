@@ -228,11 +228,11 @@ MonoBehaviour:
   style: 1
   shipMoveConfig:
     moveSpeedPerSecond: 5
-    moveDampMotion: 0
-    moveDampStop: 0
+    moveDampMotion: 136
+    moveDampStop: 95
     rotateDegreePerSecond: 35
-    rotateDampMotion: 0
-    rotateDampStop: 0
+    rotateDampMotion: 146
+    rotateDampStop: 83
   arrowMoveConfig:
     speedPerSecond: 0
   isHoming: 0

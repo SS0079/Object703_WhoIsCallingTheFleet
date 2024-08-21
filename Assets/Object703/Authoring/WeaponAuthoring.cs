@@ -107,7 +107,7 @@ namespace Object703.Authoring
             AddComponent(self,weapon);
             var randomData = new IndividualRandom() { value = Random.CreateFromIndex((uint)self.Index) };
             AddComponent(self,randomData);
-            AddBuffer<TargetBufferElement>(self);
+            AddBuffer<TargetBuffer>(self);
             if (authoring.TryGetComponent(out GhostAuthoringComponent _))
             {
                 AddBuffer<ShootAtTick>(self);
