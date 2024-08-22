@@ -24,7 +24,7 @@ namespace Object703.Authoring
         public HitFilterGenerator targetFilter;
         
         [FormerlySerializedAs("Weapon")]
-        public Weapon.AuthoringBox weapon;
+        public Weapon_FanRange.AuthoringBox weapon;
         [SerializeField]
         private bool showGizmos=false;
         
@@ -107,11 +107,9 @@ namespace Object703.Authoring
             AddComponent(self,weapon);
             var randomData = new IndividualRandom() { value = Random.CreateFromIndex((uint)self.Index) };
             AddComponent(self,randomData);
-            AddBuffer<TargetBuffer>(self);
             if (authoring.TryGetComponent(out GhostAuthoringComponent _))
             {
                 AddBuffer<ShootAtTick>(self);
-                // AppendToBuffer(self,new ShootAtTick(){Tick = new NetworkTick(1),coolDownAtTick = new NetworkTick(100)});
             }
         }
     }

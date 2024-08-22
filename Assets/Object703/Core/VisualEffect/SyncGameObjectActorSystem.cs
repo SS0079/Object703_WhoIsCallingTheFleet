@@ -31,7 +31,7 @@ namespace Object703.Core
             }
             
             //sync the lineRenderer positions of entities
-            foreach (var (line,weapon,ltw) in SystemAPI.Query<LineRendererActor,RefRO<Weapon>,RefRO<LocalToWorld>>())
+            foreach (var (line,weapon,ltw) in SystemAPI.Query<LineRendererActor,RefRO<Weapon_FanRange>,RefRO<LocalToWorld>>())
             {
                 Vector3 fwd = ltw.ValueRO.Forward;
                 Vector3 start = ltw.ValueRO.Position;

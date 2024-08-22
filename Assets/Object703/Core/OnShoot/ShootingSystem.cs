@@ -1,5 +1,7 @@
 ﻿using System;
+using KittyHelpYouOut;
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
@@ -30,7 +32,7 @@ namespace Object703.Core
         public static uint ToUInt(this ColliderLayers layers) => (uint)layers;
     }
     [Serializable]
-    public struct Weapon : IComponentData
+    public struct Weapon_FanRange : IComponentData
     {
         public float maxRange;
         public float minRange;
@@ -58,6 +60,57 @@ namespace Object703.Core
         private float arcLimitCos;
         public float ArcLimitCos => arcLimitCos;
         
+        public bool FindTarget(LocalToWorld muzzleltw,CollisionWorld cWorld,ComponentLookup<LocalTransform> transLp,ref NativeList<Entity> targetList)
+        {
+            // TODO: improve aabb calculation later on
+            // // calculate range fan left and right far point
+            // var fanFarRight = math.mul(quaternion.RotateY(math.radians(ArcLimit / 2f)), new float3(0, 0, maxRange));
+            // fanFarRight = muzzleTrans.InverseTransformPoint(fanFarRight);
+            // var fanFarLeft = math.mul(quaternion.RotateY(math.radians(-ArcLimit / 2f)), new float3(0, 0, maxRange));
+            // fanFarLeft = muzzleTrans.InverseTransformPoint(fanFarLeft);
+            // if (ArcLimit<180)
+            // {
+            //     //find aabb in fanFarRight, fanFarLeft, muzzle, centerFar
+            // }
+            targetList.Clear();
+            var result = false;
+            var muzzlePos = muzzleltw.Position;
+            var min = new float3(muzzlePos.x - maxRange, -25, muzzlePos.z - maxRange);
+            var max = new float3(muzzlePos.x + maxRange, 25, muzzlePos.z + maxRange);
+            OverlapAabbInput input = new OverlapAabbInput
+            {
+                Aabb = new Aabb
+                {
+                    Min = min,
+                    Max = max
+                },
+                Filter = targetFilter
+            };
+            NativeList<int> allhit = new NativeList<int>(Allocator.TempJob);
+            var isHit = cWorld.OverlapAabb(input,ref allhit);
+            if (isHit)
+            {
+                for (int i = 0; i < allhit.Length; i++)
+                {
+                    var hitEntity = cWorld.Bodies[allhit[i]].Entity;
+                    var entityPos = transLp[hitEntity].Position;
+                    var disSq = math.distancesq(muzzlePos, entityPos);
+                    // continue if too far or too close
+                    if (disSq<minRange*minRange || disSq>maxRange*maxRange) continue;
+                    entityPos = new float3(entityPos.x, 0, entityPos.z);
+                    muzzlePos = new float3(muzzlePos.x, 0, muzzlePos.z);
+                    var muzzleFwd = new float3(muzzleltw.Forward.x, 0, muzzleltw.Forward.z);
+                    var targetDir = math.normalizesafe(entityPos - muzzlePos);
+                    var dot = math.dot(muzzleFwd, targetDir);
+                    //continue false if not in arc
+                    if (dot<ArcLimitCos) continue;
+                    targetList.Add(hitEntity);
+                    result = true;
+                }
+            }
+            return result;
+        }
+        
         [Serializable]
         public struct AuthoringBox
         {
@@ -78,9 +131,9 @@ namespace Object703.Core
             public int targetCount;
             public float arcLimit;
 
-            public Weapon ToComponentData(IBaker i)
+            public Weapon_FanRange ToComponentData(IBaker i)
             {
-                var result = new Weapon();
+                var result = new Weapon_FanRange();
                 result.maxRange = maxRange;
                 result.minRange = minRange;
                 result.spread = spread;
@@ -134,12 +187,13 @@ namespace Object703.Core
     public partial struct ShootingSystem : ISystem
     {
         private int simulationTickRate;
-        
+        private ComponentLookup<LocalTransform> localTransLp;
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<PhysicsWorldSingleton>();
             state.RequireForUpdate<NetworkTime>();
             simulationTickRate = NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;
-            // state.RequireForUpdate<BeginInitializationEntityCommandBufferSystem.Singleton>();
+            localTransLp = SystemAPI.GetComponentLookup<LocalTransform>(true);
         }
     
         [BurstCompile]
@@ -148,17 +202,15 @@ namespace Object703.Core
             var networkTime = SystemAPI.GetSingleton<NetworkTime>();
             var currentTick = networkTime.ServerTick;
             if (!networkTime.IsFirstTimeFullyPredictingTick) return;
-            
-            foreach (var (targetBuffer,weapon,tick,ltw,random,owner) in SystemAPI.
-                         Query<DynamicBuffer<TargetBuffer>,
-                             RefRW<Weapon>,
+            var collisionWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().CollisionWorld;
+            localTransLp.Update(ref state);
+            foreach (var (weapon,tick,ltw,random,owner) in SystemAPI.
+                         Query<RefRW<Weapon_FanRange>,
                              DynamicBuffer<ShootAtTick>,
                              RefRO<LocalToWorld>,
                              RefRW<IndividualRandom>,
                              RefRO<GhostOwner>>())
             {
-                //skip if no target 
-                if(targetBuffer.Length==0) continue;
                 var onTime = false;
                 for (uint i = 0u; i < networkTime.SimulationStepBatchSize; i++)
                 {
@@ -173,36 +225,41 @@ namespace Object703.Core
                     }
                 }
                 //skip if time not reach
-                if (onTime && targetBuffer.GetDataAtTick(currentTick,out var curTarget))
+                if (onTime)
                 {
-                    
-                    var targetPos = SystemAPI.GetComponentRO<LocalTransform>(curTarget[0].Item1);
-                    for (int i = 0; i < weapon.ValueRO.salvo; i++)
+                    NativeList<Entity> targetList = new NativeList<Entity>(Allocator.TempJob);
+                    var hasTarget = weapon.ValueRW.FindTarget(ltw.ValueRO,collisionWorld,localTransLp,ref targetList);
+                    if (hasTarget)
                     {
-                        SpawnCharge(state.EntityManager,weapon,ltw,targetPos.ValueRO.Position,random,owner);
-                    }
-                    weapon.ValueRW.burstCounter++;
-                    var waitInTick = 0u;
+                        var targetPos = localTransLp[targetList[0]];
+                        for (int i = 0; i < weapon.ValueRO.salvo; i++)
+                        {
+                            SpawnCharge(state.EntityManager,weapon,ltw,targetPos.Position,random,owner);
+                        }
+                        weapon.ValueRW.burstCounter++;
+                        var waitInTick = 0u;
           
-                    if (weapon.ValueRO.burstCounter<weapon.ValueRO.burst)
-                    {
-                        //if burstCounter is smaller than burst, set next tick according to delayBetweenBurst
-                        waitInTick =(uint)(weapon.ValueRO.delayBetweenBurst * simulationTickRate);
+                        if (weapon.ValueRO.burstCounter<weapon.ValueRO.burst)
+                        {
+                            //if burstCounter is smaller than burst, set next tick according to delayBetweenBurst
+                            waitInTick =(uint)(weapon.ValueRO.delayBetweenBurst * simulationTickRate);
+                        }
+                        else
+                        {
+                            //if not, set timer to delayBetweenShot, and set burstCounter to 0
+                            waitInTick = (uint)(weapon.ValueRO.delayBetweenShot * simulationTickRate);
+                            weapon.ValueRW.burstCounter = 0;
+                        }
+                        if (state.WorldUnmanaged.IsServer()) continue;
+                        tick.AddCommandData(new ShootAtTick(){Tick = currentTick.AddSpan(1u),coolDownAtTick = currentTick.AddSpan(waitInTick)});
                     }
-                    else
-                    {
-                        //if not, set timer to delayBetweenShot, and set burstCounter to 0
-                        waitInTick = (uint)(weapon.ValueRO.delayBetweenShot * simulationTickRate);
-                        weapon.ValueRW.burstCounter = 0;
-                    }
-                    if (state.WorldUnmanaged.IsServer()) continue;
-                    tick.AddCommandData(new ShootAtTick(){Tick = currentTick.AddSpan(1u),coolDownAtTick = currentTick.AddSpan(waitInTick)});
                 }
                 
             }
         }
     
-        private static Entity SpawnCharge(EntityManager entityManager,RefRW<Weapon> weapon,RefRO<LocalToWorld> ltw,float3 targetPos,RefRW<IndividualRandom> random,RefRO<GhostOwner> owner)
+        private static Entity SpawnCharge(EntityManager entityManager,RefRW<Weapon_FanRange> weapon,RefRO<LocalToWorld> ltw,float3 targetPos,RefRW<IndividualRandom> random,
+            RefRO<GhostOwner> owner)
         {
             var localCharge = entityManager.Instantiate(weapon.ValueRO.charge);
             var muzzlePos = ltw.ValueRO.Position;
@@ -220,12 +277,5 @@ namespace Object703.Core
             entityManager.SetComponentData(localCharge,owner.ValueRO);
             return localCharge;
         }
-    
-        [BurstCompile]
-        public void OnDestroy(ref SystemState state)
-        {
-            
-        }
-    
     }
 }
