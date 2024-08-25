@@ -129,9 +129,10 @@ namespace Object703.Core
     }
 
     [Serializable]
-    public struct PenetrateLimit : IComponentData
+    public struct PenetrateLimit : ICommandData
     {
-        public int value;
+        [GhostField]public NetworkTick Tick { get; set; }
+        [GhostField]public int value;
     }
     #endregion
     
@@ -140,7 +141,7 @@ namespace Object703.Core
     /// </summary>
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(BeforeHitSystemGroup))]
+    [UpdateInGroup(typeof(OnHitSystemGroup))]
     public partial struct HitCheckSystem : ISystem
     {
         private ComponentLookup<LocalTransform> localTransLp;
@@ -148,6 +149,7 @@ namespace Object703.Core
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<NetworkTime>();
             state.RequireForUpdate<PhysicsWorldSingleton>();
             localTransLp = SystemAPI.GetComponentLookup<LocalTransform>(true);
             obstacleLp = SystemAPI.GetComponentLookup<ObstacleTag>(true);
@@ -160,9 +162,11 @@ namespace Object703.Core
             localTransLp.Update(ref state);
             obstacleLp.Update(ref state);
             state.Dependency.Complete();
-            new SphereCastHitCheckJob { cWorld = cWorld,obstacleLp = obstacleLp}.ScheduleParallel();
-            new SphereOverlapHitCheckJob { cWorld = cWorld}.ScheduleParallel();
-            new HomingShotHitCheckJob { localTransformLp = localTransLp }.ScheduleParallel();
+            var networkTime = SystemAPI.GetSingleton<NetworkTime>();
+            var currentTick = networkTime.ServerTick;
+            new SphereCastHitCheckJob { cWorld = cWorld,obstacleLp = obstacleLp,currentTick = currentTick}.ScheduleParallel();
+            new SphereOverlapHitCheckJob { cWorld = cWorld,currentTick = currentTick}.ScheduleParallel();
+            new HomingShotHitCheckJob { localTransformLp = localTransLp ,currentTick = currentTick}.ScheduleParallel();
         }
 
 
@@ -178,15 +182,18 @@ namespace Object703.Core
             public CollisionWorld cWorld;
             [ReadOnly]
             public ComponentLookup<ObstacleTag> obstacleLp;
+            [ReadOnly]
+            public NetworkTick currentTick;
             public void Execute(
                 [EntityIndexInQuery] int index,
                 Entity self,
                 ref SphereCastHitCheck castHitCheck,
                 in LocalTransform localTransform,
                 DynamicBuffer<HitCheckResult> hitResults,
-                ref PenetrateLimit count)
+                DynamicBuffer<PenetrateLimit> penLimit)
             {
-                if(count.value<=0) return; 
+                var exist = penLimit.GetDataAtTick(currentTick,out var penCount);
+                if (!exist || penCount.value <= 0) return;
                 castHitCheck.lastPos = castHitCheck.lastPos.Equals(float3.zero) ? localTransform.Position : castHitCheck.lastPos;
                 var dir = math.normalizesafe(localTransform.Position-castHitCheck.lastPos);
                 var length = math.distance(localTransform.Position, castHitCheck.lastPos);
@@ -205,11 +212,21 @@ namespace Object703.Core
                         hitResults.Add(new HitCheckResult { target = item.Entity, point = item.Position, normal = item.SurfaceNormal });
                         if (obstacleLp.HasComponent(item.Entity))
                         {
-                            count.value = 0;
+                            var nextTick = currentTick.AddSpan(1u);
+                            penLimit.Add(new PenetrateLimit
+                            {
+                                Tick = nextTick,
+                                value = 0
+                            });
                         }
                         else
                         {
-                            count.value--;
+                            var nextTick = currentTick.AddSpan(1u);
+                            penLimit.Add(new PenetrateLimit
+                            {
+                                Tick = nextTick,
+                                value = penCount.value-1
+                            });
                         }
                     }
                 }
@@ -227,16 +244,19 @@ namespace Object703.Core
         {
             [ReadOnly]
             public CollisionWorld cWorld;
+            [ReadOnly]
+            public NetworkTick currentTick;
             public void Execute(
                 [EntityIndexInQuery] int index,
                 Entity self,
                 in SphereOverlapCheck check,
                 in LocalTransform localTransform,
                 DynamicBuffer<HitCheckResult> hitResults,
-                ref PenetrateLimit count
+                DynamicBuffer<PenetrateLimit> penLimit
                 )
             {
-                if(count.value<=0) return;
+                var exist = penLimit.GetDataAtTick(currentTick,out var penCount);
+                if (!exist || penCount.value <= 0) return;
                 var hits = new NativeList<DistanceHit>(Allocator.TempJob);
                 var curHitHash = new NativeHashSet<Entity>(hitResults.Length,Allocator.TempJob);
                 for (int i = 0; i < hitResults.Length; i++)
@@ -251,7 +271,12 @@ namespace Object703.Core
                         if(curHitHash.Contains(item.Entity)) continue;
                         hitResults.Add(new HitCheckResult() { target = item.Entity, point = item.Position });
                     }
-                    count.value--;
+                    var nextTick = currentTick.AddSpan(1u);
+                    penLimit.Add(new PenetrateLimit
+                    {
+                        Tick = nextTick,
+                        value = penCount.value-1
+                    });
                 }
             }
         }
@@ -265,7 +290,8 @@ namespace Object703.Core
         {
             [ReadOnly]
             public ComponentLookup<LocalTransform> localTransformLp;
-
+            [ReadOnly]
+            public NetworkTick currentTick;
             public void Execute(
                 [EntityIndexInQuery] int index,
                 Entity self,
@@ -273,14 +299,20 @@ namespace Object703.Core
                 in LocalTransform localTransform,
                 DynamicBuffer<HitCheckResult> hitResults,
                 in HomingCheckDistance fuze,
-                ref PenetrateLimit count)
+                DynamicBuffer<PenetrateLimit> penLimit)
 
             {
-                if (count.value<=0 || !localTransformLp.HasComponent(target.value)) return;
+                var exist = penLimit.GetDataAtTick(currentTick,out var penCount);
+                if (!exist || penCount.value <= 0 || !localTransformLp.HasComponent(target.value)) return;
                 if (math.distancesq(localTransform.Position, localTransformLp[target.value].Position) <= fuze.Sqr)
                 {
                     hitResults.Add(new HitCheckResult() { target = target.value, point = localTransformLp[target.value].Position });
-                    count.value--;
+                    var nextTick = currentTick.AddSpan(1u);
+                    penLimit.Add(new PenetrateLimit
+                    {
+                        Tick = nextTick,
+                        value = penCount.value-1
+                    });
                 }
             }
         }
@@ -288,7 +320,7 @@ namespace Object703.Core
 
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(AfterHitSystemGroup))]
+    [UpdateInGroup(typeof(OnHitSystemGroup))]
     public partial struct OrderHitDestructSystem : ISystem
     {
         public void OnCreate(ref SystemState state)
@@ -299,6 +331,8 @@ namespace Object703.Core
         public void OnUpdate(ref SystemState state)
         {
             var networkTime = SystemAPI.GetSingleton<NetworkTime>();
+            var currentTick = networkTime.ServerTick;
+
             // foreach (var (count,canEndSpawn,enDestruct) in SystemAPI
             //              .Query<RefRO<PenetrateLimit>,DynamicBuffer<CanDestructSpawn>,EnabledRefRO<DestructTag>>().WithAll<Simulate>().WithOptions(EntityQueryOptions.IgnoreComponentEnabledState))
             // {
@@ -310,10 +344,11 @@ namespace Object703.Core
             //     canEndSpawn.AddCommandData(new CanDestructSpawn(){Tick = networkTime.ServerTick,canSpawn = e});
             // }
             
-            foreach (var (count,enDestruct,trans) in SystemAPI
-                         .Query<RefRO<PenetrateLimit>,EnabledRefRW<DestructTag>,RefRO<LocalTransform>>().WithAll<Simulate>().WithDisabled<DestructTag>())
+            foreach (var (penLimit,enDestruct,trans) in SystemAPI
+                         .Query<DynamicBuffer<PenetrateLimit>,EnabledRefRW<DestructTag>,RefRO<LocalTransform>>().WithAll<Simulate>().WithDisabled<DestructTag>())
             {
-                if (count.ValueRO.value<=0)
+                var exist = penLimit.GetDataAtTick(currentTick, out var penCount);
+                if (exist && penCount.value<=0)
                 {
                     enDestruct.ValueRW = true;
                 }

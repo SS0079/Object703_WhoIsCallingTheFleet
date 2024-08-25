@@ -84,7 +84,7 @@ MonoBehaviour:
     rotateDampMotion: 0
     rotateDampStop: 0
   arrowMoveConfig:
-    speedPerSecond: 40
+    speedPerSecond: 10
   isHoming: 0
 --- !u!114 &-5316111087388616607
 MonoBehaviour:

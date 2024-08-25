@@ -63,7 +63,7 @@ MonoBehaviour:
     burst: 1
     targetFilter: {fileID: 11400000, guid: 04591fbd34b5e01439ca06ecbe552bc6, type: 2}
     charge: {fileID: 83283020866352155, guid: fa6729e836c7add45acda7e648a0deb9, type: 3}
-    delayBetweenShot: 1
+    delayBetweenShot: 5
     delayBetweenBurst: 0.2
     targetCount: 4
     arcLimit: 50
