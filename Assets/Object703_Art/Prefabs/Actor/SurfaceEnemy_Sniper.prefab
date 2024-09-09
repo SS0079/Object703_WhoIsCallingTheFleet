@@ -294,7 +294,7 @@ MonoBehaviour:
   isAirBorne: 0
   isSurface: 1
   role: 2
-  maxHp: 25
+  maxHp: 2500
 --- !u!114 &1390223968049945437
 MonoBehaviour:
   m_ObjectHideFlags: 0

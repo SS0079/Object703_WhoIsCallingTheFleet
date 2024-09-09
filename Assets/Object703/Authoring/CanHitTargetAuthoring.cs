@@ -3,6 +3,7 @@ using KittyHelpYouOut.Utilities;
 using Object703.Core;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -130,7 +131,12 @@ namespace Object703.Authoring
                 AddComponent(self,spawnPrefabs);
             }
             */
-            AddComponent(self,new PenetrateLimit(){value = authoring.MaxPenetrateCount});
+            AddBuffer<PenetrateLimit>(self);
+            AppendToBuffer(self,new PenetrateLimit
+            {
+                Tick = new NetworkTick(1),
+                value = authoring.MaxPenetrateCount
+            });
         }
     }
 }
