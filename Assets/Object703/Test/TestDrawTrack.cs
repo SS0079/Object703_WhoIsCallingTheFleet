@@ -16,7 +16,7 @@ namespace Object703.Test
                 var mainTransform = Camera.main.transform;
                 for (int i = 0; i < children.Length; i++)
                 {
-                    var key = KittyDebug.Instance.AddTrackIcon(children[i],mainTransform,1f,KittyDebugIcon.Box | KittyDebugIcon.Diamond,Color.green);
+                    var key = KittyDebug.Instance.AddTrackIcon(children[i],mainTransform,1f,KittyDebugIcon.Sqare | KittyDebugIcon.Diamond,Color.green);
                     trackKey.Add(key);
                     key = KittyDebug.Instance.AddTrackIcon(children[i],mainTransform,2f,KittyDebugIcon.Cross,Color.red);
                     trackKey.Add(key);
